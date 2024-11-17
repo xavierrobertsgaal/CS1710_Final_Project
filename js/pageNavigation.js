@@ -10,6 +10,13 @@ class PageNavigation {
         this.switchLayout('graph');
     }
 
+    initializeNodes() {
+        // Add click handlers to all nodes and subnodes
+        document.querySelectorAll('.mini-node, .mini-subnode').forEach(node => {
+            node.addEventListener('click', () => this.activateNode(node));
+        });
+    }
+
     initializeLayoutToggles() {
         document.querySelectorAll('.layout-toggle').forEach(button => {
             button.addEventListener('click', () => {
@@ -88,6 +95,34 @@ class PageNavigation {
         }
 
         this.navigateToSection(node.dataset.section);
+    }
+
+    navigateToSection(section) {
+        if (!section) return;
+
+        // Hide all threads
+        document.querySelectorAll('.thread').forEach(thread => {
+            thread.classList.remove('active');
+        });
+
+        // Show the selected thread
+        const targetThread = document.querySelector(`#${section}`);
+        if (targetThread) {
+            targetThread.classList.add('active');
+        }
+
+        // Scroll to the section if needed
+        const targetSection = document.querySelector(`[data-section="${section}"]`);
+        if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    initializeScrollListener() {
+        // Optional: Add scroll behavior if needed
+        window.addEventListener('scroll', () => {
+            // Add your scroll handling logic here
+        });
     }
 
     // ... keep other navigation methods ...

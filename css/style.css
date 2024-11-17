@@ -4,88 +4,65 @@ body {
     padding: 0;
 }
 
-.left-navbar, .right-navbar {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1000;
-}
-
-.left-navbar {
-    left: 20px;
-}
-
-.right-navbar {
-    right: 20px;
-}
-
+/* Thread Styles */
 .thread-container {
     display: flex;
     transition: transform 0.5s ease;
+    padding: 20px;
     padding-bottom: 150px;
 }
 
 .thread {
-    min-width: 300px; /* Adjust as needed */
+    min-width: 300px;
     padding: 20px;
-    display: none; /* Hide all threads initially */
+    display: none;
+    transition: transform 0.2s ease-out;
 }
 
 .thread.active {
-    display: block; /* Show only the active thread */
+    display: block;
 }
 
-.container-fluid {
-    padding-left: 0;
-    padding-right: 0;
-}
-
-.title-row {
-    margin-top: 20px;
-}
-
-.hook-row {
-    margin-top: 20px;
-}
-
-.carbon-container {
-    margin-top: 20px;
-}
-
-.cybersecurity-container {
-    margin-top: 20px;
-}
-
-.risks-container {
-    margin-top: 20px;
-}
-
-.credits-row {
-    margin-top: 40px;
-    text-align: center;
+/* Credits Section */
+.credits-section {
+    margin-top: 100px;
+    padding: 40px 0;
     background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
+    border-top: 1px solid #dee2e6;
 }
 
-.credits-row .col-md-4 {
-    margin-bottom: 20px;
-}
-
-.credits-row img {
-    width: 100px;
-    height: 100px;
+.credits-img {
+    width: 120px;
+    height: 120px;
     object-fit: cover;
-    margin-bottom: 10px;
-    border: 2px solid #9400d3;
+    border: 3px solid #9400d3;
     border-radius: 50%;
+    margin-bottom: 15px;
+    transition: transform 0.2s ease;
 }
 
 .credits-link {
     text-decoration: none;
-    color: #9400d3
+    color: inherit;
+    display: inline-block;
 }
 
+.credits-link:hover .credits-img {
+    transform: scale(1.05);
+}
+
+.credits-section h4 {
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.credits-section .role {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+/* Headers */
 .sticky-header {
     position: sticky;
     top: 0;
@@ -94,41 +71,12 @@ body {
     padding: 10px 0;
 }
 
-.mt-5 {
-    margin-top: 3rem !important;
-}
-
-.credits-section {
-    margin-top: 100px;
-    padding: 20px;
-    background-color: #f8f9fa;
-    clear: both;
-    position: relative;
-    z-index: 1;
-}
-
+/* Mini-map and Controls */
 .controls-container {
     position: fixed;
     top: 20px;
-    width: 100%;
-    max-width: 280px;
-}
-
-.layout-selector {
-    padding: 0 4px;
-}
-
-.layout-selector .btn-sm {
-    font-size: 0.8rem;
-    width: 100%;
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
-    color: #212529;
-}
-
-.layout-selector .dropdown-menu {
-    font-size: 0.8rem;
-    min-width: 100%;
+    width: 250px;
+    padding: 15px;
 }
 
 .mini-map {
@@ -139,300 +87,11 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.layout-selector {
-    margin-bottom: 15px;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 10px;
-}
-
-.layout-selector .btn-sm {
-    font-size: 0.8rem;
-    padding: 4px 8px;
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
-    color: #212529;
-}
-
-.layout-selector .dropdown-menu {
-    font-size: 0.8rem;
-    min-width: 100px;
-}
-
-.mini-tree {
-    margin-top: 5px;
-}
-
+/* Node Styles */
 .mini-node, .mini-subnode {
     cursor: pointer;
     padding: 6px 12px;
     border-radius: 6px;
-    transition: all 0.15s ease;
-}
-
-.mini-node.start {
-    background-color: #007bff;
-    color: white;
-}
-
-.mini-branch {
-    margin-left: 15px;
-    border-left: 2px solid #dee2e6;
-    padding-left: 15px;
-}
-
-.mini-subnodes {
-    margin-top: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.mini-subnode {
-    padding: 4px 10px;
-    border-radius: 4px;
-    background-color: #f8f9fa;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.mini-node:hover, .mini-subnode:hover {
-    background-color: #e9ecef;
-    transform: translateX(2px);
-}
-
-.mini-node.active {
-    background-color: #007bff;
-    color: white;
-}
-
-.mini-subnode.active {
-    background-color: #0d6efd;
-    color: white;
-}
-
-.navbar button {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 200px;
-}
-
-/* Add layout-specific styles */
-.layout-selector {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.layout-vertical .thread-container {
-    flex-direction: column;
-}
-
-.layout-fluid .thread-container {
-    flex-direction: row;
-    overflow-x: hidden;
-}
-
-.layout-vertical .navbar {
-    display: none;
-}
-
-.layout-fluid .navbar {
-    display: block;
-}
-
-/* Update mini-map styles for fluid layout */
-.layout-fluid .mini-map {
-    width: 200px;
-}
-
-.layout-fluid .mini-node {
-    cursor: pointer;
-}
-
-/* Add transition effects */
-.thread {
-    transition: transform 0.3s ease;
-}
-
-/* Container for main content */
-.container {
-    max-width: 800px; /* Limit width for readability */
-    margin: 0 auto; /* Center the container */
-    padding: 20px;
-}
-
-/* Mini-map positioning */
-.controls-container {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    width: 200px;
-}
-
-/* Make all nodes and subnodes clickable */
-.mini-node, .mini-subnode {
-    cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.mini-node:hover, .mini-subnode:hover {
-    background-color: #e9ecef;
-    transform: translateX(2px);
-}
-
-/* Add data-section attributes to content sections */
-.section {
-    scroll-margin-top: 20px; /* Ensures section headers aren't hidden under sticky elements */
-}
-
-/* Update container margins to center content properly */
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    margin-left: calc(220px + 10%); /* Space for mini-map plus centering */
-    margin-right: 10%;
-}
-
-/* Move layout selector inside mini-map */
-.layout-selector {
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.layout-selector .btn-sm {
-    font-size: 0.8rem;
-    padding: 3px 8px;
-    width: 100%;
-}
-
-/* Optimize animations */
-.mini-node, .mini-subnode {
-    cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: all 0.15s ease; /* Faster transition */
-}
-
-.mini-node:hover, .mini-subnode:hover {
-    background-color: #e9ecef;
-    transform: translateX(2px);
-}
-
-.thread {
-    transition: transform 0.2s ease-out; /* Faster transition with ease-out timing */
-}
-
-/* Smooth scrolling optimization */
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 20px;
-}
-
-/* Optional: Add hardware acceleration for smoother animations */
-.mini-map, .thread, .mini-node, .mini-subnode {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-}
-
-.mini-map-header {
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.mini-map-header .btn {
-    font-size: 0.75rem;
-    padding: 2px 8px;
-    color: #666;
-    border-color: #dee2e6;
-    background-color: transparent;
-}
-
-.mini-map-header .dropdown-menu {
-    font-size: 0.75rem;
-    min-width: 80px;
-}
-
-/* Update container styles for Bootstrap grid */
-.container-fluid {
-    padding: 20px;
-}
-
-.thread-container {
-    padding: 20px;
-}
-
-/* Optimize transitions */
-.thread {
-    transition: transform 0.2s ease-out;
-}
-
-/* Hardware acceleration */
-.mini-map, .thread, .mini-node, .mini-subnode {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-}
-
-/* Layout-specific styles */
-.layout-vertical .controls-container {
-    position: fixed;
-    top: 20px;
-    width: 100%;
-    max-width: 250px;
-}
-
-.layout-graph .controls-container {
-    position: fixed;
-    top: 20px;
-    left: 0;
-    width: 250px;
-    padding: 15px;
-}
-
-.layout-graph .mini-tree {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 0;
-    max-width: 100%;
-    overflow-x: hidden;
-}
-
-.layout-graph .tree-level {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    align-items: flex-start;
-    position: relative;
-    width: 100%;
-    justify-content: space-between;
-    padding: 0 10px;
-}
-
-.layout-graph .branch {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    position: relative;
-    flex: 1;
-    min-width: 0; /* Allow shrinking */
-}
-
-.layout-graph .mini-node {
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
     transition: all 0.15s ease;
     text-align: center;
     width: 100%;
@@ -441,117 +100,17 @@ html {
     font-size: 0.9rem;
 }
 
-.layout-graph .mini-subnodes {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-}
-
-.layout-graph .mini-subnode {
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    text-align: center;
-    width: 100%;
-    min-width: 0;
-    white-space: nowrap;
-    font-size: 0.9rem;
-}
-
-/* Hover and active states */
-.layout-graph .mini-node:hover,
-.layout-graph .mini-subnode:hover {
+.mini-node:hover, .mini-subnode:hover {
     background-color: #e9ecef;
-    transform: translateY(-1px);
+    transform: translateX(2px);
 }
 
-.layout-graph .mini-node.active,
-.layout-graph .mini-subnode.active {
+.mini-node.active, .mini-subnode.active {
     background-color: #0d6efd;
     color: white;
 }
 
-/* Navigation buttons */
-.graph-navigation {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #dee2e6;
-    width: 100%;
-}
-
-.nav-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.nav-buttons button {
-    width: 100%;
-    padding: 6px 12px;
-    font-size: 0.9rem;
-    cursor: pointer;
-}
-
-.sibling-nav {
-    display: flex;
-    gap: 8px;
-}
-
-.sibling-nav button {
-    flex: 1;
-}
-
-/* Hide graph navigation by default */
-.graph-navigation {
-    display: none;
-}
-
-.layout-graph .graph-navigation {
-    display: block;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #dee2e6;
-    width: 100%;
-}
-
-/* Adjust emoji size */
-.layout-graph .mini-node,
-.layout-vertical .mini-node {
-    font-size: 1.2rem; /* Larger font size for emoji */
-}
-
-/* Add smooth scrolling to the document */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Navigation visibility */
-.graph-navigation {
-    display: none; /* Hidden by default */
-}
-
-.layout-graph .graph-navigation {
-    display: block; /* Show only in graph view */
-}
-
-/* Active state styling for both layouts */
-.mini-node.active,
-.mini-subnode.active {
-    background-color: #0d6efd;
-    color: white;
-}
-
-/* Hover states for both layouts */
-.mini-node:hover,
-.mini-subnode:hover {
-    background-color: #e9ecef;
-    cursor: pointer;
-}
-
-/* Layout toggle buttons */
+/* Layout Controls */
 .layout-controls {
     display: flex;
     gap: 8px;
@@ -576,34 +135,102 @@ html {
     border-color: #0d6efd;
 }
 
-/* Hide inactive branch subnodes */
-.layout-graph .branch .mini-subnodes {
-    display: none;
-}
-
-.layout-graph .branch.active .mini-subnodes {
+/* Graph Layout Specific */
+.layout-graph .mini-tree {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
 }
 
+.layout-graph .tree-level {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.layout-graph .branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.layout-graph .mini-subnodes {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.layout-graph .branch.active .mini-subnodes,
 .layout-graph .branch:hover .mini-subnodes {
     display: flex;
 }
 
-/* Fix page layout */
-.container-fluid {
-    padding: 20px;
+/* Navigation */
+.graph-navigation {
+    display: none;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+    width: 100%;
 }
 
-.col-3 {
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 25%;
-    padding: 20px;
+.layout-graph .graph-navigation {
+    display: block;
 }
 
-.col-6 {
-    margin-left: 25%;
-    padding: 20px;
+.nav-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sibling-nav {
+    display: flex;
+    gap: 8px;
+}
+
+/* Global Optimizations */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Add these styles for the intro section */
+.intro-text {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.intro-text p {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.risk-list {
+    margin: 2rem 0;
+    padding-left: 1.5rem;
+}
+
+.risk-list li {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.mission-statement {
+    font-weight: 500;
+    color: #333;
+    padding: 1rem 0;
+    border-top: 2px solid #eee;
+    margin-top: 2rem;
 }
