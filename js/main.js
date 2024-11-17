@@ -21,3 +21,9 @@ function createVisualizations(data) {
     // const aiProgressEvals = new LineChart('#ai-progress-evals', data[4]);
     // const aiIncidentsBySector = new TreeMap('#ai-incidents-by-sector', data[5]);
 }
+
+// Initialize page navigation when DOM is loaded
+let pageNavigation;
+document.addEventListener('DOMContentLoaded', () => {
+    pageNavigation = new PageNavigation();
+});
