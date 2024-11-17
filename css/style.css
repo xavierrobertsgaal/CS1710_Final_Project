@@ -1,0 +1,50 @@
+.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.title-row {
+    margin-top: 20px;
+}
+
+.hook-row {
+    margin-top: 20px;
+}
+
+.carbon-container {
+    margin-top: 20px;
+}
+
+.cybersecurity-container {
+    margin-top: 20px;
+}
+
+.risks-container {
+    margin-top: 20px;
+}
+
+.credits-row {
+    margin-top: 40px;
+    text-align: center;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.credits-row .col-md-4 {
+    margin-bottom: 20px;
+}
+
+.credits-row img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 2px solid #9400d3;
+    border-radius: 50%;
+}
+
+.credits-link {
+    text-decoration: none;
+    color: #9400d3
+}
