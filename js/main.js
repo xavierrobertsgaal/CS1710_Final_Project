@@ -6,6 +6,7 @@ let promises = [
     // Carbon intensity data
     // Cybersecurity data
     d3.csv("data/AIID_incidents_enhanced.csv"),
+    d3.csv("data/Internet_Activities.csv"),
 ];
 
 // Load data after DOM is ready
@@ -21,4 +22,5 @@ function createVisualizations(data) {
         parentElement: '#ai-incidents-by-sector',
         data: data[0]
     });
+    const deploymentCarbonIntensity = new CircleChart('pretraining-carbon-intensity', data[1]);
 }
