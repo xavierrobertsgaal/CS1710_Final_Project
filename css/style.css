@@ -234,3 +234,9 @@ html {
     border-top: 2px solid #eee;
     margin-top: 2rem;
 }
+
+#ai-incidents-by-sector {
+    width: 100%;
+    height: 400px; /* Set a default height */
+    margin: 20px 0;
+}
