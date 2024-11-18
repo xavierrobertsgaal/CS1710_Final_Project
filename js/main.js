@@ -16,7 +16,7 @@ function createVisualizations(data) {
     // Create visualizations
     // const pretrainingCarbonIntensity = new BubbleChart('#pretraining-carbon-intensity', data[0]);
     // const deploymentCarbonIntensity = new CircleChart('#deployment-carbon-intensity', data[1]);
-    // const cyberIncidentsCaught = new ScatterChart('#cyber-incidents-caught', data[2]);
+    const cyberIncidentsCaught = new AreaChart('cyber-incidents-caught', data[0]);
     // const costOfCyberSecurity = new BarChart('#cost-of-cyber-security', data[3]);
     // const aiProgressEvals = new LineChart('#ai-progress-evals', data[4]);
     // const aiIncidentsBySector = new TreeMap('#ai-incidents-by-sector', data[5]);
