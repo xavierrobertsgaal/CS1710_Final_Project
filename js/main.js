@@ -23,4 +23,5 @@ function createVisualizations(data) {
         data: data[0]
     });
     const deploymentCarbonIntensity = new CircleChart('pretraining-carbon-intensity', data[1]);
+    const cyberIncidentsCaught = new AreaChart('cyber-incidents-caught', data[0]);
 }

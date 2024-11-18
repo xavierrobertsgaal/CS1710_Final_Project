@@ -258,3 +258,8 @@ html {
     font-family: 'Montserrat', sans-serif;
     pointer-events: none;
 }
+
+#cyber-incidents-caught {
+    width: 100%;
+    height: 400px; /* Adjust this as needed */
+}
