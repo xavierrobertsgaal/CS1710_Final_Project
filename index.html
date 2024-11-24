@@ -17,126 +17,110 @@
 
     <!-- Local CSS -->
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Add Scrollama -->
+    <script src="https://unpkg.com/intersection-observer"></script>
+    <script src="https://unpkg.com/scrollama"></script>
 </head>
 <body>
     <div class="container-fluid">
-        <!-- Main Content Row -->
-        <div class="row">
-            <!-- Left column: Mini-map -->
-            <div class="col-2">
-                <div class="controls-container">
-                    <div class="mini-map">
-                        <div class="layout-controls">
-                            <button class="layout-toggle active" data-layout="vertical">Vertical Scroll</button>
-                            <div class="graph-view-placeholder">Graph View (Coming Soon)</div>
-                        </div>
-                        <div class="mini-tree">
-                            <div class="mini-node start active" data-section="start">Start</div>
-                            <div class="tree-level">
-                                <div class="branch">
-                                    <div class="mini-node" data-section="climate">🌍</div>
-                                    <div class="mini-subnodes">
-                                        <div class="mini-subnode" data-section="risk">Risk</div>
-                                        <div class="mini-subnode" data-section="stack">Stack</div>
-                                        <div class="mini-subnode" data-section="action">Action</div>
-                                    </div>
-                                </div>
-                                <div class="branch">
-                                    <div class="mini-node" data-section="cyber">💀</div>
-                                    <div class="mini-subnodes">
-                                        <div class="mini-subnode" data-section="risk">Risk</div>
-                                        <div class="mini-subnode" data-section="stack">Stack</div>
-                                        <div class="mini-subnode" data-section="action">Action</div>
-                                    </div>
-                                </div>
-                                <div class="branch">
-                                    <div class="mini-node" data-section="auto">🤖</div>
-                                    <div class="mini-subnodes">
-                                        <div class="mini-subnode" data-section="risk">Risk</div>
-                                        <div class="mini-subnode" data-section="stack">Stack</div>
-                                        <div class="mini-subnode" data-section="action">Action</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Middle column: Main content -->
-            <div class="col-8">
-                <div class="thread-container">
-                    <!-- Start Thread -->
-                    <div class="thread active" id="start">
+        <!-- Full-width Introduction Row -->
+        <div class="row intro-row">
+            <div class="col-12">
+                <section class="text-section" id="intro">
+                    <div class="step" data-step="intro">
                         <h1 class="display-4 mb-4">A Citizen's Guide to Responsible AI</h1>
-                        <div class="intro-text">
-                            <p class="lead">Today's powerful AI systems, and their successors on the horizon, may very well change everything. They promise to spur advances in medicine, boost productivity, and free humans from unfulfilling cognitive tasks.</p>
-                            
-                            <p>Yet, powerful AI systems must be developed responsibly, as they have enormous costs and pose important societal risks. Just to name three:</p>
-                            
-                            <ul class="risk-list">
-                                <li>Cutting-edge AI requires gargantuan amounts of carbon-intensive energy to train and use.</li>
-                                <li>AI enables criminals to launch sophisticated cyberattacks at speed and scale.</li>
-                                <li>Some types of AI, like powerful agents, may be able to plan and achieve undesirable goals and evade control by AI labs or policymakers.</li>
-                            </ul>
-                            
-                            <p>Policymakers are already crafting regulations to shape the future of AI R&D, and some of these are ending up on the ballot. We believe citizens should be informed about – and participate in – public discussion to achieve the promises of AI while avoiding its perils.</p>
-                            
-                            <p class="mission-statement">Therefore, our aim in this project is to inform our parents, friends, members of the public, and non-technical policymakers about selected, salient, and severe risks of AI.</p>
+                        <div class="intro-content">
+                            <p class="lead">Today's powerful AI systems are reshaping our world, offering unprecedented capabilities but also introducing new risks and challenges. As citizens, we need to understand these systems' impacts on our society, environment, and individual autonomy.</p>
+                            <p>This guide explores three critical dimensions of AI responsibility: environmental impact, security implications, and autonomy concerns. Through interactive visualizations and data-driven insights, we'll examine how AI affects our daily lives and what we can do to promote responsible development.</p>
                         </div>
                     </div>
-
-                    <!-- Climate Thread -->
-                    <div class="thread" id="climate">
-                        <div class="section" data-section="risk">
-                            <h2 class="sticky-header">Climate Risk</h2>
-                            <div class="row">
-                                <div class="col-12">
-                                    <div id="pretraining-carbon-intensity"></div>
-                                    <div class="controls">
-                                        <button id="moveToBottom">Align by AI Usage</button>
-                                        <button id="transformToArea">Area Chart (Coming Soon)</button>
-                                    </div>
-                                    <div<p>Placeholder text...</p></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cyber Thread -->
-                    <div class="thread" id="cyber">
-                        <div class="section" data-section="risk">
-                            <h2 class="sticky-header">Cybersecurity Risk</h2>
-                            <div class="row">
-                                <div class="col-12">
-                                    <div id="cyber-incidents-caught"></div>
-                                    <div<p>Placeholder text...</p></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Auto Thread -->
-                    <div class="thread" id="auto">
-                        <div class="section" data-section="risk">
-                            <h2 class="sticky-header">Automation Risk</h2>
-                            <div class="row">
-                                <div class="col-12">
-                                    <div<p>TREEMAP COMING SOON (see TreeMap.js for a draft)</p></div>
-                                    <div id="ai-incidents-by-sector"></div>
-                                    <div<p>Placeholder text...</p></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </section>
             </div>
-
-            <!-- Right column: Empty space -->
-            <div class="col-2"></div>
         </div>
 
-        <!-- Credits Row, to be finished
+        <!-- Two-column Narrative Row -->
+        <div class="row narrative-row">
+            <!-- Text Column -->
+            <div class="col-6">
+                <!-- Climate Section -->
+                <section class="text-section" id="climate">
+                    <div class="step" data-step="climate-1">
+                        <h2>Climate Impact</h2>
+                        <p>Training large AI models requires enormous computational resources, leading to significant carbon emissions. A single large language model's training can emit as much carbon as five cars over their entire lifetimes.</p>
+                    </div>
+                    <div class="step" data-step="climate-2">
+                        <p>The environmental cost varies dramatically based on where these models are trained. Data centers powered by renewable energy have a fraction of the carbon footprint compared to those using fossil fuels.</p>
+                    </div>
+                    <div class="step" data-step="climate-3">
+                        <p>As AI systems grow more powerful, their environmental impact becomes a crucial consideration in responsible development. Companies must balance capability advances with sustainability goals.</p>
+                    </div>
+                </section>
+
+                <!-- Incidents Section -->
+                <section class="text-section" id="incidents">
+                    <h2>AI Incidents Over Time</h2>
+                    <div class="step" data-step="incidents-1">
+                        <p>The stacked area chart shows the monthly count of AI-related incidents, categorized by severity. High-severity incidents (green) are shown at the bottom, followed by medium (orange) and low-severity (blue) incidents. This visualization reveals the dramatic increase in AI incidents across all severity levels in recent years.</p>
+                        <p>Use the time brush below to zoom into specific time periods and explore incident patterns.</p>
+                    </div>
+                    <div class="step" data-step="incidents-2">
+                        <p>The treemap visualization breaks down AI incidents by sector, with box size indicating the number of incidents. High-risk sectors like healthcare and transportation often experience more severe incidents due to their direct impact on human life.</p>
+                        <p>Click on any sector to see details of a random incident from that domain.</p>
+                    </div>
+                    <div class="step" data-step="incidents-3">
+                        <p>The rapid increase in incidents, particularly since 2020, highlights the growing need for robust safety measures and oversight in AI deployment. The brush tool below allows you to explore how different sectors are affected during specific time periods.</p>
+                    </div>
+                </section>
+
+                <!-- Progress Section -->
+                <section class="text-section" id="progress">
+                    <h2>Rapid Progress in AI Capabilities</h2>
+                    <div class="step" data-step="progress-1">
+                        <p>The line chart tracks AI model performance on SWE-Bench, a benchmark for evaluating AI systems' ability to understand and modify complex software. Each point represents a model evaluation, with the red line showing the maximum score achieved over time.</p>
+                        <p>Hover over points to see detailed model performance information. The rapid upward trajectory of scores demonstrates the accelerating pace of AI advancement.</p>
+                    </div>
+                    <div class="step" data-step="progress-2">
+                        <p>Recent models like Claude 3.5 Sonnet have achieved scores above 50 on the SWE-Bench benchmark, demonstrating unprecedented capabilities in code understanding and modification. This level of performance suggests AI systems are approaching human-level capabilities in certain programming tasks.</p>
+                    </div>
+                    <div class="step" data-step="progress-3">
+                        <p>The steep increase in performance, particularly in the last year, raises important questions about AI's role in its own development. As these systems become better at programming tasks, they could potentially accelerate their own improvement, making it crucial to establish robust safety measures now.</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Graphics Column -->
+            <div class="col-6">
+                <div class="sticky-graphic">
+                    <div class="climate-controls">
+                        <div class="btn-group w-100">
+                            <button id="moveToBottom" class="btn btn-primary">Group by AI Usage</button>
+                            <button id="resetForce" class="btn btn-outline-primary">Ungroup</button>
+                        </div>
+                    </div>
+                    <!-- Climate Visualizations -->
+                    <div id="climate-vis" class="vis-container">
+                        <div id="pretraining-carbon-intensity"></div>
+                    </div>
+
+                    <!-- Incidents Visualizations -->
+                    <div id="incidents-vis" class="vis-container">
+                        <div class="main-vis">
+                            <div id="incidents-over-time"></div>
+                            <div id="ai-incidents-by-sector"></div>
+                        </div>
+                        <div id="date-brush" class="brush-container"></div>
+                    </div>
+
+                    <!-- Progress Visualization -->
+                    <div id="progress-vis" class="vis-container">
+                        <div id="swe-bench-progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credits Row -->
         <div class="row">
             <div class="col-12">
                 <div class="credits-section">
@@ -144,7 +128,7 @@
                         <div class="col-md-4 text-center">
                             <img src="img/default.png" alt="Pranav Pendri" class="credits-img">
                             <h4>Pranav Pendri</h4>
-                            <p class="role">G2, Computer Science</p>
+                            <p class="role">Junior, Computer Science</p>
                         </div>
                         <div class="col-md-4 text-center">
                             <a href="https://scholar.harvard.edu/xrg" class="credits-link">
@@ -161,7 +145,7 @@
                     </div>
                 </div>
             </div>
-        </div> -->
+        </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -172,13 +156,13 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
     <!-- Local Scripts -->
-    <script src="js/areaChart.js"></script>
+    <script src="js/AreaChart.js"></script>
     <script src="js/BubbleChart.js"></script>
     <script src="js/LineChart.js"></script>
     <script src="js/ScatterChart.js"></script>
     <script src="js/TreeMap.js"></script>
     <script src="js/CircleChart.js"></script>
-    <script src="js/pageNavigation.js"></script>
+    <script src="js/BrushChart.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

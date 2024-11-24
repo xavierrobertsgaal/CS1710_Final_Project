@@ -1,17 +1,17 @@
 /* Core Layout */
 body {
-    overflow: hidden;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
 }
 
 .container-fluid {
-    height: 100vh;
     width: 100%;
     padding: 0;
 }
 
 /* Main Content Row */
 .row {
-    height: 100vh;
     margin: 0;
 }
 
@@ -131,6 +131,8 @@ body {
     background-color: var(--bs-gray-100);
     border-top: 1px solid var(--bs-border-color);
     padding: 2.5rem 0;
+    margin-top: 2rem;
+    width: 100%;
 }
 
 .credits-img {
@@ -165,4 +167,236 @@ body {
 .section {
     min-height: 100vh;
     padding: 1rem 0;
+}
+
+/* Add these styles to your existing CSS */
+
+.sticky-graphic {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.vis-container {
+    width: 100%;
+    height: 100%;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.step {
+    min-height: 90vh;
+    margin: 0 auto;
+    padding: 1rem;
+    border-left: 2px solid #ccc;
+    opacity: 0.3;
+    transition: opacity 0.5s;
+}
+
+.step.is-active {
+    opacity: 1;
+}
+
+.text-section {
+    padding: 0 1rem;
+}
+
+/* Remove any conflicting styles from the previous navigation system */
+
+/* Ensure credits row spans full width */
+.container-fluid > .row:last-child {
+    height: auto;
+    margin: 0;
+}
+
+/* Make sure the first visualization is visible by default */
+#climate-vis {
+    display: block;
+    opacity: 1;
+}
+
+/* Debug styling */
+.debug .step {
+    background: rgba(0,0,0,0.1);
+    border: 1px solid #f09;
+}
+
+.debug .is-active {
+    background: rgba(255,0,153,0.1);
+}
+
+#moveToBottom {
+    display: block;
+    transition: opacity 0.3s ease;
+}
+
+/* Add these styles for the new layout */
+.intro-row {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.intro-row .step {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    min-height: auto;
+    opacity: 1;
+    border: none;
+    text-align: center;
+}
+
+.intro-row h1 {
+    white-space: nowrap;
+    font-size: calc(2.5rem + 1.5vw);
+    line-height: 1.2;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.intro-content {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.narrative-row {
+    position: relative;
+}
+
+/* Update existing styles */
+.text-section {
+    padding: 0 1rem;
+}
+
+#intro {
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Ensure the narrative sections start fresh after intro */
+.narrative-row .text-section:first-child {
+    padding-top: 2rem;
+}
+
+.climate-controls {
+    display: none; /* Hidden by default */
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1000;
+}
+
+.climate-controls .btn-group {
+    display: flex;
+    gap: 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid var(--bs-primary);
+}
+
+.climate-controls button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 0;
+    background: white;
+    color: var(--bs-primary);
+    transition: all 0.2s ease;
+}
+
+.climate-controls button.active {
+    background: var(--bs-primary);
+    color: white;
+}
+
+#moveToBottom {
+    border-right: 1px solid var(--bs-primary);
+}
+
+/* Add specific styling for the area chart container */
+#cyber-incidents-caught {
+    width: 100%;
+    height: 500px;
+    /* border: 1px solid red; Remove this line */
+}
+
+/* Add specific styling for the SVG */
+#cyber-incidents-caught svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Style for the area paths */
+.area {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.area:hover {
+    opacity: 1;
+}
+
+/* Style for the SVG */
+.chart-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Remove fixed dimensions from specific containers */
+#cyber-incidents-caught,
+#pretraining-carbon-intensity,
+#ai-incidents-by-sector {
+    width: 100%;
+    height: 100%;
+}
+
+#swe-bench-progress {
+    margin-top: 20px;
+    min-height: 300px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.vis-container {
+    transition: opacity 0.3s ease;
+}
+
+#autonomy-vis {
+    display: flex;
+    flex-direction: column;
+}
+
+#ai-incidents-by-sector {
+    flex: 1;
+    min-height: 400px;
+}
+
+.main-vis {
+    height: calc(100% - 120px); /* Increase space for brush */
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.brush-container {
+    height: 100px; /* Increase height */
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+#incidents-over-time, #ai-incidents-by-sector {
+    height: 100%;
+    width: 100%;
+    display: none; /* Will be shown/hidden via JavaScript */
 }

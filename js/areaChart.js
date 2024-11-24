@@ -1,123 +1,112 @@
 class AreaChart {
     constructor(parentElement, data) {
         this.parentElement = parentElement;
-
-        // Filter relevant fields: date, severity, and incident_id
+        this.containerElement = document.getElementById(parentElement);
+        
+        // Process data
         this.data = data.map(d => ({
-            date: new Date(d.date), // Parse as Date
-            severity: d.severity,
+            date: new Date(d.date),
+            severity: d.severity || 'Unknown',
             incident_id: d.incident_id
         }));
 
-        // Group by severity levels in a logical order
-        this.severityLevels = ["Low", "Medium", "High"]; // Adjust based on your data
+        // Store full dataset for filtering
+        this.allData = [...this.data];
+
+        // Group by severity levels in a logical order (high at bottom)
+        this.severityLevels = ["High", "Medium", "Low"];
 
         // Set ordinal color scale for severity levels
         this.colorScale = d3.scaleOrdinal()
-            .domain(this.severityLevels)
-            .range(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']); // Adjust colors as needed
+            .domain(["High", "Medium", "Low"])
+            .range(['#2ca02c', '#ff7f0e', '#1f77b4']); // green, orange, blue
 
         this.initVis();
     }
 
     initVis() {
         let vis = this;
+        
+        // Set margins
+        vis.margin = { top: 40, right: 40, bottom: 100, left: 50 };
+        
+        vis.setupSvg();
+        vis.setupScales();
+        vis.setupAxes();
+        
+        vis.wrangleData();
+    }
 
-        vis.margin = { top: 40, right: 40, bottom: 100, left: 50 }; // Increased bottom margin for legend
-        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
-        vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
-
-        // SVG drawing area
+    setupSvg() {
+        let vis = this;
+        
+        // Create SVG area
         vis.svg = d3.select(`#${vis.parentElement}`).append("svg")
-            .attr("width", vis.width + vis.margin.left + vis.margin.right)
-            .attr("height", vis.height + vis.margin.top + vis.margin.bottom + 40) // Extra space for legend
-            .append("g")
-            .attr("transform", `translate(${vis.margin.left}, ${vis.margin.top})`);
+            .attr("class", "chart-svg");
+            
+        // Create group for content
+        vis.chartGroup = vis.svg.append("g");
+        
+        // Add axes groups
+        vis.chartGroup.append("g")
+            .attr("class", "x-axis axis");
 
-        // Initialize scales and axes
-        vis.x = d3.scaleTime()
-            .range([0, vis.width]);
+        vis.chartGroup.append("g")
+            .attr("class", "y-axis axis");
 
-        vis.y = d3.scaleLinear()
-            .range([vis.height, 0]);
+        // Add legend group
+        vis.legend = vis.chartGroup.append("g")
+            .attr("class", "legend");
+    }
 
+    setupScales() {
+        let vis = this;
+        
+        // Initialize scales
+        vis.x = d3.scaleTime();
+        vis.y = d3.scaleLinear();
+
+        // Initialize stack layout
+        vis.stack = d3.stack()
+            .keys(vis.severityLevels)
+            .order(d3.stackOrderReverse)  // Highest severity at bottom
+            .value((d, key) => d[key] || 0);
+            
+        vis.updateDimensions();
+    }
+
+    setupAxes() {
+        let vis = this;
+        
         vis.xAxis = d3.axisBottom()
             .scale(vis.x);
 
         vis.yAxis = d3.axisLeft()
             .scale(vis.y);
-
-        vis.svg.append("g")
-            .attr("class", "x-axis axis")
-            .attr("transform", `translate(0, ${vis.height})`);
-
-        vis.svg.append("g")
-            .attr("class", "y-axis axis");
-
-        // Initialize stack layout
-        vis.stack = d3.stack()
-            .keys(vis.severityLevels)
-            .value((d, key) => d[key] || 0);
-
-        // Initialize area layout
-        vis.area = d3.area()
-            .x(d => vis.x(d.data.date))
-            .y0(d => vis.y(d[0]))
-            .y1(d => vis.y(d[1]));
-
-        // Add legend group
-        vis.legend = vis.svg.append("g")
-            .attr("class", "legend")
-            .attr("transform", `translate(0, ${vis.height + 30})`);
-
-        vis.wrangleData();
     }
 
     wrangleData() {
         let vis = this;
-
-        // Aggregate data by month and severity
-        vis.aggregatedData = Array.from(
-            d3.rollup(
-                vis.data,
-                v => vis.severityLevels.reduce((acc, severity) => {
-                    acc[severity] = v.filter(d => d.severity === severity).length;
-                    return acc;
-                }, {}),
-                d => new Date(d.date.getFullYear(), d.date.getMonth()) // Group by year and month
-            ),
-            ([date, severityMap]) => ({
-                date,
-                ...severityMap
-            })
+        
+        // Group data by year-month for smoother visualization
+        let monthlyData = d3.rollup(vis.data,
+            values => ({
+                High: values.filter(d => d.severity === "High").length,
+                Medium: values.filter(d => d.severity === "Medium").length,
+                Low: values.filter(d => d.severity === "Low").length,
+                date: d3.timeMonth(values[0].date) // Use the month as the date
+            }),
+            d => d3.timeMonth(d.date) // Group by month
         );
 
-        // Ensure all severity levels are represented for each month
-        vis.aggregatedData.forEach(d => {
-            vis.severityLevels.forEach(severity => {
-                if (!(severity in d)) {
-                    d[severity] = 0; // Fill missing severity levels with 0
-                }
-            });
-        });
+        // Convert to array format and sort by date
+        vis.aggregatedData = Array.from(monthlyData, ([_, data]) => data)
+            .sort((a, b) => a.date - b.date);
 
-        // Sort aggregated data by date
-        vis.aggregatedData.sort((a, b) => a.date - b.date);
-
-        // Add cumulative values for each severity level
-        for (let i = 1; i < vis.aggregatedData.length; i++) {
-            vis.severityLevels.forEach(severity => {
-                vis.aggregatedData[i][severity] += vis.aggregatedData[i - 1][severity];
-            });
-        }
-
-        // Stack data and attach `key` property to each layer
-        vis.stackedData = vis.stack(vis.aggregatedData).map((layer, i) => {
-            return Object.assign(layer, { key: vis.severityLevels[i] }); // Explicitly set the key
-        });
-
-        console.log("Aggregated Data (Cumulative):", vis.aggregatedData);
-        console.log("Stacked Data (With Keys):", vis.stackedData);
+        // Create stacked data
+        vis.stackedData = d3.stack()
+            .keys(vis.severityLevels)
+            .value((d, key) => d[key] || 0)(vis.aggregatedData);
 
         vis.updateVis();
     }
@@ -129,54 +118,123 @@ class AreaChart {
         vis.x.domain(d3.extent(vis.aggregatedData, d => d.date));
         vis.y.domain([0, d3.max(vis.stackedData, d => d3.max(d, d => d[1]))]);
 
-        // Draw areas
-        let layers = vis.svg.selectAll(".area")
+        // Update axes
+        vis.chartGroup.select(".x-axis")
+            .attr("transform", `translate(0,${vis.height})`)
+            .call(vis.xAxis)
+            .selectAll("text")
+            .attr("transform", "rotate(-45)")
+            .style("text-anchor", "end");
+
+        vis.chartGroup.select(".y-axis")
+            .call(vis.yAxis);
+
+        // Draw stacked areas
+        const area = d3.area()
+            .x(d => vis.x(d.data.date))
+            .y0(d => vis.y(d[0]))
+            .y1(d => vis.y(d[1]));
+
+        // Update areas
+        const layers = vis.chartGroup.selectAll(".layer")
             .data(vis.stackedData);
 
-        layers.enter().append("path")
-            .attr("class", "area")
+        // Enter + Update
+        layers.enter()
+            .append("path")
+            .attr("class", "layer")
             .merge(layers)
-            .style("fill", d => {
-                console.log("Layer Key:", d.key); // Debug the key
-                console.log("Color for Key:", d.key, vis.colorScale(d.key)); // Debug color assignment
-                return vis.colorScale(d.key);
-            })
-            .attr("d", vis.area)
-            .on("mouseover", (event, d) => {
-                d3.select(event.currentTarget)
-                    .style("opacity", 0.8);
-            })
-            .on("mouseout", (event, d) => {
-                d3.select(event.currentTarget)
-                    .style("opacity", 1);
-            });
+            .style("fill", d => vis.colorScale(d.key))
+            .style("opacity", 0.8)
+            .transition()
+            .duration(1000)
+            .attr("d", area);
 
+        // Exit
         layers.exit().remove();
 
-        // Update axes
-        vis.svg.select(".x-axis").call(vis.xAxis);
-        vis.svg.select(".y-axis").call(vis.yAxis);
+        vis.updateLegend();
+    }
 
-        // Draw legend
-        let legendItems = vis.legend.selectAll(".legend-item")
+    updateDimensions() {
+        let vis = this;
+        
+        // Update width and height from shared dimensions
+        vis.width = sharedDimensions.width - vis.margin.left - vis.margin.right;
+        vis.height = sharedDimensions.height - vis.margin.top - vis.margin.bottom;
+
+        // Update SVG size
+        vis.svg
+            .attr("width", vis.width + vis.margin.left + vis.margin.right)
+            .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
+
+        // Update transform
+        vis.chartGroup.attr("transform", `translate(${vis.margin.left},${vis.margin.top})`);
+
+        // Update scales ranges
+        vis.x.range([0, vis.width]);
+        vis.y.range([vis.height, 0]);
+    }
+
+    resize() {
+        let vis = this;
+        vis.updateDimensions();
+        vis.updateVis();
+    }
+
+    updateLegend() {
+        let vis = this;
+        
+        // Position legend
+        const useVertical = vis.width < 500;
+        
+        vis.legend.attr("transform", useVertical 
+            ? `translate(${vis.width - 100}, 0)` 
+            : `translate(0,${vis.height + 30})`);
+
+        // Update legend items
+        const legendItems = vis.legend.selectAll(".legend-item")
             .data(vis.severityLevels);
 
-        let legendEnter = legendItems.enter().append("g")
-            .attr("class", "legend-item")
-            .attr("transform", (d, i) => `translate(${i * 150}, 0)`); // Adjust spacing between legend items
+        // Enter new items
+        const legendEnter = legendItems.enter()
+            .append("g")
+            .attr("class", "legend-item");
 
+        // Update positions
+        legendItems.merge(legendEnter)
+            .attr("transform", (d, i) => useVertical 
+                ? `translate(0, ${i * 25})`
+                : `translate(${i * Math.min(150, vis.width / 4)}, 0)`);
+
+        // Add/update rectangles
         legendEnter.append("rect")
+            .merge(legendItems.select("rect"))
             .attr("width", 20)
             .attr("height", 20)
             .attr("fill", d => vis.colorScale(d));
 
+        // Add/update text
         legendEnter.append("text")
+            .merge(legendItems.select("text"))
             .attr("x", 30)
             .attr("y", 15)
             .text(d => d)
-            .style("font-size", "12px")
-            .attr("alignment-baseline", "middle");
+            .style("font-size", useVertical ? "10px" : "12px");
 
+        // Remove old items
         legendItems.exit().remove();
+    }
+
+    // Add method to handle brush filtering
+    filterByDate(startDate, endDate) {
+        if (startDate && endDate) {
+            this.data = this.allData.filter(d => 
+                d.date >= startDate && d.date <= endDate
+            );
+        } else {
+            this.data = [...this.allData];
+        }
+        this.wrangleData();
     }
 }
