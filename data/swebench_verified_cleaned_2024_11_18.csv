@@ -1,0 +1,36 @@
+﻿leaderboard,cleaned_name,score,date
+1,OpenHands + CodeAct v2.1 (claude-3-5-sonnet-20241022),53,10/29/24
+2,Solver (2024-10-28),50,10/28/24
+3,Tools + Claude 3.5 Sonnet (2024-10-22),49,10/22/24
+4,Composio SWE-Kit (2024-10-25),48.6,10/25/24
+5,Emergent E1 (v2024-10-12),46.6,10/23/24
+6,Solver (2024-09-12),45.4,9/24/24
+7,Gru(2024-08-24),45.2,8/24/24
+8,Solver (2024-09-12),43.6,9/20/24
+9,Tools + Claude 3.5 Haiku,40.6,10/22/24
+10,Honeycomb,40.6,8/20/24
+11,Composio SWEkit + Claude 3.5 Sonnet (2024-10-16),40.6,10/16/24
+12,EPAM AI/Run Developer Agent v20241029 + Anthopic Claude 3.5 Sonnet,39.6,10/29/24
+13,Amazon Q Developer Agent (v20240719-dev),38.8,7/21/24
+14,Agentless-1.5 + GPT 4o (2024-05-13),38.8,10/28/24
+15,AutoCodeRover (v20240620) + GPT 4o (2024-05-13),38.4,6/28/24
+16,SWE-agent + Claude 3.5 Sonnet,33.6,6/20/24
+17,nFactorial (2024-10-07),31.6,10/7/24
+18,Lingma Agent + Lingma SWE-GPT 72b (v0925),28.8,10/2/24
+19,EPAM AI/Run Developer Agent + GPT4o,27,10/16/24
+20,AppMap Navie + GPT 4o (2024-05-13),26.2,6/15/24
+21,nFactorial (2024-10-01),25.8,10/1/24
+22,Amazon Q Developer Agent (v20240430-dev),25.6,5/9/24
+23,Lingma Agent + Lingma SWE-GPT 72b (v0918),25,9/18/24
+24,EPAM AI/Run Developer Agent + GPT4o,24,8/20/24
+25,SWE-agent + GPT 4o (2024-05-13),23.2,7/28/24
+26,SWE-agent + GPT 4 (1106),22.4,4/2/24
+27,SWE-agent + Claude 3 Opus,18.2,4/2/24
+28,Lingma Agent + Lingma SWE-GPT 7b (v0925),18.2,10/2/24
+29,Lingma Agent + Lingma SWE-GPT 7b (v0918),10.2,9/18/24
+30,RAG + Claude 3 Opus,7,4/2/24
+31,RAG + Claude 2,4.4,10/10/23
+32,RAG + GPT 4 (1106),2.8,4/2/24
+33,RAG + SWE-Llama 7B,1.4,10/10/23
+34,RAG + SWE-Llama 13B,1.2,10/10/23
+35,RAG + ChatGPT 3.5,0.4,10/10/23

@@ -1,34 +1,136 @@
+/* Core Layout */
 body {
-    font-family: 'Montserrat', sans-serif;
-    margin: 0;
+    overflow: hidden;
+}
+
+.container-fluid {
+    height: 100vh;
+    width: 100%;
     padding: 0;
 }
 
-/* Thread Styles */
-.thread-container {
-    display: flex;
-    transition: transform 0.5s ease;
-    padding: 20px;
-    padding-bottom: 150px;
+/* Main Content Row */
+.row {
+    height: 100vh;
+    margin: 0;
 }
 
+/* Column Layout */
+.col-2 {
+    height: 100vh;
+}
+
+.col-8 {
+    height: 100vh;
+    overflow-y: auto;
+    padding: 2rem;
+}
+
+/* Mini-map Container */
+.controls-container {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 1rem;
+}
+
+/* Thread Display */
 .thread {
-    min-width: 300px;
-    padding: 20px;
     display: none;
-    transition: transform 0.2s ease-out;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .thread.active {
     display: block;
+    opacity: 1;
+}
+
+/* Component Styling - Keep these */
+.mini-map {
+    background: white;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    padding: 1rem;
+}
+
+.mini-node, .mini-subnode {
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border-radius: var(--bs-border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: var(--bs-gray-100);
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.mini-node:hover, .mini-subnode:hover {
+    background-color: var(--bs-primary-subtle);
+}
+
+.mini-node.active, .mini-subnode.active {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+.mini-subnodes {
+    display: none;
+    margin-left: 1rem;
+}
+
+.layout-controls {
+    margin-bottom: 1rem;
+}
+
+.layout-toggle {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--bs-primary);
+    border-radius: var(--bs-border-radius);
+    background: transparent;
+    color: var(--bs-primary);
+    transition: all 0.2s ease;
+}
+
+.layout-toggle.active {
+    background: var(--bs-primary);
+    color: white;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1000;
+    padding: 1rem 0;
+    margin: 0;
+}
+
+/* Visualization containers */
+#pretraining-carbon-intensity,
+#cyber-incidents-caught,
+#ai-incidents-by-sector {
+    min-height: 600px;
+    width: 100%;
+    margin: 1.25rem 0;
+    display: block;
+    opacity: 1;
+}
+
+/* Ensure SVG within visualization containers are visible */
+#pretraining-carbon-intensity svg,
+#cyber-incidents-caught svg,
+#ai-incidents-by-sector svg {
+    display: block;
+    opacity: 1;
 }
 
 /* Credits Section */
 .credits-section {
-    margin-top: 100px;
-    padding: 40px 0;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--bs-gray-100);
+    border-top: 1px solid var(--bs-border-color);
+    padding: 2.5rem 0;
 }
 
 .credits-img {
@@ -37,14 +139,13 @@ body {
     object-fit: cover;
     border: 3px solid #9400d3;
     border-radius: 50%;
-    margin-bottom: 15px;
+    margin-bottom: 1rem;
     transition: transform 0.2s ease;
 }
 
 .credits-link {
     text-decoration: none;
     color: inherit;
-    display: inline-block;
 }
 
 .credits-link:hover .credits-img {
@@ -52,214 +153,16 @@ body {
 }
 
 .credits-section h4 {
-    margin-bottom: 5px;
-    color: #333;
+    margin-bottom: 0.5rem;
 }
 
 .credits-section .role {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-}
-
-/* Headers */
-.sticky-header {
-    position: sticky;
-    top: 0;
-    background-color: white;
-    z-index: 1000;
-    padding: 10px 0;
-}
-
-/* Mini-map and Controls */
-.controls-container {
-    position: fixed;
-    top: 20px;
-    width: 250px;
-    padding: 15px;
-}
-
-.mini-map {
-    background-color: rgba(255, 255, 255, 0.95);
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* Node Styles */
-.mini-node, .mini-subnode {
-    cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: all 0.15s ease;
-    text-align: center;
-    width: 100%;
-    min-width: 0;
-    white-space: nowrap;
+    color: var(--bs-gray-600);
     font-size: 0.9rem;
 }
 
-.mini-node:hover, .mini-subnode:hover {
-    background-color: #e9ecef;
-    transform: translateX(2px);
-}
-
-.mini-node.active, .mini-subnode.active {
-    background-color: #0d6efd;
-    color: white;
-}
-
-/* Layout Controls */
-.layout-controls {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.layout-toggle {
-    flex: 1;
-    padding: 6px 12px;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    background: white;
-    font-size: 0.8rem;
-    cursor: pointer;
-}
-
-.layout-toggle.active {
-    background-color: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
-}
-
-/* Graph Layout Specific */
-.layout-graph .mini-tree {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 0;
-}
-
-.layout-graph .tree-level {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    align-items: flex-start;
-    width: 100%;
-    justify-content: space-between;
-    padding: 0 10px;
-}
-
-.layout-graph .branch {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-}
-
-.layout-graph .mini-subnodes {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-}
-
-.layout-graph .branch.active .mini-subnodes,
-.layout-graph .branch:hover .mini-subnodes {
-    display: flex;
-}
-
-/* Navigation */
-.graph-navigation {
-    display: none;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #dee2e6;
-    width: 100%;
-}
-
-.layout-graph .graph-navigation {
-    display: block;
-}
-
-.nav-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.sibling-nav {
-    display: flex;
-    gap: 8px;
-}
-
-/* Global Optimizations */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Add these styles for the intro section */
-.intro-text {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px 0;
-}
-
-.intro-text p {
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-}
-
-.risk-list {
-    margin: 2rem 0;
-    padding-left: 1.5rem;
-}
-
-.risk-list li {
-    margin-bottom: 1rem;
-    line-height: 1.6;
-}
-
-.mission-statement {
-    font-weight: 500;
-    color: #333;
+/* Section Styling */
+.section {
+    min-height: 100vh;
     padding: 1rem 0;
-    border-top: 2px solid #eee;
-    margin-top: 2rem;
-}
-
-#ai-incidents-by-sector {
-    width: 100%;
-    height: 400px; /* Set a default height */
-    margin: 20px 0;
-}
-
-.tooltip {
-    position: absolute;
-    background-color: #FFFFFF;  /* Solid white background */
-    border-radius: 4px;
-    pointer-events: none;
-    font-size: 0.875rem;
-    transition: opacity 0.15s ease-in-out;
-    z-index: 1000;
-    min-width: 120px;
-    border: 1px solid rgba(0,0,0,.1);
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);  /* Bootstrap's shadow-sm */
-}
-
-.treemap-label {
-    font-family: 'Montserrat', sans-serif;
-    pointer-events: none;
-}
-
-#cyber-incidents-caught {
-    width: 100%;
-    height: 400px; /* Adjust this as needed */
 }

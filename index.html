@@ -20,17 +20,18 @@
 </head>
 <body>
     <div class="container-fluid">
+        <!-- Main Content Row -->
         <div class="row">
             <!-- Left column: Mini-map -->
-            <div class="col-3">
+            <div class="col-2">
                 <div class="controls-container">
                     <div class="mini-map">
                         <div class="layout-controls">
-                            <button class="layout-toggle" data-layout="graph">Graph View</button>
-                            <button class="layout-toggle" data-layout="vertical">Vertical Scroll</button>
+                            <button class="layout-toggle active" data-layout="vertical">Vertical Scroll</button>
+                            <div class="graph-view-placeholder">Graph View (Coming Soon)</div>
                         </div>
                         <div class="mini-tree">
-                            <div class="mini-node start" data-section="start">Start</div>
+                            <div class="mini-node start active" data-section="start">Start</div>
                             <div class="tree-level">
                                 <div class="branch">
                                     <div class="mini-node" data-section="climate">🌍</div>
@@ -58,213 +59,109 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="graph-navigation">
-                            <div class="nav-buttons">
-                                <button class="btn btn-sm btn-light" data-action="parent">↑ Parent</button>
-                                <button class="btn btn-sm btn-light" data-action="child">↓ Child</button>
-                                <div class="sibling-nav">
-                                    <button class="btn btn-sm btn-light" data-action="prev">← Previous</button>
-                                    <button class="btn btn-sm btn-light" data-action="next">Next →</button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Middle column: Main content -->
-            <div class="col-6">
+            <div class="col-8">
                 <div class="thread-container">
-                    <div class="thread active" id="climate">
+                    <!-- Start Thread -->
+                    <div class="thread active" id="start">
+                        <h1 class="display-4 mb-4">A Citizen's Guide to Responsible AI</h1>
+                        <div class="intro-text">
+                            <p class="lead">Today's powerful AI systems, and their successors on the horizon, may very well change everything. They promise to spur advances in medicine, boost productivity, and free humans from unfulfilling cognitive tasks.</p>
+                            
+                            <p>Yet, powerful AI systems must be developed responsibly, as they have enormous costs and pose important societal risks. Just to name three:</p>
+                            
+                            <ul class="risk-list">
+                                <li>Cutting-edge AI requires gargantuan amounts of carbon-intensive energy to train and use.</li>
+                                <li>AI enables criminals to launch sophisticated cyberattacks at speed and scale.</li>
+                                <li>Some types of AI, like powerful agents, may be able to plan and achieve undesirable goals and evade control by AI labs or policymakers.</li>
+                            </ul>
+                            
+                            <p>Policymakers are already crafting regulations to shape the future of AI R&D, and some of these are ending up on the ballot. We believe citizens should be informed about – and participate in – public discussion to achieve the promises of AI while avoiding its perils.</p>
+                            
+                            <p class="mission-statement">Therefore, our aim in this project is to inform our parents, friends, members of the public, and non-technical policymakers about selected, salient, and severe risks of AI.</p>
+                        </div>
+                    </div>
+
+                    <!-- Climate Thread -->
+                    <div class="thread" id="climate">
                         <div class="section" data-section="risk">
-                            <div class="container">
-                                <h2 class="sticky-header">Climate Risk</h2>
-                                <div class="row mt-5">
-                                    <div class="col-md-6">
-                                        <div id="pretraining-carbon-intensity"></div>
+                            <h2 class="sticky-header">Climate Risk</h2>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div id="pretraining-carbon-intensity"></div>
+                                    <div class="controls">
                                         <button id="moveToBottom">Align by AI Usage</button>
-                                        <button id="transformToArea">Area Chart</button>
+                                        <button id="transformToArea">Area Chart (Coming Soon)</button>
                                     </div>
-                                    <p>Line 2...</p>
-                                        <p>Line 3...</p>
-                                        <p>Line 4...</p>
-                                        <p>Line 5...</p>
-                                        <p>Line 6...</p>
-                                        <p>Line 7...</p>
-                                        <p>Line 8...</p>
-                                        <p>Line 9...</p>
-                                        <p>Line 10...</p>
-                                    </div>
+                                    <div<p>Placeholder text...</p></div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="section" data-section="stack">
-                            <div class="container">
-                                <h2 class="sticky-header">How does advanced AI stack up?</h2>
-                                <div class="visualization" id="cyber-incidents-caught">Area Chart Here</div>
-                                <p>Line 2...</p>
-                                <p>Line 3...</p>
-                                <p>Line 4...</p>
-                                <p>Line 5...</p>
-                                <p>Line 6...</p>
-                                <p>Line 7...</p>
-                                <p>Line 8...</p>
-                                <p>Line 9...</p>
-                                <p>Line 10...</p>
-                            </div>
-                        </div>
-                        <div class="section" data-section="action">
-                            <div class="container">
-                                <h2 class="sticky-header">What can you do about it?</h2>
-                                <p>Text about actions...</p>
-                                <p>Line 2...</p>
-                                <p>Line 3...</p>
-                                <p>Line 4...</p>
-                                <p>Line 5...</p>
-                                <p>Line 6...</p>
-                                <p>Line 7...</p>
-                                <p>Line 8...</p>
-                                <p>Line 9...</p>
-                                <p>Line 10...</p>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Cyber Thread -->
                     <div class="thread" id="cyber">
-                        <div class="container">
+                        <div class="section" data-section="risk">
                             <h2 class="sticky-header">Cybersecurity Risk</h2>
                             <div class="row">
-                                <div class="col-md-6">
-                                    <p>Text about cybersecurity risk...</p>
-                                    <p>Line 2...</p>
-                                    <p>Line 3...</p>
-                                    <p>Line 4...</p>
-                                    <p>Line 5...</p>
-                                    <p>Line 6...</p>
-                                    <p>Line 7...</p>
-                                    <p>Line 8...</p>
-                                    <p>Line 9...</p>
-                                    <p>Line 10...</p>
-                                </div>
-                            </div>
-                            <div class="row">   
-                                <div class="col-md-12">
-                                    <h3 class="sticky-header">How does advanced AI stack up?</h3>
-                                    <p>Line 2...</p>
-                                    <p>Line 3...</p>
-                                    <p>Line 4...</p>
-                                    <p>Line 5...</p>
-                                    <p>Line 6...</p>
-                                    <p>Line 7...</p>
-                                    <p>Line 8...</p>
-                                    <p>Line 9...</p>
-                                    <p>Line 10...</p>
-                                    <div class="visualization">[Visualization]</div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <h3 class="sticky-header">What can you do about it?</h3>
-                                    <p>Text about actions...</p>
-                                    <p>Line 2...</p>
-                                    <p>Line 3...</p>
-                                    <p>Line 4...</p>
-                                    <p>Line 5...</p>
-                                    <p>Line 6...</p>
-                                    <p>Line 7...</p>
-                                    <p>Line 8...</p>
-                                    <p>Line 9...</p>
-                                    <p>Line 10...</p>
+                                <div class="col-12">
+                                    <div id="cyber-incidents-caught"></div>
+                                    <div<p>Placeholder text...</p></div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Auto Thread -->
                     <div class="thread" id="auto">
-                        <div class="container">
-                            <h2>Autonomous Harm Risk</h2>
+                        <div class="section" data-section="risk">
+                            <h2 class="sticky-header">Automation Risk</h2>
                             <div class="row">
-                                <div class="col-md-12">
-                                    <div id="treemap-container"></div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <h3 class="sticky-header">How does advanced AI stack up?</h3>
+                                <div class="col-12">
+                                    <div<p>TREEMAP COMING SOON (see TreeMap.js for a draft)</p></div>
                                     <div id="ai-incidents-by-sector"></div>
-                                    <p>Line 9...</p>
-                                    <p>Line 10...</p>
-                                    <div class="visualization">[Visualization]</div>
+                                    <div<p>Placeholder text...</p></div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <h3 class="sticky-header">What can you do about it?</h3>
-                                    <p>Text about actions...</p>
-                                    <p>Line 2...</p>
-                                    <p>Line 3...</p>
-                                    <p>Line 4...</p>
-                                    <p>Line 5...</p>
-                                    <p>Line 6...</p>
-                                    <p>Line 7...</p>
-                                    <p>Line 8...</p>
-                                    <p>Line 9...</p>
-                                    <p>Line 10...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="thread" id="start">
-                        <div class="container">
-                            <h1 class="display-4 mb-4">A Citizen's Guide to Responsible AI</h1>
-                            <div class="intro-text">
-                                <p class="lead">Today's powerful AI systems, and their successors on the horizon, may very well change everything. They promise to spur advances in medicine, boost productivity, and free humans from unfulfilling cognitive tasks.</p>
-                                
-                                <p>Yet, powerful AI systems must be developed responsibly, as they have enormous costs and pose important societal risks. Just to name three:</p>
-                                
-                                <ul class="risk-list">
-                                    <li>Cutting-edge AI requires gargantuan amounts of carbon-intensive energy to train and use.</li>
-                                    <li>AI enables criminals to launch sophisticated cyberattacks at speed and scale.</li>
-                                    <li>Some types of AI, like powerful agents, may be able to plan and achieve undesirable goals and evade control by AI labs or policymakers.</li>
-                                </ul>
-                                
-                                <p>Policymakers are already crafting regulations to shape the future of AI R&D, and some of these are ending up on the ballot. We believe citizens should be informed about – and participate in – public discussion to achieve the promises of AI while avoiding its perils.</p>
-                                
-                                <p class="mission-statement">Therefore, our aim in this project is to inform our parents, friends, members of the public, and non-technical policymakers about selected, salient, and severe risks of AI.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right column: Empty space for balance -->
-            <div class="col-3"></div>
+            <!-- Right column: Empty space -->
+            <div class="col-2"></div>
         </div>
-        <div class="credits-section">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-md-4 text-center">
-                        <img src="img/default.png" alt="Pranav Pendri" class="credits-img">
-                        <h4>Pranav Pendri</h4>
-                        <p class="role">G2, Computer Science</p>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <a href="https://scholar.harvard.edu/xrg" class="credits-link">
-                            <img src="img/xavier_headshot-transparent-bg.png" alt="Xavier Roberts-Gaal" class="credits-img">
-                            <h4>Xavier Roberts-Gaal</h4>
-                        </a>
-                        <p class="role">G3, Psychology</p>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <img src="img/default.png" alt="Haozhuo Yang" class="credits-img">
-                        <h4>Haozhuo Yang</h4>
-                        <p class="role">G2, Urban Design</p>
+
+        <!-- Credits Row, to be finished
+        <div class="row">
+            <div class="col-12">
+                <div class="credits-section">
+                    <div class="row justify-content-center">
+                        <div class="col-md-4 text-center">
+                            <img src="img/default.png" alt="Pranav Pendri" class="credits-img">
+                            <h4>Pranav Pendri</h4>
+                            <p class="role">G2, Computer Science</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <a href="https://scholar.harvard.edu/xrg" class="credits-link">
+                                <img src="img/xavier_headshot-transparent-bg.png" alt="Xavier Roberts-Gaal" class="credits-img">
+                                <h4>Xavier Roberts-Gaal</h4>
+                            </a>
+                            <p class="role">G3, Psychology</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <img src="img/default.png" alt="Haozhuo Yang" class="credits-img">
+                            <h4>Haozhuo Yang</h4>
+                            <p class="role">G2, Urban Design</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </div> -->
     </div>
 
     <!-- Bootstrap JS -->

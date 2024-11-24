@@ -1,7 +1,8 @@
 // Tree map used in AI incidents by sector visualization
 class TreeMap {
-    constructor({parentElement, data}) {
-        this.parentElement = parentElement.replace('#', '');
+    constructor(parentElement, data) {
+        console.log('TreeMap constructor called with data:', data);
+        this.parentElement = parentElement;
         this.data = data;
         
         // Initialize tooltip with Bootstrap classes
@@ -49,31 +50,39 @@ class TreeMap {
 
     wrangleData() {
         let vis = this;
-
-        // Group incidents by Cleaned_Sector and count them
+        console.log('TreeMap wrangleData called with:', vis.data);
+        
+        // Filter out null/undefined sectors and count incidents
         const sectorCounts = d3.rollup(
-            vis.data,
+            vis.data.filter(d => d.Cleaned_Sector),
             v => v.length,
             d => d.Cleaned_Sector
         );
 
-        // Convert to hierarchical format needed for treemap
+        // Sort sectors by count for better visualization
+        const sortedSectors = Array.from(sectorCounts, ([sector, count]) => ({
+            name: sector,
+            value: count
+        })).sort((a, b) => b.value - a.value);
+
+        // Convert to hierarchical format
         const hierarchicalData = {
             name: "AI Incidents",
-            children: Array.from(sectorCounts, ([sector, count]) => ({
-                name: sector,
-                value: count
-            }))
+            children: sortedSectors
         };
 
         // Create hierarchy and calculate values
         vis.root = d3.hierarchy(hierarchicalData)
-            .sum(d => d.value);
+            .sum(d => d.value)
+            .sort((a, b) => b.value - a.value); // Sort by value for better layout
 
         // Create treemap layout
         vis.treemap = d3.treemap()
             .size([vis.width, vis.height])
-            .padding(1);
+            .paddingTop(10)
+            .paddingRight(2)
+            .paddingBottom(2)
+            .paddingLeft(2);
 
         vis.treemap(vis.root);
 
@@ -83,101 +92,63 @@ class TreeMap {
     updateVis() {
         let vis = this;
 
-        // Create color scale with new palette
+        // Clear any existing content
+        vis.svg.selectAll("*").remove();
+
+        // Create color scale
         const colorScale = d3.scaleOrdinal()
             .domain(vis.root.leaves().map(d => d.data.name))
             .range(vis.colorPalette);
 
-        // Draw rectangles
-        const cell = vis.svg.selectAll("g")
+        // Add rectangles for each leaf node
+        const leaf = vis.svg.selectAll("g")
             .data(vis.root.leaves())
             .join("g")
             .attr("transform", d => `translate(${d.x0},${d.y0})`);
 
-        // Add rectangles with hover effects
-        cell.append("rect")
+        leaf.append("rect")
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => colorScale(d.data.name))
-            .attr("stroke", "white")
-            .attr("stroke-width", 2)
-            .style("cursor", "pointer")
             .on("mouseover", function(event, d) {
-                d3.select(this)
-                    .attr("fill", d3.color(colorScale(d.data.name)).brighter(0.2));
+                // Highlight effect
+                d3.select(this).attr("fill", d3.color(colorScale(d.data.name)).brighter(0.2));
                 
-                vis.tooltip
-                    .style("opacity", 1)
-                    .html(`
-                        <div class="p-2">
-                            <div class="fw-bold mb-1">${d.data.name}</div>
-                            <div class="text-muted">${d.value} incidents</div>
-                        </div>
-                    `)
+                // Show tooltip
+                vis.tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                vis.tooltip.html(`
+                    <div class="p-2">
+                        <strong>${d.data.name}</strong><br/>
+                        ${d.value} incidents
+                    </div>`)
                     .style("left", (event.pageX + 10) + "px")
                     .style("top", (event.pageY - 10) + "px");
             })
             .on("mouseout", function(event, d) {
-                d3.select(this)
-                    .attr("fill", colorScale(d.data.name));
-                
-                vis.tooltip.style("opacity", 0);
+                // Remove highlight
+                d3.select(this).attr("fill", colorScale(d.data.name));
+                // Hide tooltip
+                vis.tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
             });
 
-        // Add labels with size-based visibility and text wrapping
-        cell.append("text")
-            .attr("class", "treemap-label")
-            .attr("x", 4)
-            .attr("y", 14)
-            .each(function(d) {
-                const node = d3.select(this);
-                const rectWidth = d.x1 - d.x0;
-                const rectHeight = d.y1 - d.y0;
-                
-                // Only show text if rectangle is big enough
-                if (rectWidth > 60 && rectHeight > 30) {
-                    // Calculate how many characters can fit on one line
-                    const charsPerLine = Math.floor((rectWidth - 8) / 6); // Approximate char width of 6px
-                    
-                    // Split title into lines if needed
-                    const title = d.data.name;
-                    let lines = [];
-                    if (title.length > charsPerLine) {
-                        // Split into words
-                        const words = title.split(' ');
-                        let currentLine = words[0];
-                        
-                        for (let i = 1; i < words.length; i++) {
-                            if (currentLine.length + words[i].length + 1 <= charsPerLine) {
-                                currentLine += " " + words[i];
-                            } else if (lines.length < 1) { // Only allow second line if we haven't added one yet
-                                lines.push(currentLine);
-                                currentLine = words[i];
-                            } else {
-                                currentLine += "...";
-                                break;
-                            }
-                        }
-                        lines.push(currentLine);
-                    } else {
-                        lines = [title];
-                    }
-
-                    // Add the text lines
-                    node.selectAll("tspan")
-                        .data([...lines, `${d.value} incidents`])
-                        .join("tspan")
-                        .attr("x", 4)
-                        .attr("y", (_, i) => 14 + i * 12)
-                        .attr("fill", "white")
-                        .style("font-size", "10px")
-                        .style("font-weight", (_, i) => i < lines.length ? "bold" : "normal")
-                        .text(d => d);
-                }
-            });
-
-        // Update text styling to use Montserrat
-        cell.selectAll("text")
-            .style("font-family", "Montserrat, sans-serif");
+        // Add text labels
+        leaf.append("text")
+            .selectAll("tspan")
+            .data(d => {
+                const name = d.data.name;
+                const value = d.value;
+                const width = d.x1 - d.x0;
+                // Only show text if rectangle is wide enough
+                return width > 60 ? [`${name}`, `(${value})`] : [];
+            })
+            .join("tspan")
+            .attr("x", 3)
+            .attr("y", (d, i) => 13 + i * 10)
+            .attr("fill", "white")
+            .text(d => d);
     }
 }
