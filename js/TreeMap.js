@@ -1,54 +1,28 @@
 // Tree map used in AI incidents by sector visualization
 class TreeMap {
     constructor(parentElement, data) {
-        this.parentElement = parentElement;
-        this.containerElement = document.getElementById(parentElement);
-        this.data = data;
-        this.displayData = data; // Add this for filtering
+        let vis = this;
+        vis.parentElement = parentElement;
+        vis.containerElement = document.getElementById(parentElement);
+        vis.data = data;
+        vis.displayData = data; // Add this for filtering
         
         // Initialize with shared dimensions
-        this.width = sharedDimensions.width;
-        this.height = sharedDimensions.height;
-        
-        this.initVis();
-    }
-
-    initVis() {
-        let vis = this;
+        vis.width = sharedDimensions.width;
+        vis.height = sharedDimensions.height;
         
         // Set margins
         vis.margin = { top: 40, right: 10, bottom: 40, left: 10 };
         
+        vis.initVis();
+    }
+
+    initVis() {
+        let vis = this;
         vis.setupSvg();
         vis.setupScales();
-        
-        // Initialize tooltip (remove duplicate)
-        vis.tooltip = d3.select('body').append('div')
-            .attr('class', 'tooltip shadow-sm')
-            .attr('role', 'tooltip')
-            .style('opacity', 0)
-            .style('position', 'absolute')
-            .style('background-color', 'white')
-            .style('border', '1px solid #ddd')
-            .style('padding', '10px')
-            .style('border-radius', '5px')
-            .style('pointer-events', 'none')
-            .style('font-family', 'Montserrat, sans-serif');
-
-        // Add incident details panel
-        vis.detailsPanel = d3.select(`#${vis.parentElement}`)
-            .append("div")
-            .attr("class", "incident-details")
-            .style("position", "absolute")
-            .style("right", "20px")
-            .style("top", "20px")
-            .style("width", "250px")
-            .style("background", "white")
-            .style("border", "1px solid #ddd")
-            .style("border-radius", "5px")
-            .style("padding", "15px")
-            .style("display", "none");
-        
+        vis.setupTooltip();
+        vis.setupDetailsPanel();
         vis.wrangleData();
     }
 
@@ -83,12 +57,45 @@ class TreeMap {
         vis.updateDimensions();
     }
 
+    setupTooltip() {
+        let vis = this;
+        
+        vis.tooltip = d3.select('body').append('div')
+            .attr('class', 'tooltip shadow-sm')
+            .attr('role', 'tooltip')
+            .style('opacity', 0)
+            .style('position', 'absolute')
+            .style('background-color', 'white')
+            .style('border', '1px solid #ddd')
+            .style('padding', '10px')
+            .style('border-radius', '5px')
+            .style('pointer-events', 'none')
+            .style('font-family', 'Montserrat, sans-serif');
+    }
+
+    setupDetailsPanel() {
+        let vis = this;
+        
+        vis.detailsPanel = d3.select(`#${vis.parentElement}`)
+            .append("div")
+            .attr("class", "incident-details")
+            .style("position", "absolute")
+            .style("right", "20px")
+            .style("top", "20px")
+            .style("width", "250px")
+            .style("background", "white")
+            .style("border", "1px solid #ddd")
+            .style("border-radius", "5px")
+            .style("padding", "15px")
+            .style("display", "none");
+    }
+
     wrangleData() {
         let vis = this;
         
         // Filter out null/undefined sectors and count incidents
         const sectorCounts = d3.rollup(
-            vis.displayData.filter(d => d.Cleaned_Sector), // Use displayData instead of data
+            vis.displayData.filter(d => d.Cleaned_Sector),
             v => v.length,
             d => d.Cleaned_Sector
         );
@@ -97,7 +104,7 @@ class TreeMap {
         const sortedSectors = Array.from(sectorCounts, ([sector, count]) => ({
             name: sector,
             value: count,
-            incidents: vis.displayData.filter(d => d.Cleaned_Sector === sector) // Store incidents for details
+            incidents: vis.displayData.filter(d => d.Cleaned_Sector === sector)
         })).sort((a, b) => b.value - a.value);
 
         // Convert to hierarchical format
@@ -135,59 +142,32 @@ class TreeMap {
             .join("g")
             .attr("transform", d => `translate(${d.x0},${d.y0})`);
 
+        // Add rectangles
         leaf.append("rect")
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => vis.colorScale(d.data.name))
             .style("cursor", "pointer")
-            .on("mouseover", function() {
+            .on("mouseover", function(event, d) {
                 d3.select(this)
-                    .attr("fill", d => d3.color(vis.colorScale(d.data.name)).brighter(0.2));
+                    .attr("fill", d3.color(vis.colorScale(d.data.name)).brighter(0.2));
             })
             .on("mouseout", function(event, d) {
                 d3.select(this)
                     .attr("fill", vis.colorScale(d.data.name));
             })
             .on("click", function(event, d) {
-                // Show incident details on click
-                const incidents = d.data.incidents;
-                if (incidents && incidents.length > 0) {
-                    const randomIncident = incidents[Math.floor(Math.random() * incidents.length)];
-                    vis.showIncidentDetails(randomIncident);
+                if (d.data.incidents && d.data.incidents.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * d.data.incidents.length);
+                    const incident = d.data.incidents[randomIndex];
+                    vis.showIncidentDetails(incident);
                 }
             });
 
-        // Add text labels with responsive sizing
-        leaf.append("text")
-            .selectAll("tspan")
-            .data(d => {
-                const name = d.data.name;
-                const value = d.value;
-                const width = d.x1 - d.x0;
-                const height = d.y1 - d.y0;
-                
-                // Only show text if rectangle is large enough
-                if (width < 60 || height < 30) return [];
-                if (width < 100) return [`${value}`]; // Show only value for medium sizes
-                return [`${name}`, `(${value})`]; // Show both for large sizes
-            })
-            .join("tspan")
-            .attr("x", 3)
-            .attr("y", (d, i, nodes) => {
-                const height = nodes[0].parentNode.__data__.y1 - nodes[0].parentNode.__data__.y0;
-                // Center text vertically if only one line
-                if (nodes.length === 1) return height / 2 + 5;
-                // Otherwise spread lines
-                return 13 + i * Math.min(15, height / 3);
-            })
-            .attr("fill", "white")
-            .style("font-size", (d, i, nodes) => {
-                const width = nodes[0].parentNode.__data__.x1 - nodes[0].parentNode.__data__.x0;
-                return `${Math.min(12, width / 10)}px`;
-            })
-            .text(d => d);
+        // Add text labels
+        vis.addTextLabels(leaf);
 
-        // Add text instruction
+        // Add instruction text
         vis.svg.append("text")
             .attr("class", "instruction-text")
             .attr("x", vis.width / 2)
@@ -196,6 +176,36 @@ class TreeMap {
             .style("font-size", "14px")
             .style("fill", "#666")
             .text("Click on a sector to see a sample incident");
+    }
+
+    addTextLabels(leaf) {
+        let vis = this;
+        
+        leaf.append("text")
+            .selectAll("tspan")
+            .data(d => {
+                const name = d.data.name;
+                const value = d.value;
+                const width = d.x1 - d.x0;
+                const height = d.y1 - d.y0;
+                
+                if (width < 60 || height < 30) return [];
+                if (width < 100) return [`${value}`];
+                return [`${name}`, `(${value})`];
+            })
+            .join("tspan")
+            .attr("x", 3)
+            .attr("y", (d, i, nodes) => {
+                const height = nodes[0].parentNode.__data__.y1 - nodes[0].parentNode.__data__.y0;
+                if (nodes.length === 1) return height / 2 + 5;
+                return 13 + i * Math.min(15, height / 3);
+            })
+            .attr("fill", "white")
+            .style("font-size", (d, i, nodes) => {
+                const width = nodes[0].parentNode.__data__.x1 - nodes[0].parentNode.__data__.x0;
+                return `${Math.min(12, width / 10)}px`;
+            })
+            .text(d => d);
     }
 
     updateDimensions() {
@@ -225,33 +235,56 @@ class TreeMap {
         vis.wrangleData(); // Need to recalculate treemap layout with new dimensions
     }
 
+    hide() {
+        d3.select("#" + this.parentElement).style("display", "none");
+    }
+
+    show() {
+        d3.select("#" + this.parentElement).style("display", "block");
+    }
+
     showIncidentDetails(incident) {
-        const vis = this;
+        let vis = this;
         
-        // Format incident details
+        // Format incident details with error handling
         const details = `
             <h5>Sample Incident</h5>
-            <p><strong>Sector:</strong> ${incident.Cleaned_Sector}</p>
-            <p><strong>Date:</strong> ${d3.timeFormat("%B %d, %Y")(new Date(incident.date))}</p>
-            <p><strong>Description:</strong> ${incident.description || 'No description available'}</p>
-            <p><strong>Severity:</strong> ${incident.severity || 'Severity not specified'}</p>
+            <p><strong>Sector:</strong> ${incident.Cleaned_Sector || 'Unknown'}</p>
+            <p><strong>Date:</strong> ${incident.date ? d3.timeFormat("%B %d, %Y")(new Date(incident.date)) : 'Date unknown'}</p>
+            <p><strong>Description:</strong> ${incident.description ? incident.description.substring(0, 200) + '...' : 'No description available'}</p>
+            <p><strong>Severity:</strong> ${incident.severity || 'Not specified'}</p>
         `;
         
-        // Update and show the details panel
+        // Show the details panel with transition
         vis.detailsPanel
             .html(details)
-            .style("display", "block");
+            .style("opacity", 0)
+            .style("display", "block")
+            .transition()
+            .duration(200)
+            .style("opacity", 1);
         
-        // Add hover handling to keep panel visible
-        vis.detailsPanel
-            .on("mouseleave", () => {
-                vis.detailsPanel.style("display", "none");
+        // Add close button
+        const closeButton = vis.detailsPanel.append("button")
+            .attr("class", "btn-close")
+            .style("position", "absolute")
+            .style("top", "10px")
+            .style("right", "10px")
+            .style("background", "none")
+            .style("border", "none")
+            .style("cursor", "pointer")
+            .html("×")
+            .on("click", () => {
+                vis.detailsPanel
+                    .transition()
+                    .duration(200)
+                    .style("opacity", 0)
+                    .on("end", () => vis.detailsPanel.style("display", "none"));
             });
     }
 
-    // Update the filterByDate method to use displayData
     filterByDate(startDate, endDate) {
-        const vis = this;
+        let vis = this;
         
         // Filter data based on date range
         vis.displayData = vis.data.filter(d => {
@@ -259,7 +292,6 @@ class TreeMap {
             return date >= startDate && date <= endDate;
         });
         
-        // Update the visualization using existing wrangleData
         vis.wrangleData();
     }
 }

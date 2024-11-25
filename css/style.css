@@ -1,8 +1,101 @@
+/* Color variables */
+:root {
+    --primary-red: #ff4141;
+    --primary-blue: #2563eb;
+    --text-color: #333333;
+    --background-color: #ffffff;
+    --border-color: #dddddd;
+}
+
+/* General styles */
+body {
+    color: var(--text-color);
+    background-color: var(--background-color);
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
+    color: white !important;
+}
+
+.btn-outline-primary {
+    color: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-blue) !important;
+    color: white !important;
+}
+
+/* Chart colors */
+.line {
+    stroke: var(--primary-blue) !important;
+}
+
+.area {
+    fill: var(--primary-blue) !important;
+}
+
+.max-score-line {
+    stroke: var(--primary-red) !important;
+}
+
+.point {
+    fill: var(--primary-blue) !important;
+}
+
+.point.highlight {
+    fill: var(--primary-red) !important;
+}
+
+/* TreeMap colors */
+.node rect {
+    fill: var(--primary-blue) !important;
+}
+
+/* Circle chart colors */
+circle.active {
+    fill: var(--primary-red) !important;
+}
+
+circle.passive {
+    fill: var(--primary-blue) !important;
+}
+
+circle.no {
+    fill: #5c7077 !important;
+}
+
+/* Axis and text colors */
+.axis text {
+    fill: var(--text-color);
+}
+
+.axis line, .axis path {
+    stroke: var(--text-color);
+}
+
+.chart-title, .chart-subtitle {
+    fill: var(--text-color);
+}
+
+/* Tooltip styles */
+.tooltip {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
 /* Core Layout */
 body {
     overflow-y: auto;
     margin: 0;
     padding: 0;
+    color: var(--text-color);
 }
 
 .container-fluid {
@@ -10,120 +103,179 @@ body {
     padding: 0;
 }
 
-/* Main Content Row */
-.row {
-    margin: 0;
-}
-
-/* Column Layout */
-.col-2 {
-    height: 100vh;
-}
-
-.col-8 {
-    height: 100vh;
-    overflow-y: auto;
+/* Intro Section */
+.intro-row {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 2rem;
 }
 
-/* Mini-map Container */
-.controls-container {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    padding: 1rem;
+.intro-row .step {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    min-height: auto;
+    opacity: 1;
+    border: none;
+    text-align: center;
 }
 
-/* Thread Display */
-.thread {
-    display: none;
-    opacity: 0;
+.intro-row h1 {
+    white-space: nowrap;
+    font-size: calc(2.5rem + 1.5vw);
+    line-height: 1.2;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.intro-content {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Narrative Section */
+.narrative-row {
+    position: relative;
+    color: var(--text-color);
+}
+
+.text-section {
+    padding: 0 1rem;
+    position: relative;
+    margin-bottom: 50vh;
+}
+
+.text-section:last-child {
+    margin-bottom: 0;
+}
+
+.text-section h2 {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 1rem 0;
+    margin: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+    opacity: 1;
+}
+
+/* Scrollytelling Steps */
+.step {
+    min-height: 90vh;
+    margin: 0 auto;
+    padding: 1rem;
+    border-left: 2px solid #ddd;
+    opacity: 0.3;
     transition: opacity 0.3s ease;
 }
 
-.thread.active {
-    display: block;
+.step.is-active {
     opacity: 1;
+    border-left: 2px solid var(--primary-blue);
 }
 
-/* Component Styling - Keep these */
-.mini-map {
-    background: white;
-    border: 1px solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
-    padding: 1rem;
+/* Add spacing between sections */
+.text-section {
+    margin-bottom: 50vh;
 }
 
-.mini-node, .mini-subnode {
-    padding: 0.75rem;
-    margin: 0.5rem 0;
-    border-radius: var(--bs-border-radius);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background-color: var(--bs-gray-100);
-    text-align: center;
-    font-size: 1.2rem;
+/* Last section shouldn't have extra space */
+.text-section:last-child {
+    margin-bottom: 0;
 }
 
-.mini-node:hover, .mini-subnode:hover {
-    background-color: var(--bs-primary-subtle);
-}
-
-.mini-node.active, .mini-subnode.active {
-    background-color: var(--bs-primary);
-    color: white;
-}
-
-.mini-subnodes {
-    display: none;
-    margin-left: 1rem;
-}
-
-.layout-controls {
-    margin-bottom: 1rem;
-}
-
-.layout-toggle {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid var(--bs-primary);
-    border-radius: var(--bs-border-radius);
-    background: transparent;
-    color: var(--bs-primary);
-    transition: all 0.2s ease;
-}
-
-.layout-toggle.active {
-    background: var(--bs-primary);
-    color: white;
-}
-
-.sticky-header {
+/* Visualization Layout */
+.sticky-graphic {
     position: sticky;
     top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    min-width: 300px;
     background: white;
-    z-index: 1000;
-    padding: 1rem 0;
-    margin: 0;
+    z-index: 1;
 }
 
-/* Visualization containers */
-#pretraining-carbon-intensity,
-#cyber-incidents-caught,
-#ai-incidents-by-sector {
-    min-height: 600px;
+/* Visualization Container Visibility */
+.vis-container {
     width: 100%;
-    margin: 1.25rem 0;
-    display: block;
+    height: 100%;
+    position: relative;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+/* Individual Visualization Containers */
+#pretraining-carbon-intensity,
+#electricity-data-center,
+#electricity-timeline,
+#incidents-over-time,
+#ai-incidents-by-sector,
+#date-brush,
+#swe-bench-progress {
+    width: 100%;
+    min-height: 400px;
+    margin: 1rem 0;
     opacity: 1;
 }
 
-/* Ensure SVG within visualization containers are visible */
-#pretraining-carbon-intensity svg,
-#cyber-incidents-caught svg,
-#ai-incidents-by-sector svg {
+/* Main visualization container */
+.main-vis {
+    position: relative;
+    height: 600px;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+/* Incidents section specific */
+#incidents-vis .main-vis {
+    display: flex;
+    flex-direction: column;
+}
+
+#incidents-over-time,
+#ai-incidents-by-sector {
+    flex: 1;
+    height: 100%;
+}
+
+/* Brush container */
+.brush-container {
+    height: 100px;
+    width: 100%;
+}
+
+/* Special Container Sizes */
+#electricity-timeline {
+    height: 150px;
+    min-height: 150px;
+    flex: 0 0 150px;
+}
+
+#date-brush {
+    height: 100px;
+    min-height: 100px;
     display: block;
+    margin-top: 1rem;
+}
+
+/* Climate Controls */
+.climate-controls {
+    margin-bottom: 1rem;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.climate-controls.visible {
     opacity: 1;
+    pointer-events: all;
 }
 
 /* Credits Section */
@@ -163,64 +315,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* Section Styling */
-.section {
-    min-height: 100vh;
-    padding: 1rem 0;
-}
-
-/* Add these styles to your existing CSS */
-
-.sticky-graphic {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 1rem;
-}
-
-.vis-container {
-    width: 100%;
-    height: 100%;
-    display: none;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-
-.step {
-    min-height: 90vh;
-    margin: 0 auto;
-    padding: 1rem;
-    border-left: 2px solid #ccc;
-    opacity: 0.3;
-    transition: opacity 0.5s;
-}
-
-.step.is-active {
-    opacity: 1;
-}
-
-.text-section {
-    padding: 0 1rem;
-}
-
-/* Remove any conflicting styles from the previous navigation system */
-
-/* Ensure credits row spans full width */
-.container-fluid > .row:last-child {
-    height: auto;
-    margin: 0;
-}
-
-/* Make sure the first visualization is visible by default */
-#climate-vis {
-    display: block;
-    opacity: 1;
-}
-
-/* Debug styling */
+/* Debug Styling */
 .debug .step {
     background: rgba(0,0,0,0.1);
     border: 1px solid #f09;
@@ -230,173 +325,63 @@ body {
     background: rgba(255,0,153,0.1);
 }
 
-#moveToBottom {
-    display: block;
-    transition: opacity 0.3s ease;
-}
-
-/* Add these styles for the new layout */
-.intro-row {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-}
-
-.intro-row .step {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-    min-height: auto;
-    opacity: 1;
-    border: none;
-    text-align: center;
-}
-
-.intro-row h1 {
-    white-space: nowrap;
-    font-size: calc(2.5rem + 1.5vw);
-    line-height: 1.2;
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.intro-content {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.narrative-row {
-    position: relative;
-}
-
-/* Update existing styles */
-.text-section {
-    padding: 0 1rem;
-}
-
-#intro {
-    text-align: center;
-    padding: 2rem;
-}
-
-/* Ensure the narrative sections start fresh after intro */
-.narrative-row .text-section:first-child {
-    padding-top: 2rem;
-}
-
-.climate-controls {
-    display: none; /* Hidden by default */
-    margin-bottom: 1rem;
-    position: relative;
-    z-index: 1000;
-}
-
-.climate-controls .btn-group {
-    display: flex;
-    gap: 0;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    border: 1px solid var(--bs-primary);
-}
-
-.climate-controls button {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    font-weight: 500;
-    border: none;
-    border-radius: 0;
-    background: white;
-    color: var(--bs-primary);
-    transition: all 0.2s ease;
-}
-
-.climate-controls button.active {
-    background: var(--bs-primary);
-    color: white;
-}
-
-#moveToBottom {
-    border-right: 1px solid var(--bs-primary);
-}
-
-/* Add specific styling for the area chart container */
-#cyber-incidents-caught {
-    width: 100%;
-    height: 500px;
-    /* border: 1px solid red; Remove this line */
-}
-
-/* Add specific styling for the SVG */
-#cyber-incidents-caught svg {
-    width: 100%;
-    height: 100%;
-}
-
-/* Style for the area paths */
-.area {
+/* Area chart colors */
+.area-high {
+    fill: var(--primary-red) !important;
     opacity: 0.7;
-    transition: opacity 0.2s;
 }
 
-.area:hover {
+.area-medium {
+    fill: #e1a25d !important;
+    opacity: 0.7;
+}
+
+.area-low {
+    fill: var(--primary-blue) !important;
+    opacity: 0.7;
+}
+
+/* SWE-bench plot colors */
+.line {
+    stroke: var(--primary-blue) !important;
+}
+
+.max-score-line {
+    stroke: var(--primary-red) !important;
+}
+
+.point {
+    fill: var(--primary-blue) !important;
+    opacity: 0.6;
+}
+
+.point.max-point {
+    fill: var(--primary-red) !important;
     opacity: 1;
 }
 
-/* Style for the SVG */
-.chart-svg {
-    width: 100%;
-    height: 100%;
+/* Circle chart colors */
+circle.active {
+    fill: var(--primary-red) !important;
 }
 
-/* Remove fixed dimensions from specific containers */
-#cyber-incidents-caught,
-#pretraining-carbon-intensity,
-#ai-incidents-by-sector {
-    width: 100%;
-    height: 100%;
+circle.passive {
+    fill: var(--primary-blue) !important;
 }
 
-#swe-bench-progress {
-    margin-top: 20px;
-    min-height: 300px;
-    border-top: 1px solid #eee;
-    padding-top: 20px;
+circle.no {
+    fill: #5c7077 !important;
 }
 
-.vis-container {
-    transition: opacity 0.3s ease;
+/* TreeMap colors */
+.node rect {
+    fill: var(--primary-blue) !important;
 }
 
-#autonomy-vis {
-    display: flex;
-    flex-direction: column;
-}
-
-#ai-incidents-by-sector {
-    flex: 1;
-    min-height: 400px;
-}
-
-.main-vis {
-    height: calc(100% - 120px); /* Increase space for brush */
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.brush-container {
-    height: 100px; /* Increase height */
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-}
-
-#incidents-over-time, #ai-incidents-by-sector {
-    height: 100%;
-    width: 100%;
-    display: none; /* Will be shown/hidden via JavaScript */
+/* Make sure text is always black when active */
+.step.is-active p,
+.step.is-active h3,
+.step.is-active h4,
+.step.is-active li {
+    color: var(--text-color) !important;
 }

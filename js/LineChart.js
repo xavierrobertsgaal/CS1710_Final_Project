@@ -1,26 +1,36 @@
 // Placeholder for line chart -- used in a number of different visualizations
 class LineChart {
-    constructor(containerId, data) {
-        this.containerId = containerId;
-        this.data = data;
+    constructor(parentElement, data) {
+        let vis = this;
+        vis.parentElement = parentElement;
+        vis.data = data;
         
-        // Set up dimensions - make it bigger
-        this.margin = {top: 60, right: 100, bottom: 60, left: 60};
-        this.width = sharedDimensions.width - this.margin.left - this.margin.right;
-        this.height = Math.min(500, sharedDimensions.height * 0.7) - this.margin.top - this.margin.bottom; // Increased height
-
+        // Standard margins with extra space for title and labels
+        vis.margin = { top: 60, right: 100, bottom: 60, left: 60 };
+        
         // Add title
-        this.title = "AI Model Performance Progress on SWE-Bench";
-        this.subtitle = "Red line shows the maximum score achieved to date";
+        vis.title = "AI Model Performance Progress on SWE-Bench";
+        vis.subtitle = "Red line shows the maximum score achieved to date";
         
-        this.initVis();
+        vis.initVis();
     }
 
     initVis() {
-        const vis = this;
+        let vis = this;
+        vis.setupSvg();
+        vis.setupScales();
+        vis.setupAxes();
+        vis.setupTooltip();
+        vis.wrangleData();
+    }
 
-        // Create SVG with more space for title
-        vis.svg = d3.select(`#${vis.containerId}`)
+    setupSvg() {
+        let vis = this;
+        
+        vis.width = sharedDimensions.width - vis.margin.left - vis.margin.right;
+        vis.height = Math.min(500, sharedDimensions.height * 0.7) - vis.margin.top - vis.margin.bottom;
+
+        vis.svg = d3.select(`#${vis.parentElement}`)
             .append("svg")
             .attr("width", vis.width + vis.margin.left + vis.margin.right)
             .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
@@ -45,21 +55,26 @@ class LineChart {
             .style("font-size", "12px")
             .style("fill", "#666")
             .text(vis.subtitle);
+    }
 
-        // Initialize scales
+    setupScales() {
+        let vis = this;
+        
         vis.x = d3.scaleTime()
             .range([0, vis.width]);
 
         vis.y = d3.scaleLinear()
             .range([vis.height, 0]);
+    }
 
-        // Initialize axes
+    setupAxes() {
+        let vis = this;
+        
         vis.xAxis = d3.axisBottom(vis.x)
             .tickFormat(d3.timeFormat("%b %Y"));
 
         vis.yAxis = d3.axisLeft(vis.y);
 
-        // Add axes groups
         vis.xAxisG = vis.svg.append("g")
             .attr("class", "x-axis")
             .attr("transform", `translate(0,${vis.height})`);
@@ -67,23 +82,29 @@ class LineChart {
         vis.yAxisG = vis.svg.append("g")
             .attr("class", "y-axis");
 
-        // Add labels
-        vis.svg.append("text")
-            .attr("class", "x-label")
-            .attr("text-anchor", "middle")
-            .attr("x", vis.width / 2)
-            .attr("y", vis.height + 40)
-            .text("Evaluation Date");
-
+        // Add y-axis label
         vis.svg.append("text")
             .attr("class", "y-label")
             .attr("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
             .attr("x", -vis.height / 2)
             .attr("y", -40)
+            .style("font-size", "12px")
             .text("SWE-Bench Score (higher is better)");
 
-        // Add tooltip with more detailed information
+        // Add x-axis label (moved lower and removed duplicate)
+        vis.svg.append('text')
+            .attr('class', 'x-label')
+            .attr('text-anchor', 'middle')
+            .attr('x', vis.width / 2)
+            .attr('y', vis.height + 50)  // Increased from 40 to 50
+            .style("font-size", "12px")
+            .text('Evaluation Date');
+    }
+
+    setupTooltip() {
+        let vis = this;
+        
         vis.tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
             .style("opacity", 0)
@@ -93,12 +114,10 @@ class LineChart {
             .style("padding", "10px")
             .style("border-radius", "5px")
             .style("max-width", "300px");
-
-        this.wrangleData();
     }
 
     wrangleData() {
-        const vis = this;
+        let vis = this;
         
         // Parse dates and convert scores to numbers
         vis.processedData = vis.data.map(d => ({
@@ -124,11 +143,11 @@ class LineChart {
                 });
             });
 
-        this.updateVis();
+        vis.updateVis();
     }
 
     updateVis() {
-        const vis = this;
+        let vis = this;
 
         // Update scales
         vis.x.domain(d3.extent(vis.processedData, d => d.date));
@@ -146,42 +165,38 @@ class LineChart {
             .x(d => vis.x(d.date))
             .y(d => vis.y(d.score));
 
+        // Update max score line
         vis.svg.selectAll(".max-score-line")
             .data([vis.maxScoreLine])
             .join("path")
             .attr("class", "max-score-line")
             .attr("fill", "none")
-            .attr("stroke", "red")
+            .attr("stroke", "#ff4141")  // Primary red
             .attr("stroke-width", 2)
             .attr("d", line);
 
-        // Add all points
-        const points = vis.svg.selectAll(".point")
+        // Update points
+        vis.svg.selectAll(".point")
             .data(vis.processedData)
             .join("circle")
             .attr("class", "point")
             .attr("cx", d => vis.x(d.date))
             .attr("cy", d => vis.y(d.score))
             .attr("r", d => {
-                // Make points on the max line slightly larger
                 const isMax = vis.maxScoreLine.some(m => 
                     m.date.getTime() === d.date.getTime() && m.score === d.score);
                 return isMax ? 6 : 4;
             })
             .attr("fill", d => {
-                // Color points on the max line differently
                 const isMax = vis.maxScoreLine.some(m => 
                     m.date.getTime() === d.date.getTime() && m.score === d.score);
-                return isMax ? "red" : "steelblue";
+                return isMax ? "#ff4141" : "#2563eb";  // Primary red for max, blue for others
             })
             .attr("opacity", d => {
                 const isMax = vis.maxScoreLine.some(m => 
                     m.date.getTime() === d.date.getTime() && m.score === d.score);
                 return isMax ? 1 : 0.6;
-            });
-
-        // Update tooltip behavior
-        points
+            })
             .on("mouseover", function(event, d) {
                 const isMax = vis.maxScoreLine.some(m => 
                     m.date.getTime() === d.date.getTime() && m.score === d.score);
@@ -214,15 +229,18 @@ class LineChart {
             });
     }
 
-    resize() {
-        const vis = this;
+    updateDimensions() {
+        let vis = this;
         
-        // Update width and height based on container
-        vis.width = sharedDimensions.width - vis.margin.left - vis.margin.right;
-        vis.height = Math.min(400, sharedDimensions.height/2) - vis.margin.top - vis.margin.bottom;
+        // Get container dimensions
+        const container = document.getElementById(vis.parentElement);
+        const containerWidth = container.getBoundingClientRect().width;
+        
+        vis.width = containerWidth - vis.margin.left - vis.margin.right;
+        vis.height = Math.min(500, window.innerHeight * 0.5) - vis.margin.top - vis.margin.bottom;
 
         // Update SVG dimensions
-        vis.svg.select("svg")
+        vis.svg
             .attr("width", vis.width + vis.margin.left + vis.margin.right)
             .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
 
@@ -230,15 +248,38 @@ class LineChart {
         vis.x.range([0, vis.width]);
         vis.y.range([vis.height, 0]);
 
-        // Update labels
+        // Update axes and labels
+        vis.xAxis.scale(vis.x);
+        vis.yAxis.scale(vis.y);
+        
+        vis.xAxisG
+            .attr("transform", `translate(0,${vis.height})`);
+            
+        // Update title and subtitle positions
+        vis.svg.select(".chart-title")
+            .attr("x", vis.width / 2);
+        vis.svg.select(".chart-subtitle")
+            .attr("x", vis.width / 2);
+            
+        // Update axis labels
         vis.svg.select(".x-label")
             .attr("x", vis.width / 2)
             .attr("y", vis.height + 40);
-
         vis.svg.select(".y-label")
             .attr("x", -vis.height / 2);
+    }
 
-        // Update visualization
-        this.updateVis();
+    resize() {
+        let vis = this;
+        vis.updateDimensions();
+        vis.updateVis();
+    }
+
+    hide() {
+        d3.select("#" + this.parentElement).style("display", "none");
+    }
+
+    show() {
+        d3.select("#" + this.parentElement).style("display", "block");
     }
 }

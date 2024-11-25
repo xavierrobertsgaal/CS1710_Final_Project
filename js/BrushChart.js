@@ -1,26 +1,28 @@
 class BrushChart {
-    constructor(containerId, data) {
-        this.containerId = containerId;
+    constructor(parentElement, data) {
+        this.parentElement = parentElement;
         this.data = data;
         
-        // Set up dimensions - make it shorter than main vis
-        this.margin = {top: 10, right: 30, bottom: 20, left: 40};
+        // Initialize margins
+        this.margin = {top: 10, right: 10, bottom: 20, left: 10};
         
-        // Initialize dimensions
-        sharedDimensions.updateDimensions();
-        this.width = sharedDimensions.width - this.margin.left - this.margin.right;
-        this.height = 100 - this.margin.top - this.margin.bottom;
+        // Fixed height for brush chart
+        this.height = 50;
         
-        // Ensure we have valid dimensions before initializing
-        if (this.width > 0 && this.height > 0) {
-            this.initVis();
-        } else {
-            console.error('Invalid dimensions for BrushChart');
-        }
+        this.initVis();
     }
 
     initVis() {
-        const vis = this;
+        let vis = this;
+        vis.setupSvg();
+        vis.setupScales();
+        vis.setupAxes();
+        vis.setupBrush();
+        vis.wrangleData();
+    }
+
+    setupSvg() {
+        let vis = this;
 
         // Create SVG
         vis.svg = d3.select(`#${vis.containerId}`)
@@ -29,6 +31,10 @@ class BrushChart {
             .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
             .append("g")
             .attr("transform", `translate(${vis.margin.left},${vis.margin.top})`);
+    }
+
+    setupScales() {
+        let vis = this;
 
         // Initialize scales
         vis.x = d3.scaleTime()
@@ -36,6 +42,10 @@ class BrushChart {
 
         vis.y = d3.scaleLinear()
             .range([vis.height, 0]);
+    }
+
+    setupAxes() {
+        let vis = this;
 
         // Initialize axes
         vis.xAxis = d3.axisBottom(vis.x)
@@ -45,6 +55,10 @@ class BrushChart {
         vis.xAxisG = vis.svg.append("g")
             .attr("class", "x-axis")
             .attr("transform", `translate(0,${vis.height})`);
+    }
+
+    setupBrush() {
+        let vis = this;
 
         // Initialize brush
         vis.brush = d3.brushX()
@@ -63,12 +77,10 @@ class BrushChart {
         // Add brush group
         vis.brushG = vis.svg.append("g")
             .attr("class", "brush");
-
-        this.wrangleData();
     }
 
     wrangleData() {
-        const vis = this;
+        let vis = this;
         
         // Process and aggregate data by date
         vis.processedData = Array.from(d3.rollups(vis.data,
@@ -83,11 +95,11 @@ class BrushChart {
         .map(([date, count]) => ({date, count}))
         .sort((a, b) => a.date - b.date);
 
-        this.updateVis();
+        vis.updateVis();
     }
 
     updateVis() {
-        const vis = this;
+        let vis = this;
 
         if (vis.processedData.length === 0) {
             console.warn('No valid data for BrushChart');
@@ -120,7 +132,7 @@ class BrushChart {
     }
 
     onBrush(startDate, endDate) {
-        const vis = this;
+        let vis = this;
         
         // Filter both area chart and treemap
         if (visualizations.incidents) {
@@ -131,29 +143,40 @@ class BrushChart {
         }
     }
 
-    resize() {
-        const vis = this;
+    updateDimensions() {
+        let vis = this;
         
-        // Update dimensions
-        sharedDimensions.updateDimensions();
-        vis.width = sharedDimensions.width - vis.margin.left - vis.margin.right;
-
-        if (vis.width <= 0) return; // Skip if invalid width
+        // Get container dimensions
+        const container = document.getElementById(vis.parentElement);
+        if (!container) return;
+        
+        const rect = container.getBoundingClientRect();
+        vis.width = rect.width - vis.margin.left - vis.margin.right;
+        vis.height = rect.height - vis.margin.top - vis.margin.bottom;
 
         // Update SVG dimensions
-        d3.select(`#${vis.containerId} svg`)
-            .attr("width", vis.width + vis.margin.left + vis.margin.right);
-
-        // Update scales
-        vis.x.range([0, vis.width]);
-
-        // Update brush extent
-        vis.brush.extent([[0, 0], [vis.width, vis.height]]);
-        if (vis.brushG) {
-            vis.brushG.call(vis.brush);
+        if (vis.svg) {
+            vis.svg
+                .attr("width", vis.width + vis.margin.left + vis.margin.right)
+                .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
         }
 
-        // Update visualization
-        this.updateVis();
+        // Update scales ranges
+        if (vis.x) vis.x.range([0, vis.width]);
+        if (vis.y) vis.y.range([vis.height, 0]);
+    }
+
+    resize() {
+        let vis = this;
+        vis.updateDimensions();
+        vis.updateVis();
+    }
+
+    hide() {
+        d3.select("#" + this.parentElement).style("display", "none");
+    }
+
+    show() {
+        d3.select("#" + this.parentElement).style("display", "block");
     }
 } 

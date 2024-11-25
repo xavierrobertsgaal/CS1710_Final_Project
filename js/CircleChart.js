@@ -2,18 +2,15 @@ class CircleChart {
     constructor(parentElement, carbonData) {
         this.parentElement = parentElement;
         this.carbonData = carbonData;
-
+        this.margin = {top: 20, right: 20, bottom: 20, left: 20};
         this.initVis();
     }
 
     initVis() {
         let vis = this;
 
-        // Set up margins
-        vis.margin = {top: 20, right: 20, bottom: 20, left: 20};
-
-        vis.width = document.getElementById(vis.parentElement).getBoundingClientRect().width - vis.margin.left - vis.margin.right;
-        vis.height = document.getElementById(vis.parentElement).getBoundingClientRect().height - vis.margin.top - vis.margin.bottom;
+        // Get initial dimensions
+        vis.updateDimensions();
 
         // Initialize SVG
         vis.svg = d3.select("#" + vis.parentElement)
@@ -39,36 +36,75 @@ class CircleChart {
             .domain([0, d3.max(vis.carbonData, d => +d["Total Carbon Emission (g CO2e)"] || 0)])
             .range([5, 70]);
 
-        // Set up force simulation
-        // vis.simulation = d3.forceSimulation(vis.carbonData)
-        //     .force("x", d3.forceX(vis.width / 2).strength(0.1))
-        //     .force("y", d3.forceY(vis.height / 2).strength(0.1))
-        //     .force(
-        //         "collision",
-        //         d3.forceCollide(d => vis.sizeScale(+d["Total Carbon Emission (g CO2e)"] || 0) )
-        //     )
-        //     .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
-        //     .alpha(0.1)
-        //     .alphaDecay(1)
-        //     .alphaMin(0.0001)
-        //     .on("tick", () => vis.updateVis());
-
         vis.simulation = d3.forceSimulation(vis.carbonData)
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
             .force('charge', d3.forceManyBody().strength(5))
             .force(
                 "collision",
-                d3.forceCollide().radius(d => vis.sizeScale(+d["Total Carbon Emission (g CO2e)"] ) )
-            )
+                d3.forceCollide().radius(d => vis.sizeScale(+d["Total Carbon Emission (g CO2e)"])))
             .on("tick", () => vis.updateVis());
 
-        // Initial rendering
-        vis.updateVis();
-
         // Add button functionality
-        document.getElementById("moveToBottom").addEventListener("click", () => vis.alignCircles());
-        // document.getElementById("transformToArea").addEventListener("click", () => vis.transformToAreaChart());
+        document.getElementById("moveToBottom").addEventListener("click", () => {
+            const button = document.getElementById("moveToBottom");
+            if (button.textContent === "Group") {
+                vis.alignCircles();
+                button.textContent = "Ungroup";
+            } else {
+                vis.ungroupCircles();
+                button.textContent = "Group";
+            }
+        });
 
+        // Initial rendering
+        vis.wrangleData();
+    }
+
+    wrangleData() {
+        let vis = this;
+        // Process data if needed
+        vis.updateVis();
+    }
+
+    updateDimensions() {
+        let vis = this;
+        
+        // Get container dimensions
+        const container = document.getElementById(vis.parentElement);
+        if (!container) return;
+        
+        const rect = container.getBoundingClientRect();
+        vis.width = rect.width - vis.margin.left - vis.margin.right;
+        vis.height = rect.height - vis.margin.top - vis.margin.bottom;
+
+        // Update SVG dimensions
+        if (vis.svg) {
+            vis.svg
+                .attr("width", vis.width + vis.margin.left + vis.margin.right)
+                .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
+        }
+
+        // Update simulation center force if it exists
+        if (vis.simulation) {
+            vis.simulation
+                .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
+                .alpha(0.3)
+                .restart();
+        }
+    }
+
+    resize() {
+        let vis = this;
+        vis.updateDimensions();
+        vis.wrangleData();
+    }
+
+    hide() {
+        d3.select("#" + this.parentElement).style("display", "none");
+    }
+
+    show() {
+        d3.select("#" + this.parentElement).style("display", "block");
     }
 
     updateVis() {
@@ -88,7 +124,7 @@ class CircleChart {
             .attr("cy", d => d.y)
             .attr('fill', d => {
                 if (d['Uses AI'] === 'Active') return '#ff4141';
-                else if (d['Uses AI'] === 'Passive') return '#e1a25d';
+                else if (d['Uses AI'] === 'Passive') return '#2563eb';
                 else return '#5c7077'
             });
 
@@ -103,10 +139,10 @@ class CircleChart {
             .attr("opacity", 0.7)
             .attr('fill', d => {
                 if (d['Uses AI'] === 'Active') return '#ff4141';
-                else if (d['Uses AI'] === 'Passive') return '#e1a25d';
+                else if (d['Uses AI'] === 'Passive') return '#2563eb';
                 else return '#5c7077'
             })
-            .on("mouseover", function (event, d) {
+            .on("mouseover", function(event, d) {
                 d3.select(this)
                     .attr("opacity", 1)
                     .attr("stroke-width", 2);
@@ -123,7 +159,7 @@ class CircleChart {
                         <strong>Frequency:</strong> ${d["Times"]} times/day
                     `);
             })
-            .on("mouseout", function () {
+            .on("mouseout", function() {
                 d3.select(this)
                     .attr("opacity", 0.7)
                     .attr("stroke-width", 1);
@@ -147,19 +183,6 @@ class CircleChart {
             No: (5 * vis.height) / 6
         };
 
-        const yPositions_after = {
-            Active: vis.height / 6,
-            Passive: 3 * vis.height / 7,
-            No: (5 * vis.height) / 6
-        }
-
-        // Define constants for layout
-        const FIXED_SPACING = 2; // Space between circles
-        const ROW_SPACING = 75;  // Space between rows
-        const MARGIN = 50; // Margin from edges
-
-
-
         // Update the force simulation to move circles into groups
         vis.simulation
             .force('charge', d3.forceManyBody().strength(5))
@@ -170,100 +193,13 @@ class CircleChart {
             }).strength(0.5))
             .force(
                 "collision",
-                d3.forceCollide().radius(d => vis.sizeScale(+d["Total Carbon Emission (g CO2e)"]) )
+                d3.forceCollide().radius(d => vis.sizeScale(+d["Total Carbon Emission (g CO2e)"]))
             )
-            // .alpha(4)
-            .alphaDecay(0.6)
+            .alphaDecay(0.1)
             .on("tick", () => vis.updateVis());
-            // .alphaMin(0.0001);
 
-        // Restart the simulation to apply the new forces
-        vis.simulation.alpha(0.5).restart();
-
-        // Group data by category for even horizontal positioning
-        const groupedData = {
-            Active: vis.carbonData
-                .filter(d => d['Uses AI'] === 'Active')
-                .sort((a, b) => (+a["Total Carbon Emission (g CO2e)"]) - (+b["Total Carbon Emission (g CO2e)"])),
-            Passive: vis.carbonData
-                .filter(d => d['Uses AI'] === 'Passive')
-                .sort((a, b) => (+a["Total Carbon Emission (g CO2e)"]) - (+b["Total Carbon Emission (g CO2e)"])),
-            No: vis.carbonData
-                .filter(d => d['Uses AI'] === 'No')
-                .sort((a, b) => (+a["Total Carbon Emission (g CO2e)"]) - (+b["Total Carbon Emission (g CO2e)"])),
-        };
-
-        // Calculate positions for each category
-        const calculatePositions = (data, baseY) => {
-            let positions = new Map();
-            let rows = [[]];
-            let currentRow = 0;
-            let currentRowWidth = 0;
-
-            // First pass: organize circles into rows
-            data.forEach((d) => {
-                const radius = vis.sizeScale(+d["Total Carbon Emission (g CO2e)"]);
-                const circleWidth = radius * 2 + FIXED_SPACING;
-
-                // Check if we need to start a new row
-                if (currentRowWidth + circleWidth > vis.width - MARGIN * 2) {
-                    currentRow++;
-                    rows[currentRow] = [];
-                    currentRowWidth = 0;
-                }
-
-                rows[currentRow].push({
-                    data: d,
-                    radius: radius,
-                    width: circleWidth
-                });
-                currentRowWidth += circleWidth;
-            });
-
-            // Second pass: calculate centered positions for each row
-            rows.forEach((row, rowIndex) => {
-                // Calculate total width of current row (excluding last spacing)
-                const rowWidth = row.reduce((sum, circle) => sum + circle.width, 0) - FIXED_SPACING;
-                // Calculate starting X position to center the row
-                let startX = (vis.width - rowWidth) / 2;
-                let currentX = startX;
-
-                row.forEach((circle) => {
-                    positions.set(circle.data, {
-                        x: currentX + circle.radius,
-                        y: baseY + (rowIndex * ROW_SPACING)
-                    });
-                    currentX += circle.width;
-                });
-            });
-
-            return positions;
-        };
-
-        // Calculate positions for each category
-        const activePositions = calculatePositions(groupedData.Active, yPositions_after.Active);
-        const passivePositions = calculatePositions(groupedData.Passive, yPositions_after.Passive);
-        const noPositions = calculatePositions(groupedData.No, yPositions_after.No);
-
-
-        // Transition all circles to their final positions after stabilization
-        setTimeout(() => {
-            vis.simulation.stop();
-
-            vis.svg.selectAll("circle")
-                .transition()
-                .duration(1000)
-                .attr("cx", d => {
-                    if (d['Uses AI'] === 'Active') return activePositions.get(d).x;
-                    if (d['Uses AI'] === 'Passive') return passivePositions.get(d).x;
-                    return noPositions.get(d).x;
-                })
-                .attr("cy", d => {
-                    if (d['Uses AI'] === 'Active') return activePositions.get(d).y;
-                    if (d['Uses AI'] === 'Passive') return passivePositions.get(d).y;
-                    return noPositions.get(d).y;
-                });
-        }, 3000);
+        // Restart the simulation
+        vis.simulation.alpha(1).restart();
     }
 }
 
