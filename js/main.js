@@ -5,6 +5,7 @@ let promises = [
     d3.csv("data/AIID_incidents_enhanced.csv"),
     d3.csv("data/Internet_Activities.csv"),
     d3.csv("data/swebench_verified_cleaned_2024_11_18.csv")
+
 ];
 
 // Add at the top with other global variables

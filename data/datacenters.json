@@ -1,0 +1,1777 @@
+[
+    {
+        "state": "California",
+        "cities": [
+            {
+                "city": "Los Angeles",
+                "data_centers": [
+                    {
+                        "name": "600 West 7th Street (LAX10)",
+                        "address": "Digital Realty 600 West 7th Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "2260 E El Segundo Blvd (LAX12)",
+                        "address": "Digital Realty 2260 East El Segundo Boulevard El Segundo",
+                        "zip_code": "90245"
+                    },
+                    {
+                        "name": "Centersquare - Los Angeles LAX5-A",
+                        "address": "Centersquare 2681 Kelvin Ave Irvine",
+                        "zip_code": "92614"
+                    },
+                    {
+                        "name": "Hivelocity - Los Angeles 2",
+                        "address": "Hivelocity 600 W. 7th St Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Hivelocity - Los Angeles 1",
+                        "address": "Hivelocity 624 S Grand Ave Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Colocation America LADC3",
+                        "address": "Colocation America 600 W. 7th St Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "One Wilshire",
+                        "address": "GI Property Management 624 South Grand Avenue Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "West 7 Center",
+                        "address": "Rising Realty Partners 1200 West 7th Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Equinix LA2",
+                        "address": "Equinix 818 W 7th Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Evocative LAX14",
+                        "address": "Evocative Data Centers 3690 Redondo Beach Avenue Redondo Beach",
+                        "zip_code": "90278"
+                    },
+                    {
+                        "name": "Colocation America LADC4",
+                        "address": "Colocation America 530 W. 6th St Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "CoreSite One Wilshire (LA1)",
+                        "address": "CoreSite 624 South Grand Avenue Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "DataBank LAX1 - LA One Wilshire",
+                        "address": "DataBank 624 South Grand Avenue Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Equinix LA7",
+                        "address": "Equinix 1501 Francisco Street Torrance",
+                        "zip_code": "90501"
+                    },
+                    {
+                        "name": "Serverfarm LAX1",
+                        "address": "Serverfarm 444 North Nash Street El Segundo",
+                        "zip_code": "90245"
+                    },
+                    {
+                        "name": "Colocation America LADC5",
+                        "address": "Colocation America 650 S. Grand Ave Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Colocation America LADC2",
+                        "address": "Colocation America 707 Wilshire Blvd Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Prime Los Angeles",
+                        "address": "Prime Data Centers 4701 S Santa Fe Ave Vernon",
+                        "zip_code": "90058"
+                    },
+                    {
+                        "name": "Cogent Data Center - Los Angeles",
+                        "address": "Cogent Communications, Inc. 530 W 6th St Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Cogent Data Center - Pasadena",
+                        "address": "Cogent Communications, Inc. 2947 Bradley Street Pasadena",
+                        "zip_code": "91107"
+                    },
+                    {
+                        "name": "Evocative LAX2",
+                        "address": "Evocative Data Centers 600 W 7th Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "CoreSite Los Angeles (LA2)",
+                        "address": "CoreSite 900 North Alameda Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "TELEHOUSE Los Angeles Center",
+                        "address": "Telehouse America 626 Wilshire Boulevard Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Crown Castle Los Angeles LA1",
+                        "address": "CROWN CASTLE 624 S Grand Ave Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "UnitedLayer Los Angeles",
+                        "address": "UnitedLayer, Inc. 624 S Grand Ave Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Equinix LA3",
+                        "address": "Equinix 1920 E Maple Ave El Segundo",
+                        "zip_code": "90245"
+                    },
+                    {
+                        "name": "Crown Castle Los Angeles LA2",
+                        "address": "CROWN CASTLE 609 W 7th St Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Xfernet Data Center",
+                        "address": "Xfernet 3250 Wilshire Blvd Koreatown",
+                        "zip_code": "90010"
+                    },
+                    {
+                        "name": "Equinix LA1",
+                        "address": "Equinix 600 West 7th Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "QuadraNet Los Angeles",
+                        "address": "QuadraNet.com 530 W. 6th St. Los Angeles",
+                        "zip_code": "90014"
+                    },
+                    {
+                        "name": "Centersquare - Los Angeles LAX2",
+                        "address": "Centersquare 3015 Winona Avenue Burbank",
+                        "zip_code": "91504"
+                    },
+                    {
+                        "name": "365 Data Centers - Los Angeles 1",
+                        "address": "365 Data Centers 600 W 7th St. Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Cogent Data Center - La Mirada",
+                        "address": "Cogent Communications, Inc. Valley View Avenue 90638 La Mirada",
+                        "zip_code": "16680"
+                    },
+                    {
+                        "name": "Edge Centres EC101 Los Angeles",
+                        "address": "Edge Centres 707 Wilshire Blvd. Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "CoreSite Los Angeles (LA3)",
+                        "address": "CoreSite 260 Bauchet St. Los Angeles",
+                        "zip_code": "90012"
+                    },
+                    {
+                        "name": "Cogent Data Center - Burbank",
+                        "address": "Cogent Communications, Inc. 100 S Flower St Burbank",
+                        "zip_code": "91502"
+                    },
+                    {
+                        "name": "Colocation America LADC1",
+                        "address": "Colocation America 624 South Grand Avenue Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "ColoCrossing LA1",
+                        "address": "ColoCrossing 530 W. 6th Street Los Angeles",
+                        "zip_code": "90014"
+                    },
+                    {
+                        "name": "Fireline Broadband Data Center",
+                        "address": "Fireline Broadband 5900 Wilshire Blvd Los Angeles",
+                        "zip_code": "90036"
+                    },
+                    {
+                        "name": "Crown Castle Los Angeles LA3",
+                        "address": "CROWN CASTLE 530 W 6th St Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Aptum Los Angeles",
+                        "address": "Aptum 360 E 2nd Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "365 Data Centers - Los Angeles 2",
+                        "address": "365 Data Centers 624 South Grand Ave Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Windstream Los Angeles",
+                        "address": "Windstream 530 West 6th St Los Angeles",
+                        "zip_code": "90014"
+                    },
+                    {
+                        "name": "365 Data Centers - Los Angeles 3",
+                        "address": "365 Data Centers 900 N. Alameda St Los Angeles",
+                        "zip_code": "90012"
+                    },
+                    {
+                        "name": "Key Info (Agoura Ct)",
+                        "address": "Key Information Systems Agoura Ct 91301 Agoura Hills",
+                        "zip_code": "30077"
+                    },
+                    {
+                        "name": "Lumen Los Angeles",
+                        "address": "Lumen 818 W. 7th Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Telecom Center LA",
+                        "address": "BGC Group 530 West 6th Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "China Telecom One Wilshire",
+                        "address": "China Telecom Americas 624 S Grand Ave Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Marina Towers",
+                        "address": "DigiLink, Inc. 4676 Admiralty Way Marina Del Rey",
+                        "zip_code": "90292"
+                    },
+                    {
+                        "name": "Psychz LA Suite 100 & 200",
+                        "address": "Psychz Networks 700 Wilshire Blvd Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Downtown Colo Corporation",
+                        "address": "Downtown Colo Corporation 650 South Grand Avenue Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Lumen Los Angeles 4",
+                        "address": "Lumen 600 Wilshire Blvd Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "DataBank - zColo - 707 Wilshire Blvd",
+                        "address": "DataBank 707 Wilshire Blvd Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "One Data Center America",
+                        "address": "One Data Center America 3833 Ebony St Ontario",
+                        "zip_code": "91761"
+                    },
+                    {
+                        "name": "LAX Data Center",
+                        "address": "Dynascale, Inc. 6171 West Century Blvd Los Angeles",
+                        "zip_code": "90045"
+                    },
+                    {
+                        "name": "IHNetworks Datacenter (SFV1)",
+                        "address": "IHNetworks, LLC Nordhoff Street 91311 Chatsworth",
+                        "zip_code": "20339"
+                    },
+                    {
+                        "name": "611 Wilshire",
+                        "address": "Xyvest Holdings 611 Wilshire Blvd Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Long Beach Data Center",
+                        "address": "Long Beach Data Center 3910 E 7th St. Long Beach",
+                        "zip_code": "90804"
+                    },
+                    {
+                        "name": "NocRoom Los Angeles Colocation",
+                        "address": "NocRoom Miami Colocation VPS 530 W 6th Street Penthouse Los Angeles",
+                        "zip_code": "90014"
+                    },
+                    {
+                        "name": "Vernon Data Center",
+                        "address": "Downtown Properties Holdings, LLC 5001 S. Soto Street Vernon",
+                        "zip_code": "90058"
+                    },
+                    {
+                        "name": "818 West 7th Street",
+                        "address": "Downtown Properties Holdings, LLC 818 West 7th Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Hostrunway Data Center",
+                        "address": "Hostrunway 900 N Alameda St #200 Naud Junction",
+                        "zip_code": "90012"
+                    },
+                    {
+                        "name": "Downtown Data Center",
+                        "address": "Dynascale, Inc. 1200 West 7th Street Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Quinby Building",
+                        "address": "Quinby Building 650 South Grand Avenue Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Aon Center",
+                        "address": "Shorenstein 707 Wilshire Boulevard Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Downtown Colo Corporation",
+                        "address": "Downtown Colo Corporation 624 South Grand Avenue Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "Vertex SSX",
+                        "address": "Vertex SSX Corporation 615 S. Grand Avenue Los Angeles",
+                        "zip_code": "90017"
+                    },
+                    {
+                        "name": "WebNX LAX",
+                        "address": "WebNX Internet Services 530 West 6th Street Los Angeles",
+                        "zip_code": "90017"
+                    }
+                ]
+            },
+            {
+                "city": "San Jose",
+                "data_centers": [
+                    {
+                        "name": "2334 Lundy Place (SJC26)",
+                        "address": "Digital Realty 2334 Lundy Place San Jose",
+                        "zip_code": "95131"
+                    },
+                    {
+                        "name": "150 South First St",
+                        "address": "Hines 150 South First Street San Jose",
+                        "zip_code": "95113"
+                    },
+                    {
+                        "name": "Equinix SV1",
+                        "address": "Equinix 11 Great Oaks Boulevard San Jose",
+                        "zip_code": "95119"
+                    },
+                    {
+                        "name": "Equinix SV3",
+                        "address": "Equinix 1735 Lundy Ave San Jose",
+                        "zip_code": "95131"
+                    },
+                    {
+                        "name": "Prime San Jose",
+                        "address": "Prime Data Centers 6580 Via del Oro San Jose",
+                        "zip_code": "95119"
+                    },
+                    {
+                        "name": "Equinix SV11",
+                        "address": "Equinix 5 Great Oaks Boulevard San Jose",
+                        "zip_code": "95119"
+                    },
+                    {
+                        "name": "Element Critical Silicon Valley",
+                        "address": "Element Critical 1360 Kifer Rd Sunnyvale",
+                        "zip_code": "94086"
+                    },
+                    {
+                        "name": "Equinix SV10",
+                        "address": "Equinix 7 Great Oaks Boulevard San Jose",
+                        "zip_code": "95119"
+                    },
+                    {
+                        "name": "Evocative OAK1",
+                        "address": "Evocative Data Centers 1400 65th Stret Emeryville",
+                        "zip_code": "94608"
+                    },
+                    {
+                        "name": "Equinix SV12x",
+                        "address": "Equinix within Equinix's Great Oaks data center campus in San Jose, CA San Jose",
+                        "zip_code": "95119"
+                    },
+                    {
+                        "name": "Equinix SV5",
+                        "address": "Equinix 9 Great Oaks Boulevard San Jose",
+                        "zip_code": "95119"
+                    },
+                    {
+                        "name": "CoreSite San Jose (SV1)",
+                        "address": "CoreSite 55 South Market Street San Jose",
+                        "zip_code": "95113"
+                    },
+                    {
+                        "name": "QTS Santa Clara I & II",
+                        "address": "QTS Data Centers 2805/2807 Mission College Blvd Santa Clara",
+                        "zip_code": "95054"
+                    },
+                    {
+                        "name": "Rackspace San Jose",
+                        "address": "Rackspace Hosting 150 South 1st St San Jose",
+                        "zip_code": "95113"
+                    },
+                    {
+                        "name": "ColoCrossing SJ1",
+                        "address": "ColoCrossing 55 S. Market Street San Jose",
+                        "zip_code": "95113"
+                    },
+                    {
+                        "name": "CoreSite Santa Clara (SV2)",
+                        "address": "CoreSite 1656 McCarthy Blvd. Milpitas",
+                        "zip_code": "95035"
+                    },
+                    {
+                        "name": "STACK Infrastructure SVY01B",
+                        "address": "STACK INFRASTRUCTURE 2001 Fortune Drive San Jose",
+                        "zip_code": "95131"
+                    },
+                    {
+                        "name": "ECL MV1",
+                        "address": "ECL 411 Clyde Ave Mountain View",
+                        "zip_code": "94043"
+                    },
+                    {
+                        "name": "Evocative SJC7",
+                        "address": "Evocative Data Centers 534 Stockton Ave San Jose",
+                        "zip_code": "95126"
+                    },
+                    {
+                        "name": "STACK Infrastructure SVY01A",
+                        "address": "STACK INFRASTRUCTURE 2001 Fortune Drive San Jose",
+                        "zip_code": "95131"
+                    },
+                    {
+                        "name": "STACK Infrastructure SVY06",
+                        "address": "STACK INFRASTRUCTURE 1849 Fortune Dr San Jose",
+                        "zip_code": "95131"
+                    },
+                    {
+                        "name": "Amazon AWS SFO - Arroyo",
+                        "address": "Amazon AWS Camino Arroyo / Arroyo Circle Gilroy",
+                        "zip_code": "95020"
+                    },
+                    {
+                        "name": "STACK Infrastructure SVY05",
+                        "address": "STACK INFRASTRUCTURE 2400 Ringwood Ave San Jose",
+                        "zip_code": "95131"
+                    },
+                    {
+                        "name": "H5 Data Centers San Jose",
+                        "address": "H5 Data Centers 2030 Fortune Dr San Jose",
+                        "zip_code": "95131"
+                    },
+                    {
+                        "name": "Synoptek - San Jose Data Center",
+                        "address": "Synoptek 11 Great Oaks Blvd San Jose",
+                        "zip_code": "95119"
+                    },
+                    {
+                        "name": "China Mobile San Jose",
+                        "address": "China Mobile International 6320-6340 San Ignacio Ave San Jose",
+                        "zip_code": "95119"
+                    },
+                    {
+                        "name": "SVCOLO Sunnyvale",
+                        "address": "Silicon Valley Colocation, Inc. 1111 Karlstad Sunnyvale",
+                        "zip_code": "94089"
+                    },
+                    {
+                        "name": "Lumen San Jose 2",
+                        "address": "Lumen 1400 Kifer Road Sunnyvale",
+                        "zip_code": "98108"
+                    },
+                    {
+                        "name": "Lumen San Jose 1",
+                        "address": "Lumen 1741 Technology Drive San Jose",
+                        "zip_code": "95110"
+                    },
+                    {
+                        "name": "Plug and Play Tech Center",
+                        "address": "Plug and Play Tech Center 440 N Wolfe Road Sunnyvale",
+                        "zip_code": "94085"
+                    },
+                    {
+                        "name": "Lumen San Jose",
+                        "address": "Lumen 1380 Kifer Road Sunnyvale",
+                        "zip_code": "98108"
+                    },
+                    {
+                        "name": "QTS San Jose",
+                        "address": "QTS Data Centers 9 Great Oaks Boulevard San Jose",
+                        "zip_code": "95119"
+                    },
+                    {
+                        "name": "NaviSIte San Jose",
+                        "address": "NaviSite, Inc. 2720 Zanker Road San Jose",
+                        "zip_code": "95134"
+                    }
+                ]
+            },
+            {
+                "city": "San Francisco",
+                "data_centers": [
+                    {
+                        "name": "365 Main Street (SFO12)",
+                        "address": "Digital Realty 365 Main Street San Francisco",
+                        "zip_code": "94105"
+                    },
+                    {
+                        "name": "200 Paul Avenue (SFO10)",
+                        "address": "Digital Realty 200 Paul Avenue San Francisco",
+                        "zip_code": "94124"
+                    },
+                    {
+                        "name": "Fortress Data Centers",
+                        "address": "Fortress Data Centers 274 Brannan Street San Francisco",
+                        "zip_code": "94107"
+                    },
+                    {
+                        "name": "Colocation America SFDC1",
+                        "address": "Colocation America 200 Paul Ave San Francisco",
+                        "zip_code": "94124"
+                    },
+                    {
+                        "name": "Novva San Francisco",
+                        "address": "Novva 400 Paul Ave San Francisco",
+                        "zip_code": "94124"
+                    },
+                    {
+                        "name": "Data Center 360 Spear Street",
+                        "address": "Fastmetrics LLC 360 Spear Street San Francisco",
+                        "zip_code": "94105"
+                    },
+                    {
+                        "name": "Centersquare - Silicon Valley SFO3-A",
+                        "address": "Centersquare 1400 Kifer Rd Sunnyvale",
+                        "zip_code": "94086"
+                    },
+                    {
+                        "name": "UnitedLayer San Francisco",
+                        "address": "UnitedLayer, Inc. 200 Paul Ave San Francisco",
+                        "zip_code": "94124"
+                    },
+                    {
+                        "name": "Centersquare - Silicon Valley SFO3-B",
+                        "address": "Centersquare 1320 Kifer Rd Sunnyvale",
+                        "zip_code": "94086"
+                    },
+                    {
+                        "name": "Data Center 365 Main Street",
+                        "address": "Fastmetrics LLC 365 Main Street San Francisco",
+                        "zip_code": "94105"
+                    },
+                    {
+                        "name": "CoreSite Santa Clara (SV6)",
+                        "address": "CoreSite 3001 Coronado Dr Santa Clara",
+                        "zip_code": "95054"
+                    },
+                    {
+                        "name": "Lumen San Francisco 1",
+                        "address": "Lumen 185 Berry Street San Francisco",
+                        "zip_code": "94107"
+                    },
+                    {
+                        "name": "Lumen San Francisco 3",
+                        "address": "Lumen 200 Paul Avenue San Francisco",
+                        "zip_code": "94124"
+                    },
+                    {
+                        "name": "Data Canopy - San Francisco",
+                        "address": "Data Canopy 630 Third Street San Francisco",
+                        "zip_code": "94107"
+                    },
+                    {
+                        "name": "JMA Wired",
+                        "address": "JMA Ventures, LLC 360 Spear St San Francisco",
+                        "zip_code": "94105"
+                    },
+                    {
+                        "name": "ColoServe 360 Spear",
+                        "address": "ServePath, LLC 360 Spear St San Francisco",
+                        "zip_code": "94105"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "state": "Texas",
+        "cities": [
+            {
+                "city": "Montgomery TX",
+                "data_centers": [
+                    {
+                        "name": "Data Journey The Bunker",
+                        "address": "Data Journey 550 Club Dr. Montgomery",
+                        "zip_code": "77316"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "state": "Virginia",
+        "cities": [
+            {
+                "city": "Ashburn",
+                "data_centers": [
+                    {
+                        "name": "43830 Devin Shafron Drive (IAD24)",
+                        "address": "Digital Realty Devin Shafron Drive 20147 Ashburn",
+                        "zip_code": "43830"
+                    },
+                    {
+                        "name": "Centersquare Ashburn Campus",
+                        "address": "Centersquare 21561-21571 Beaumeade Circle Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "44100 Digital Loudoun Plaza (IAD38)",
+                        "address": "Digital Realty Digital Loudoun Plaza 20147 Ashburn",
+                        "zip_code": "44100"
+                    },
+                    {
+                        "name": "44274 Round Table Plaza, Bldg L (IAD39)",
+                        "address": "Digital Realty Round Table Plaza 20147 Ashburn",
+                        "zip_code": "44274"
+                    },
+                    {
+                        "name": "44461 Chilum Place (ACC6)",
+                        "address": "Digital Realty Chilum Place 20147 Ashburn",
+                        "zip_code": "44461"
+                    },
+                    {
+                        "name": "44480 Hastings Drive (ACC4)",
+                        "address": "Digital Realty Hastings Drive 20147 Ashburn",
+                        "zip_code": "44480"
+                    },
+                    {
+                        "name": "Cologix ASH1-S",
+                        "address": "Cologix Beaumeade Circle 20147 Ashburn",
+                        "zip_code": "21745"
+                    },
+                    {
+                        "name": "44060 Digital Loudoun Plaza (IAD37)",
+                        "address": "Digital Realty Digital Loudoun Plaza 20147 Ashburn",
+                        "zip_code": "44060"
+                    },
+                    {
+                        "name": "21625 Gresham Drive (ACC7)",
+                        "address": "Digital Realty Gresham Drive 20147 Ashburn",
+                        "zip_code": "21625"
+                    },
+                    {
+                        "name": "44521 Hastings Drive (ACC5)",
+                        "address": "Digital Realty Hastings Drive 20147 Ashburn",
+                        "zip_code": "44521"
+                    },
+                    {
+                        "name": "44490 Chillum (ACC2)",
+                        "address": "Digital Realty Chillum Place 20147 Ashburn",
+                        "zip_code": "44490"
+                    },
+                    {
+                        "name": "44520 Hastings (ACC3)",
+                        "address": "Digital Realty Hastings Dr 20147 Ashburn",
+                        "zip_code": "44520"
+                    },
+                    {
+                        "name": "21745 Sir Timothy (ACC9)",
+                        "address": "Digital Realty Sir Timothy Dr 20147 Ashburn",
+                        "zip_code": "21745"
+                    },
+                    {
+                        "name": "44372 Round Table Plaza, Bldg M (IAD40)",
+                        "address": "Digital Realty Round Table Plaza 20147 Ashburn",
+                        "zip_code": "44372"
+                    },
+                    {
+                        "name": "43780 Digital Loudoun Plaza (IAD36)",
+                        "address": "Digital Realty Digital Loudoun Plaza 20147 Ashburn",
+                        "zip_code": "43780"
+                    },
+                    {
+                        "name": "43791 Devin Shafron Drive (IAD14)",
+                        "address": "Digital Realty Devin Shafron Drive 20147 Ashburn",
+                        "zip_code": "43791"
+                    },
+                    {
+                        "name": "44540 Round Table Plaza (IAD73)",
+                        "address": "Digital Realty Round Table Plz 20147 Ashburn",
+                        "zip_code": "44540"
+                    },
+                    {
+                        "name": "43940 Digital Loudoun Plaza (IAD35)",
+                        "address": "Digital Realty Digital Loudoun Plaza 20147 Ashburn",
+                        "zip_code": "43940"
+                    },
+                    {
+                        "name": "43881 Devin Shafron Drive (IAD12)",
+                        "address": "Digital Realty Devin Shafron Drive 20147 Ashburn",
+                        "zip_code": "43881"
+                    },
+                    {
+                        "name": "21744 Sir Timothy (ACC10)",
+                        "address": "Digital Realty Sir Timothy Dr 20147 Ashburn",
+                        "zip_code": "21744"
+                    },
+                    {
+                        "name": "44470 Chilum Place (IAD18)",
+                        "address": "Digital Realty Chilum Place 20147 Ashburn",
+                        "zip_code": "44470"
+                    },
+                    {
+                        "name": "43831 Devin Shafron (IAD13)",
+                        "address": "Digital Realty Devin Shafron Dr 20147 Ashburn",
+                        "zip_code": "43831"
+                    },
+                    {
+                        "name": "22124 Broderick Drive, Bldg R (IAD42)",
+                        "address": "Digital Realty Broderick Drive (Bldg R) 20147 Ashburn",
+                        "zip_code": "22124"
+                    },
+                    {
+                        "name": "21362 Smith Switch (ACC8)",
+                        "address": "Digital Realty Smith Switch Rd 20147 Ashburn",
+                        "zip_code": "21362"
+                    },
+                    {
+                        "name": "43915 Devin Shafron (IAD15)",
+                        "address": "GI Property Management Devin Shafron Drive 20147 Ashburn",
+                        "zip_code": "43915"
+                    },
+                    {
+                        "name": "44751 Round Table Plaza, Bldg P (IAD41)",
+                        "address": "Digital Realty Round Table Plaza (Bldg P) 20147 Ashburn",
+                        "zip_code": "44751"
+                    },
+                    {
+                        "name": "NTT Ashburn VA1",
+                        "address": "NTT Global Data Centers Guilford Drive 20147 Ashburn",
+                        "zip_code": "44664"
+                    },
+                    {
+                        "name": "NTT Ashburn VA2",
+                        "address": "NTT Global Data Centers Guilford Drive 20147 Ashburn",
+                        "zip_code": "44610"
+                    },
+                    {
+                        "name": "NTT Ashburn VA3",
+                        "address": "NTT Global Data Centers Megawatt Drive 20147 Ashburn",
+                        "zip_code": "21583"
+                    },
+                    {
+                        "name": "NTT Ashburn VA4",
+                        "address": "NTT Global Data Centers Megawatt Drive 20147 Ashburn",
+                        "zip_code": "21583"
+                    },
+                    {
+                        "name": "NTT Ashburn VA5",
+                        "address": "NTT Global Data Centers Megawatt Drive 20147 Ashburn",
+                        "zip_code": "21583"
+                    },
+                    {
+                        "name": "Element Critical Northern Virginia",
+                        "address": "Element Critical 7990 Quantum Dr Vienna",
+                        "zip_code": "22182"
+                    },
+                    {
+                        "name": "H5 Data Centers Ashburn",
+                        "address": "H5 Data Centers Beaumeade Cir 20147 Ashburn",
+                        "zip_code": "21800"
+                    },
+                    {
+                        "name": "Equinix DC11",
+                        "address": "Equinix Filigree Court 20147 Ashburn",
+                        "zip_code": "21721"
+                    },
+                    {
+                        "name": "Equinix DC2",
+                        "address": "Equinix Filigree Court 20147 Ashburn",
+                        "zip_code": "21715"
+                    },
+                    {
+                        "name": "SDC Ashburn A",
+                        "address": "Sabey Data Center Properties LLC Red Rum Dr 20147 Ashburn",
+                        "zip_code": "21741"
+                    },
+                    {
+                        "name": "Equinix DC21",
+                        "address": "Equinix Beaumeade Circle 20147 Ashburn",
+                        "zip_code": "22175"
+                    },
+                    {
+                        "name": "Equinix DC12",
+                        "address": "Equinix Performance Circle 20147 Ashburn",
+                        "zip_code": "44790"
+                    },
+                    {
+                        "name": "Aligned IAD-02",
+                        "address": "Aligned Data Centers Uunet Drive 20147 Ashburn",
+                        "zip_code": "21821"
+                    },
+                    {
+                        "name": "Aligned IAD-01",
+                        "address": "Aligned Data Centers Uunet Drive 20147 Ashburn",
+                        "zip_code": "21890"
+                    },
+                    {
+                        "name": "Equinix DC4",
+                        "address": "Equinix Filigree Court 20147 Ashburn",
+                        "zip_code": "21691"
+                    },
+                    {
+                        "name": "Equinix DC1",
+                        "address": "Equinix Filigree Court 20147 Ashburn",
+                        "zip_code": "21711"
+                    },
+                    {
+                        "name": "Equinix DC3",
+                        "address": "Equinix Chilum Place 20147 Ashburn",
+                        "zip_code": "44470"
+                    },
+                    {
+                        "name": "DataBank IAD1 - Ashburn",
+                        "address": "DataBank Red Rum Drive 20147 Ashburn",
+                        "zip_code": "21635"
+                    },
+                    {
+                        "name": "Centersquare - Ashburn IAD4-A",
+                        "address": "Centersquare Beaumeade Circle 20147 Ashburn",
+                        "zip_code": "21571"
+                    },
+                    {
+                        "name": "Equinix DC5",
+                        "address": "Equinix Filigree Court 20147 Ashburn",
+                        "zip_code": "21701"
+                    },
+                    {
+                        "name": "Equinix DC10",
+                        "address": "Equinix Beaumeade Circle 20147 Ashburn",
+                        "zip_code": "21551"
+                    },
+                    {
+                        "name": "Equinix DC6",
+                        "address": "Equinix Filigree Court 20147 Ashburn",
+                        "zip_code": "21721"
+                    },
+                    {
+                        "name": "Centersquare - Ashburn IAD4-B",
+                        "address": "Centersquare Beaumeade Circle 20147 Ashburn",
+                        "zip_code": "21561"
+                    },
+                    {
+                        "name": "Deft Ashburn",
+                        "address": "Deft Devin Shafron Dr 20147 Ashburn",
+                        "zip_code": "43830"
+                    },
+                    {
+                        "name": "Equinix DC15",
+                        "address": "Equinix Performance Circle 20147 Ashburn",
+                        "zip_code": "44780"
+                    },
+                    {
+                        "name": "Equinix DC13",
+                        "address": "Equinix Uunet Way 20147 Ashburn",
+                        "zip_code": "21830"
+                    },
+                    {
+                        "name": "DataBank IAD3 - Ashburn Campus",
+                        "address": "DataBank Red Rum Drive 20147 Ashburn",
+                        "zip_code": "21630"
+                    },
+                    {
+                        "name": "Equinix DC16",
+                        "address": "Equinix Performance Circle 20147 Ashburn",
+                        "zip_code": "44740"
+                    },
+                    {
+                        "name": "EdgeCore Ashburn AS01",
+                        "address": "EdgeCore Maries Road 20166 Sterling",
+                        "zip_code": "45865"
+                    },
+                    {
+                        "name": "Rackspace Ashburn",
+                        "address": "Rackspace Hosting Chilum Place 20147 Ashburn",
+                        "zip_code": "44461"
+                    },
+                    {
+                        "name": "Remington Technology Park",
+                        "address": "PointOne 6980 Helm Dr Remington",
+                        "zip_code": "22734"
+                    },
+                    {
+                        "name": "Microsoft Compass Creek Campus",
+                        "address": "Microsoft 19515-19540 Compass Creek Pkwy Leesburg",
+                        "zip_code": "20175"
+                    },
+                    {
+                        "name": "PowerHouse ABX-1",
+                        "address": "PowerHouse Data Centers Beaumeade Circle 20147 Ashburn",
+                        "zip_code": "21529"
+                    },
+                    {
+                        "name": "Vantage VA3 - Ashburn III Campus",
+                        "address": "Vantage Data Centers Belmont Ridge Road 20147 Ashburn",
+                        "zip_code": "19509"
+                    },
+                    {
+                        "name": "Quantum Connect",
+                        "address": "PowerHouse Data Centers Loudoun County Pkwy 20147 Ashburn",
+                        "zip_code": "22001"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - Loudoun County Campus",
+                        "address": "Amazon AWS 20935-20934 Lodoun County Pkwy Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "STACK Infrastructure NVA06",
+                        "address": "STACK INFRASTRUCTURE Compass Creek Pkwy 20175 Leesburg",
+                        "zip_code": "19275"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - Import Campus",
+                        "address": "Amazon AWS 44351-44254 Import Plaza Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "Dulles 28 Technology Park",
+                        "address": "The BlackChamber Group Pacific Blvd / Wapool Rd Ashburn",
+                        "zip_code": "20166"
+                    },
+                    {
+                        "name": "NTT Ashburn Campus",
+                        "address": "NTT Global Data Centers Megawatt Dr / Gigabit Plz Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "Compass Loudoun County I - Campus",
+                        "address": "Compass Datacenters Thunderball Dr Ashburn",
+                        "zip_code": "20148"
+                    },
+                    {
+                        "name": "Microsoft - 41720 Inclusion Ln",
+                        "address": "Microsoft Inclusion Ln 20175 Leesburg",
+                        "zip_code": "41720"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - Interconnection Campus",
+                        "address": "Amazon AWS 44854-44862 Interconnection Plz Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "CloudHQ LC4",
+                        "address": "CloudHQ Loudoun County Parkway 20147 Ashburn",
+                        "zip_code": "22210"
+                    },
+                    {
+                        "name": "CloudHQ LC Campus",
+                        "address": "CloudHQ Loudoun County Pkwy 20147 Ashburn",
+                        "zip_code": "21955"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - Smith Campus",
+                        "address": "Amazon AWS 21263-21271 Smith Switch Rd Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "Microsoft - 41730 Inclusion Ln",
+                        "address": "Microsoft Inclusion Ln 20175 Leesburg",
+                        "zip_code": "41730"
+                    },
+                    {
+                        "name": "Google Loudoun County Campus",
+                        "address": "Google Energy Park Drive Leesburg",
+                        "zip_code": "20175"
+                    },
+                    {
+                        "name": "Google Loudoun County Data Center 1",
+                        "address": "Google Goose Landing Ln Leesburg",
+                        "zip_code": "20175"
+                    },
+                    {
+                        "name": "SDC Ashburn C",
+                        "address": "Sabey Data Center Properties LLC Red Rum Drive 20147 Ashburn",
+                        "zip_code": "21735"
+                    },
+                    {
+                        "name": "43790 Devin Shafron Dr",
+                        "address": "Menlo Equities Devin Shafron Dr 20147 Ashburn",
+                        "zip_code": "43790"
+                    },
+                    {
+                        "name": "Equinix DC22",
+                        "address": "Equinix Beaumeade Circle 20147 Ashburn",
+                        "zip_code": "22165"
+                    },
+                    {
+                        "name": "STACK Infrastructure NVA01A",
+                        "address": "STACK INFRASTRUCTURE Pacific Blvd. 20166 Sterling",
+                        "zip_code": "22080"
+                    },
+                    {
+                        "name": "Microsoft - 19525 Compass Creek",
+                        "address": "Microsoft Compass Creek Pkwy 20175 Leesburg",
+                        "zip_code": "19525"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - 21271 Smith",
+                        "address": "Amazon AWS Smith Switch Rd 20147 Ashburn",
+                        "zip_code": "21271"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - 44854 Interconnection",
+                        "address": "Amazon AWS Interconnection Plz 20147 Ashburn",
+                        "zip_code": "44854"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - 21267 Smith",
+                        "address": "Amazon AWS Smith Switch Rd 20147 Ashburn",
+                        "zip_code": "21267"
+                    },
+                    {
+                        "name": "CloudHQ LC3",
+                        "address": "CloudHQ within the Ashburn Data Center Valley Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "Amazon IAD - 44351 Import",
+                        "address": "Amazon AWS Import Plaza 20147 Ashburn",
+                        "zip_code": "44351"
+                    },
+                    {
+                        "name": "QTS ASH 3 Data center 1",
+                        "address": "QTS Data Centers Shellhorn Road 20147 Ashburn",
+                        "zip_code": "22291"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - 20935 Loudoun",
+                        "address": "Amazon AWS Loudoun County Pkwy 20147 Ashburn",
+                        "zip_code": "20935"
+                    },
+                    {
+                        "name": "Compass Loudoun County I - D",
+                        "address": "Compass Datacenters Thunderball Dr 20148 Ashburn",
+                        "zip_code": "42311"
+                    },
+                    {
+                        "name": "Windstream Ashburn",
+                        "address": "Windstream Waxpool Rd 20147 Ashburn",
+                        "zip_code": "44200"
+                    },
+                    {
+                        "name": "QTS Ashburn-Shellhorn Campus",
+                        "address": "QTS Data Centers Shellhorn Road Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "NTT Ashburn VA8",
+                        "address": "NTT Global Data Centers Gigabit Plaza 20147 Ashburn",
+                        "zip_code": "44725"
+                    },
+                    {
+                        "name": "Compass Loudoun County I - B",
+                        "address": "Compass Datacenters Thunderball Dr 20148 Ashburn",
+                        "zip_code": "42250"
+                    },
+                    {
+                        "name": "QTS ASH 3 Data Center 2",
+                        "address": "QTS Data Centers Shellhorn Road 20147 Ashburn",
+                        "zip_code": "22271"
+                    },
+                    {
+                        "name": "NTT Ashburn VA9",
+                        "address": "NTT Global Data Centers Gigabit Plaza 20147 Ashburn",
+                        "zip_code": "44720"
+                    },
+                    {
+                        "name": "Google Loudoun County Data Center 2",
+                        "address": "Google Goose Landing Ln Leesburg",
+                        "zip_code": "20175"
+                    },
+                    {
+                        "name": "SDC Ashburn B",
+                        "address": "Sabey Data Center Properties LLC Red Rum 20147 Ashburn",
+                        "zip_code": "21745"
+                    },
+                    {
+                        "name": "CloudHQ LC8",
+                        "address": "CloudHQ Loudoun County Parkway 20147 Ashburn",
+                        "zip_code": "22210"
+                    },
+                    {
+                        "name": "Tech Park at Brambleton",
+                        "address": "The BlackChamber Group Belmont Ridge Road 20148 Ashburn",
+                        "zip_code": "23896"
+                    },
+                    {
+                        "name": "CloudHQ LC1",
+                        "address": "CloudHQ Loudoun County Pkwy 20147 Ashburn",
+                        "zip_code": "21955"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - 20945 Loudoun",
+                        "address": "Amazon AWS Loudoun County Pkwy 20147 Ashburn",
+                        "zip_code": "20945"
+                    },
+                    {
+                        "name": "Lumen Ashburn",
+                        "address": "Lumen Guilford Drive 20147 Ashburn",
+                        "zip_code": "44633"
+                    },
+                    {
+                        "name": "Microsoft - 19515 Compass Creek",
+                        "address": "Microsoft Compass Creek Pkwy 20175 Leesburg",
+                        "zip_code": "19515"
+                    },
+                    {
+                        "name": "NTT Ashburn VA7",
+                        "address": "NTT Global Data Centers Gigabit Plaza 20147 Ashburn",
+                        "zip_code": "44371"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - 21263 Smith",
+                        "address": "Amazon AWS Smith Switch Rd 20147 Ashburn",
+                        "zip_code": "21263"
+                    },
+                    {
+                        "name": "NTT Ashburn VA6",
+                        "address": "NTT Global Data Centers Gigabit Plaza 20147 Ashburn",
+                        "zip_code": "44495"
+                    },
+                    {
+                        "name": "Compass Loudoun County I - A",
+                        "address": "Compass Datacenters Thunderball Dr 20148 Ashburn",
+                        "zip_code": "42310"
+                    },
+                    {
+                        "name": "Compass Loudoun County I - E",
+                        "address": "Compass Datacenters Thunderball Dr 20148 Ashburn",
+                        "zip_code": "42590"
+                    },
+                    {
+                        "name": "Amazon IAD - 44305 Import",
+                        "address": "Amazon AWS Import Plaza 20147 Ashburn",
+                        "zip_code": "44305"
+                    },
+                    {
+                        "name": "CloudHQ LC2",
+                        "address": "CloudHQ Waxpool Rd 20147 Ashburn",
+                        "zip_code": "44621"
+                    },
+                    {
+                        "name": "Microsoft - 41700 Inclusion Ln (IAD6)",
+                        "address": "Microsoft Inclusion Ln 20175 Leesburg",
+                        "zip_code": "41700"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - 44862 Interconnection",
+                        "address": "Amazon AWS Interconnection Plz 20147 Ashburn",
+                        "zip_code": "44862"
+                    },
+                    {
+                        "name": "Microsoft - 41700 Inclusion Ln (IAD4)",
+                        "address": "Microsoft Inclusion Ln 20175 Leesburg",
+                        "zip_code": "41700"
+                    },
+                    {
+                        "name": "Amazon IAD - 44254 Import",
+                        "address": "Amazon AWS Import Plaza 20147 Ashburn",
+                        "zip_code": "44254"
+                    },
+                    {
+                        "name": "Amazon AWS IAD - 44858 Interconnection",
+                        "address": "Amazon AWS Interconnection Plz 20147 Ashburn",
+                        "zip_code": "44858"
+                    },
+                    {
+                        "name": "Compass Loudoun County I - C",
+                        "address": "Compass Datacenters Thunderball Dr 20148 Ashburn",
+                        "zip_code": "42251"
+                    },
+                    {
+                        "name": "CloudHQ MCC1",
+                        "address": "CloudHQ Airman Ave 20112 Manassas",
+                        "zip_code": "10880"
+                    },
+                    {
+                        "name": "19886 Ashburn Rd",
+                        "address": "JK Land Holdings Ashburn Rd 20147 Ashburn",
+                        "zip_code": "19886"
+                    },
+                    {
+                        "name": "CloudHQ LC5",
+                        "address": "CloudHQ within the Ashburn Data Center Valley Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "CloudHQ LC12",
+                        "address": "CloudHQ within the Ashburn Data Center Valley Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "CloudHQ LC14",
+                        "address": "CloudHQ within the Ashburn Data Center Valley Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "CloudHQ LC9",
+                        "address": "CloudHQ within the Ashburn Data Center Valley Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "CloudHQ LC10",
+                        "address": "CloudHQ within the Ashburn Data Center Valley Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "CloudHQ LC13",
+                        "address": "CloudHQ within the Ashburn Data Center Valley Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "CloudHQ LC11",
+                        "address": "CloudHQ within the Ashburn Data Center Valley Ashburn",
+                        "zip_code": "20147"
+                    },
+                    {
+                        "name": "Tuscarora Crossing Bldg 3",
+                        "address": "The BlackChamber Group Crosstrail Blvd Leesburg",
+                        "zip_code": "20175"
+                    },
+                    {
+                        "name": "CyrusOne Broadlands - Building 3",
+                        "address": "CyrusOne Data Centers Education Ct / Broadlands Blvd Broadlands",
+                        "zip_code": "20148"
+                    },
+                    {
+                        "name": "CyrusOne Broadlands - Building 2",
+                        "address": "CyrusOne Data Centers Education Ct / Broadlands Blvd Broadlands",
+                        "zip_code": "20148"
+                    },
+                    {
+                        "name": "CyrusOne Broadlands - Building 1",
+                        "address": "CyrusOne Data Centers Education Ct / Broadlands Blvd Broadlands",
+                        "zip_code": "20148"
+                    },
+                    {
+                        "name": "CyrusOne Broadlands - Building 4",
+                        "address": "CyrusOne Data Centers Education Ct / Broadlands Blvd Broadlands",
+                        "zip_code": "20148"
+                    },
+                    {
+                        "name": "Tuscarora Crossing Bldg 1",
+                        "address": "The BlackChamber Group Crosstrail Blvd Leesburg",
+                        "zip_code": "20175"
+                    },
+                    {
+                        "name": "CyrusOne Broadlands Campus",
+                        "address": "CyrusOne Data Centers Education Ct / Broadlands Blvd Broadlands",
+                        "zip_code": "20148"
+                    },
+                    {
+                        "name": "Tuscarora Crossing Bldg 2",
+                        "address": "The BlackChamber Group Crosstrail Blvd Leesburg",
+                        "zip_code": "20175"
+                    },
+                    {
+                        "name": "Tuscarora Crossing Campus",
+                        "address": "The BlackChamber Group Crosstrail Blvd Leesburg",
+                        "zip_code": "20175"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "state": "Pennsylvania",
+        "cities": [
+            {
+                "city": "Pittsburgh",
+                "data_centers": [
+                    {
+                        "name": "Iron Mountain Data Centers WPA-1",
+                        "address": "Iron Mountain Data Centers 1137 Branchton Road Boyers",
+                        "zip_code": "16020"
+                    },
+                    {
+                        "name": "MSA Evergreen Heights",
+                        "address": "Management Science Associates 115 Evergreen Heights Dr Pittsburgh",
+                        "zip_code": "15229"
+                    },
+                    {
+                        "name": "MSA Rockpointe",
+                        "address": "Management Science Associates within Just a few miles from Pittsburgh Tarentum",
+                        "zip_code": "15084"
+                    },
+                    {
+                        "name": "Bitfarms Sharon",
+                        "address": "Bitfarms Ltd. within Sharon, Pennsylvania Sharon",
+                        "zip_code": "16146"
+                    },
+                    {
+                        "name": "EdgeConneX Pittsburgh - EDCPIT01",
+                        "address": "EdgeConneX 282 Corliss St Pittsburgh",
+                        "zip_code": "15220"
+                    },
+                    {
+                        "name": "Ark Data Centers Pittsburgh",
+                        "address": "Ark Data Centers 161 Armstrong Drive Freeport",
+                        "zip_code": "16229"
+                    },
+                    {
+                        "name": "H5 Data Centers Pittsburgh",
+                        "address": "H5 Data Centers 2202 Liberty Ave Pittsburgh",
+                        "zip_code": "15222"
+                    },
+                    {
+                        "name": "Ardent Pittsburgh",
+                        "address": "Ardent Data Centers 615 McMichael Rd McKees Rocks",
+                        "zip_code": "15136"
+                    },
+                    {
+                        "name": "DataBank PIT2 - Summit Park",
+                        "address": "DataBank 35 Summit Park Dr Pittsburgh",
+                        "zip_code": "15275"
+                    },
+                    {
+                        "name": "DQE Butler",
+                        "address": "DQE Communications 238 Pillow St Butler",
+                        "zip_code": "16001"
+                    },
+                    {
+                        "name": "DQE Pittsburgh",
+                        "address": "DQE Communications 322 Fourth Ave Pittsburgh",
+                        "zip_code": "15222"
+                    },
+                    {
+                        "name": "DataBank PIT1 - Downtown Pittsburgh",
+                        "address": "DataBank 100 South commons Pittsburgh",
+                        "zip_code": "15212"
+                    },
+                    {
+                        "name": "iM Critical Pittsburgh",
+                        "address": "iM Critical 900 Brinton Rd Pittsburgh",
+                        "zip_code": "15221"
+                    },
+                    {
+                        "name": "TECfusions New Kensington",
+                        "address": "TECfusions 100 Technical Drive New Kensington",
+                        "zip_code": "15068"
+                    },
+                    {
+                        "name": "Expedient Pittsburgh ACM",
+                        "address": "Expedient Data Centers 1 Allegheny Center Mall Pittsburgh",
+                        "zip_code": "15212"
+                    },
+                    {
+                        "name": "Expedient Pittsburgh North Shore",
+                        "address": "Expedient Data Centers 100 S Commons Pittsburgh",
+                        "zip_code": "15212"
+                    },
+                    {
+                        "name": "Consolidated Pittsburgh",
+                        "address": "Consolidated Communications 115 Evergreen Heights Dr Pittsburgh",
+                        "zip_code": "15229"
+                    },
+                    {
+                        "name": "Consolidated Tarentum",
+                        "address": "Consolidated Communications 400 MSA Dr Tarentum",
+                        "zip_code": "15084"
+                    },
+                    {
+                        "name": "Lumen Pittsburgh 2",
+                        "address": "Lumen 200 Technology Dr Pittsburgh",
+                        "zip_code": "15219"
+                    },
+                    {
+                        "name": "Citynet Pittsburgh",
+                        "address": "Citynet, LLC Allegheny Center Mall Pittsburgh",
+                        "zip_code": "15212"
+                    },
+                    {
+                        "name": "Lumen Pittsburgh 1",
+                        "address": "Lumen 143 25th Street Pittsburgh",
+                        "zip_code": "15023"
+                    },
+                    {
+                        "name": "Expedient  Pittsburgh South",
+                        "address": "Expedient Data Centers 810 Parish Street Pittsburgh",
+                        "zip_code": "15220"
+                    },
+                    {
+                        "name": "Ascent Data",
+                        "address": "Ascent Data 90 Beta Drive Pittsburgh",
+                        "zip_code": "15238"
+                    },
+                    {
+                        "name": "aspStation",
+                        "address": "aspStation, Inc 4736 Penn Ave Pittsburgh",
+                        "zip_code": "15224"
+                    },
+                    {
+                        "name": "viLogics-Pittsburgh",
+                        "address": "viLogics Data Centers 322 4th Ave Pittsburgh",
+                        "zip_code": "15222"
+                    },
+                    {
+                        "name": "Sierra Data Center",
+                        "address": "Sierra Data Centers 322 Fourth Ave Pittsburgh",
+                        "zip_code": "15222"
+                    },
+                    {
+                        "name": "DataBank - zColo - 2500 Allegheny Center Mall",
+                        "address": "DataBank 2500 Allegheny Center Mall Pittsburgh",
+                        "zip_code": "15212"
+                    },
+                    {
+                        "name": "Bare Metal PIttsburgh",
+                        "address": "Bare Metal Pittsburgh 1030 Vinial Street Pittsburgh",
+                        "zip_code": "15212"
+                    },
+                    {
+                        "name": "TeraSwitch Networks - DC1",
+                        "address": "TeraSwitch Networks Inc. 1016 North Lincoln Ave Pittsburgh",
+                        "zip_code": "15233"
+                    },
+                    {
+                        "name": "Allegheny Center Mall",
+                        "address": "Allegheny Center Associates Allegheny Center Mall Pittsburgh",
+                        "zip_code": "15212"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "state": "Indiana",
+        "cities": [
+            {
+                "city": "Fort Wayne",
+                "data_centers": [
+                    {
+                        "name": "Lifeline Data Centers Fort Wayne",
+                        "address": "Lifeline Data Centers, LLC 7601 S Anthony Blvd Fort Wayne",
+                        "zip_code": "46816"
+                    },
+                    {
+                        "name": "Google Fort Wayne Data Center",
+                        "address": "Google within East Tillman Road, Adams Center Road, and the railroad track Fort Wayne",
+                        "zip_code": "46816"
+                    },
+                    {
+                        "name": "Indiana Data center",
+                        "address": "Indiana Data Center, LLC. 620 W. Coliseum Boulevard Fort Wayne",
+                        "zip_code": "46808"
+                    },
+                    {
+                        "name": "SafeHouse Datacenter",
+                        "address": "safehosue datacenter 9813 Dawson Creek Blvd Fort Wayne",
+                        "zip_code": "46825"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "state": "Ohio",
+        "cities": [
+            {
+                "city": "Cleveland",
+                "data_centers": [
+                    {
+                        "name": "H5 Data Centers Cleveland",
+                        "address": "H5 Data Centers 1625 Rockwell Ave Cleveland",
+                        "zip_code": "44114"
+                    },
+                    {
+                        "name": "Fusion Connect - Cleveland",
+                        "address": "Fusion Connect 1621 Euclid Ave Cleveland",
+                        "zip_code": "44115"
+                    },
+                    {
+                        "name": "Ark Data Centers Independence",
+                        "address": "Ark Data Centers 7500 E. Pleasant Valley Rd Independence",
+                        "zip_code": "44131"
+                    },
+                    {
+                        "name": "Expedient Garfield Heights 2",
+                        "address": "Expedient Data Centers NEO Parkway 44128 Cleveland",
+                        "zip_code": "15248"
+                    },
+                    {
+                        "name": "Cleveland Data Center",
+                        "address": "Green Bridge Real Estate Corporate Drive / 44130 Cleveland",
+                        "zip_code": "12875"
+                    },
+                    {
+                        "name": "Aligned NEO-01",
+                        "address": "Aligned Data Centers 2509 Hayes Ave Sandusky",
+                        "zip_code": "44870"
+                    },
+                    {
+                        "name": "Cogent Data Center - Cleveland",
+                        "address": "Cogent Communications, Inc. 1621 Euclid Ave Cleveland",
+                        "zip_code": "44115"
+                    },
+                    {
+                        "name": "DataBank CLE1 - Downtown Cleveland",
+                        "address": "DataBank 1255 Euclid Avenue Cleveland",
+                        "zip_code": "44115"
+                    },
+                    {
+                        "name": "BlueBridge Networks",
+                        "address": "BlueBridge Networks, LLC 1255 Euclid Ave Cleveland",
+                        "zip_code": "44115"
+                    },
+                    {
+                        "name": "BlueBridge Networks",
+                        "address": "BlueBridge Networks, LLC 5915 Landerbrook Mayfield Hts",
+                        "zip_code": "44124"
+                    },
+                    {
+                        "name": "Expedient Lewis Center",
+                        "address": "Expedient Data Centers 281 E Powell Rd Lewis Center",
+                        "zip_code": "43035"
+                    },
+                    {
+                        "name": "Everstream Parma Data Center",
+                        "address": "Everstream Corporate Dr 44130 Parma",
+                        "zip_code": "12875"
+                    },
+                    {
+                        "name": "Windstream Cleveland",
+                        "address": "Windstream 200 W Prospect Ave Cleveland",
+                        "zip_code": "44115"
+                    },
+                    {
+                        "name": "Expedient Garfield Heights 1",
+                        "address": "Expedient Data Centers NEO Parkway 44128 Cleveland",
+                        "zip_code": "15166"
+                    },
+                    {
+                        "name": "Lumen Cleveland 3",
+                        "address": "Lumen 1621 Euclid Avenue Cleveland",
+                        "zip_code": "44115"
+                    },
+                    {
+                        "name": "Lumen Cleveland 1",
+                        "address": "Lumen 4000 Chester Ave Cleveland",
+                        "zip_code": "44145"
+                    },
+                    {
+                        "name": "Lumen Cleveland 2",
+                        "address": "Lumen 1228 Euclid Cleveland",
+                        "zip_code": "44145"
+                    },
+                    {
+                        "name": "Richmond Heights",
+                        "address": "NCS Datacom Curtiss Wright Parkway 44143 Richmond Heights",
+                        "zip_code": "26391"
+                    },
+                    {
+                        "name": "Mangobay Cleveland",
+                        "address": "Mango Bay Internet 1277 E, Schaaf Rd. Brooklyn Heights",
+                        "zip_code": "44131"
+                    },
+                    {
+                        "name": "Public Square Tech Center",
+                        "address": "Morgan Reed Group 200 Euclid Avenue Cleveland",
+                        "zip_code": "44114"
+                    },
+                    {
+                        "name": "Bay Pointe",
+                        "address": "Bay Pointe 2662 Brecksville Rd Richfield",
+                        "zip_code": "44286"
+                    },
+                    {
+                        "name": "Keith Building",
+                        "address": "Unknown Company 1621 Euclid Avenue Cleveland",
+                        "zip_code": "44115"
+                    },
+                    {
+                        "name": "Sterling Telecom Office Building",
+                        "address": "Sterling Telecom Office Building, LLC 1255 Euclid Avenue Cleveland",
+                        "zip_code": "44115"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "state": "Maryland",
+        "cities": [
+            {
+                "city": "Baltimore",
+                "data_centers": [
+                    {
+                        "name": "TierPoint Baltimore - BAL",
+                        "address": "TierPoint 1401 Russell St Baltimore",
+                        "zip_code": "21230"
+                    },
+                    {
+                        "name": "TierPoint Baltimore - BWI",
+                        "address": "TierPoint 813 Pinnacle Drive Linthicum Heights",
+                        "zip_code": "21090"
+                    },
+                    {
+                        "name": "AiNET One Market Center",
+                        "address": "AiNET 300 West Lexington Street Baltimore",
+                        "zip_code": "21201"
+                    },
+                    {
+                        "name": "Expedient Owings Mills",
+                        "address": "Expedient Data Centers Red Run 21117 Baltimore",
+                        "zip_code": "11155"
+                    },
+                    {
+                        "name": "DataBank BWI1 - Downtown Baltimore",
+                        "address": "DataBank 300 West Lexington Street Baltimore",
+                        "zip_code": "21202"
+                    },
+                    {
+                        "name": "Expedient Tide Point",
+                        "address": "Expedient Data Centers 1050 Hull Street Baltimore",
+                        "zip_code": "21230"
+                    },
+                    {
+                        "name": "AiNET CyberNAP",
+                        "address": "AiNET 7900 Ritchie Hwy Glen Burnie",
+                        "zip_code": "21061"
+                    },
+                    {
+                        "name": "Cogent Data Center - Elkridge",
+                        "address": "Cogent Communications, Inc. 6050 Race Rd Elkridge",
+                        "zip_code": "21075"
+                    },
+                    {
+                        "name": "Crown Castle Baltimore",
+                        "address": "CROWN CASTLE 111 Market Place Baltimore",
+                        "zip_code": "21202"
+                    },
+                    {
+                        "name": "Commercial Media",
+                        "address": "Commercial Media Corp. 1430 Joh Ave. Baltimore",
+                        "zip_code": "21227"
+                    },
+                    {
+                        "name": "IDMS-BAL01",
+                        "address": "InfraDMS 1 South St Baltimore",
+                        "zip_code": "21202"
+                    },
+                    {
+                        "name": "DataBank - zColo - 111 Market Pl",
+                        "address": "DataBank 111 Market Pl Baltimore",
+                        "zip_code": "21202"
+                    },
+                    {
+                        "name": "One Market Center",
+                        "address": "Unknown Company 300 W. Lexington St. Baltimore",
+                        "zip_code": "21201"
+                    },
+                    {
+                        "name": "Candler Building",
+                        "address": "Unknown Company 111 Market Place Baltimore",
+                        "zip_code": "21202"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "state": "Connecticut",
+        "cities": [
+            {
+                "city": "Wallingford",
+                "data_centers": [
+                    {
+                        "name": "Gotspace Wallingford 1 Campus",
+                        "address": "Gotspace Data Partners 775-965 Northrop Rd Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 2 - Building 6",
+                        "address": "Gotspace Data Partners Barnes Industrial Rd S Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 1 - Building 1",
+                        "address": "Gotspace Data Partners 775 Northrop Rd Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 2 - Building 2",
+                        "address": "Gotspace Data Partners Tankwood Rd Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 1 - Building 2",
+                        "address": "Gotspace Data Partners 961 Northrop Rd Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 2 - Building 7",
+                        "address": "Gotspace Data Partners Barnes Industrial Rd S Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 2 - Building 5",
+                        "address": "Gotspace Data Partners Barnes Industrial Rd S Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 2 - Building 3",
+                        "address": "Gotspace Data Partners Tankwood Rd Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 2 Campus",
+                        "address": "Gotspace Data Partners Barnes Industrial Rd S / Tankwood Rd Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 1 - Building 3",
+                        "address": "Gotspace Data Partners 965 Northrop Rd Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 2 - Building 4",
+                        "address": "Gotspace Data Partners Barnes Industrial Rd S Wallingford",
+                        "zip_code": "06492"
+                    },
+                    {
+                        "name": "Gotspace Wallingford 2 - Building 1",
+                        "address": "Gotspace Data Partners Barnes Industrial Rd S Wallingford",
+                        "zip_code": "06492"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "state": "Mississippi",
+        "cities": [
+            {
+                "city": "Hattiesburg",
+                "data_centers": [
+                    {
+                        "name": "C Spire Hattiesburg",
+                        "address": "C Spire 6184 US Hwy 98 Hattiesburg",
+                        "zip_code": "39402"
+                    }
+                ]
+            }
+        ]
+    }
+]
