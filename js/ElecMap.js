@@ -1,4 +1,4 @@
-class ElectricityMap2 {
+class ElectricityMap {
     constructor(parentElement, csvData) {
         this.parentElement = parentElement;
         this.rawData = this.processData(csvData);
