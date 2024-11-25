@@ -36,6 +36,20 @@ class CircleChart {
             .domain([0, d3.max(vis.carbonData, d => +d["Total Carbon Emission (g CO2e)"] || 0)])
             .range([5, 70]);
 
+        // Initialize force simulation
+        vis.initializeSimulation();
+
+        // Add button functionality
+        document.getElementById("moveToBottom").addEventListener("click", () => vis.alignCircles());
+
+        // Initial rendering
+        vis.wrangleData();
+    }
+
+    initializeSimulation() {
+        let vis = this;
+        
+        // Initialize force simulation
         vis.simulation = d3.forceSimulation(vis.carbonData)
             .force("center", d3.forceCenter(vis.width / 2, vis.height / 2))
             .force('charge', d3.forceManyBody().strength(5))
@@ -43,21 +57,6 @@ class CircleChart {
                 "collision",
                 d3.forceCollide().radius(d => vis.sizeScale(+d["Total Carbon Emission (g CO2e)"])))
             .on("tick", () => vis.updateVis());
-
-        // Add button functionality
-        document.getElementById("moveToBottom").addEventListener("click", () => {
-            const button = document.getElementById("moveToBottom");
-            if (button.textContent === "Group") {
-                vis.alignCircles();
-                button.textContent = "Ungroup";
-            } else {
-                vis.ungroupCircles();
-                button.textContent = "Group";
-            }
-        });
-
-        // Initial rendering
-        vis.wrangleData();
     }
 
     wrangleData() {
@@ -186,6 +185,7 @@ class CircleChart {
         // Update the force simulation to move circles into groups
         vis.simulation
             .force('charge', d3.forceManyBody().strength(5))
+            .force("center", null)  // Remove center force
             .force("y", d3.forceY(d => {
                 if (d['Uses AI'] === 'Active') return yPositions.Active;
                 else if (d['Uses AI'] === 'Passive') return yPositions.Passive;
@@ -195,8 +195,7 @@ class CircleChart {
                 "collision",
                 d3.forceCollide().radius(d => vis.sizeScale(+d["Total Carbon Emission (g CO2e)"]))
             )
-            .alphaDecay(0.1)
-            .on("tick", () => vis.updateVis());
+            .alphaDecay(0.1);
 
         // Restart the simulation
         vis.simulation.alpha(1).restart();
