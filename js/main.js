@@ -31,7 +31,7 @@ function initVisualizations(data) {
     // Ensure containers exist before creating visualizations
     const containers = {
         climate: document.getElementById('pretraining-carbon-intensity'),
-        // datacenter: document.getElementById('electricity-data-center'),
+        // electricity: document.getElementById('electricity-data-center'),
         incidents: document.getElementById('incidents-over-time'),
         sectors: document.getElementById('ai-incidents-by-sector'),
         progress: document.getElementById('swe-bench-progress'),
@@ -49,7 +49,7 @@ function initVisualizations(data) {
     // Initialize visualization objects
     visualizations = {
         climate: new CircleChart('pretraining-carbon-intensity', data[1]),
-        // datacenter: new ElectricityMap('electricity-data-center', data[3]),
+        // electricity: new ElectricityMap('electricity-data-center', data[3]),
         incidents: new AreaChart('incidents-over-time', data[0]),
         sectors: new TreeMap('ai-incidents-by-sector', data[0]),
         progress: new LineChart('swe-bench-progress', data[2]),
@@ -202,6 +202,21 @@ function showVis(section, step) {
                 visualizations.brush.resize();
             }
         }
+
+
+        // // handle the electricity map
+        // if (section === 'climate' && step === 'climate-2') {
+        //     const electricityContainer = document.getElementById('electricity-data-center');
+        //     if (electricityContainer) {
+        //         electricityContainer.style.display = 'block';
+        //         electricityContainer.style.opacity = '1';
+        //
+        //         // Resize and update the electricity visualization
+        //         if (visualizations.electricity && typeof visualizations.electricity.resize === 'function') {
+        //             visualizations.electricity.resize();
+        //         }
+        //     }
+        // }
 
         // Update dimensions when container becomes visible
         sharedDimensions.updateDimensions();
