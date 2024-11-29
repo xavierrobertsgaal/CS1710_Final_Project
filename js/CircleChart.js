@@ -4,6 +4,7 @@ class CircleChart {
         this.carbonData = carbonData;
         this.margin = {top: 20, right: 20, bottom: 20, left: 20};
         this.initVis();
+        // not updated
     }
 
     initVis() {
