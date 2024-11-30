@@ -112,7 +112,7 @@ function updateVisualization(step) {
 }
 
 function showVis(section, step) {
-    console.log("Showing visualization for section and step:", section, step);
+    // console.log("Showing visualization for section and step:", section, step);
 
     // Skip visibility changes for intro section
     if (section === 'intro') return;
@@ -254,7 +254,7 @@ function initScrollytelling() {
             const step = response.element.dataset.step;
             const section = response.element.closest('section').id;
             
-            console.log(`Entering step: ${step}, section: ${section}`);
+            // console.log(`Entering step: ${step}, section: ${section}`);
             
             // Show appropriate visualization
             showVis(section, step);
