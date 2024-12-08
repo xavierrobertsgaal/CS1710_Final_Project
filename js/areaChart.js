@@ -2,26 +2,35 @@ class AreaChart {
     constructor(parentElement, data) {
         let vis = this;
         vis.parentElement = parentElement;
-        vis.data = data.map(d => ({
-            date: new Date(d.date),
-            severity: d.severity || 'Unknown',
-            incident_id: d.incident_id
-        }));
+
+        // Filter data to only include dates from 2010 onwards
+        vis.data = data
+            .filter(d => new Date(d.date).getFullYear() >= 2010)
+            .map(d => ({
+                date: new Date(d.date),
+                severity: d.severity || 'Unknown',
+                incident_id: d.incident_id
+            }));
         
         // Store full dataset for filtering
         vis.allData = [...vis.data];
         
-        // Group by severity levels in a logical order (high at bottom)
+        // Group by severity levels in order from bottom to top
         vis.severityLevels = ["High", "Medium", "Low"];
         
-        // Set ordinal color scale for severity levels
-        vis.colorScale = d3.scaleOrdinal()
-            .domain(["High", "Medium", "Low"])
-            .range(['#2ca02c', '#ff7f0e', '#1f77b4']); // green, orange, blue
-
-        // Standard margins
-        vis.margin = { top: 40, right: 40, bottom: 100, left: 50 };
+        // Simplified severity descriptions for legend
+        vis.severityDescriptions = {
+            'High': 'High Severity',
+            'Medium': 'Medium Severity',
+            'Low': 'Low Severity'
+        };
         
+        // Set ordinal color scale for severity levels with matching colors from circle chart
+        vis.colorScale = d3.scaleOrdinal()
+            .domain(["Low", "Medium", "High"])
+            .range(['#2563eb', '#5c7077', '#ff4141']); // Blue, Gray, Red - matching circle chart colors
+
+        vis.margin = { top: 40, right: 40, bottom: 100, left: 50 };
         vis.initVis();
     }
 
@@ -60,14 +69,10 @@ class AreaChart {
     setupScales() {
         let vis = this;
         
-        // Define severity colors
-        vis.colorScale = d3.scaleOrdinal()
-            .domain(['High', 'Medium', 'Low'])
-            .range(['#ff4141', '#e1a25d', '#2563eb']);  // Red, Orange, Blue
-
-        // Set up stack generator
+        // Set up stack generator with normal order (since we reversed the levels array)
         vis.stack = d3.stack()
-            .keys(['High', 'Medium', 'Low']);
+            .keys(vis.severityLevels)
+            .order(d3.stackOrderNone);
 
         // Initialize scales
         vis.x = d3.scaleTime();
@@ -112,13 +117,6 @@ class AreaChart {
         // Create legend
         vis.legend = vis.chartGroup.append("g")
             .attr("class", "legend");
-
-        vis.severityLevels = ['High', 'Medium', 'Low'];
-        vis.severityDescriptions = {
-            'High': 'Critical system compromises, major data breaches',
-            'Medium': 'Limited system access, minor data exposure',
-            'Low': 'Attempted breaches, minimal impact'
-        };
     }
 
     wrangleData() {
@@ -139,13 +137,24 @@ class AreaChart {
         vis.aggregatedData = Array.from(monthlyData, ([_, data]) => data)
             .sort((a, b) => a.date - b.date);
 
-        // Create stacked data
-        vis.stackedData = vis.stack(vis.aggregatedData);
-
-        // Calculate total for each month for y-axis domain
+        // Make the data cumulative
+        let cumulative = {High: 0, Medium: 0, Low: 0};
         vis.aggregatedData.forEach(d => {
+            cumulative.High += d.High;
+            cumulative.Medium += d.Medium;
+            cumulative.Low += d.Low;
+            
+            // Update the values to be cumulative
+            d.High = cumulative.High;
+            d.Medium = cumulative.Medium;
+            d.Low = cumulative.Low;
+            
+            // Update total
             d.total = d.High + d.Medium + d.Low;
         });
+
+        // Create stacked data
+        vis.stackedData = vis.stack(vis.aggregatedData);
 
         vis.updateVis();
     }
@@ -172,12 +181,12 @@ class AreaChart {
             .y1(d => vis.y(d[1]));
 
         // Update areas with consistent colors
-        const layers = vis.chartGroup.selectAll(".layer")
+        const layers = vis.chartGroup.selectAll(".stacked-area")
             .data(vis.stackedData);
 
         layers.enter()
             .append("path")
-            .attr("class", "layer")
+            .attr("class", d => `stacked-area area-${d.key.toLowerCase()}`)
             .merge(layers)
             .style("fill", d => vis.colorScale(d.key))
             .style("opacity", 0.7)
@@ -230,7 +239,7 @@ class AreaChart {
         
         vis.legend.attr("transform", `translate(${legendX}, ${legendY})`);
 
-        // Update legend items
+        // Update legend items with simplified text
         const legendItems = vis.legend.selectAll(".legend-item")
             .data(vis.severityLevels);
 
@@ -239,11 +248,11 @@ class AreaChart {
             .append("g")
             .attr("class", "legend-item");
 
-        // Update positions
+        // Update positions with more spacing
         legendItems.merge(legendEnter)
             .attr("transform", (d, i) => useVertical 
-                ? `translate(0, ${i * 40})`
-                : `translate(${i * Math.min(200, vis.width / 3)}, 0)`);
+                ? `translate(0, ${i * 25})`  // Reduced vertical spacing
+                : `translate(${i * 150}, 0)`);  // Increased horizontal spacing
 
         // Add/update rectangles
         legendEnter.append("rect")
@@ -252,18 +261,13 @@ class AreaChart {
             .attr("height", 20)
             .attr("fill", d => vis.colorScale(d));
 
-        // Add/update text with severity description
+        // Add/update text with simplified descriptions
         legendEnter.append("text")
             .merge(legendItems.select("text"))
             .attr("x", 30)
             .attr("y", 15)
-            .text(d => `${d}: ${vis.severityDescriptions[d]}`)
-            .style("font-size", useVertical ? "10px" : "12px")
-            .each(function() {
-                const text = d3.select(this);
-                const words = text.text().split(/\s+/);
-                text.text(words.slice(0, 6).join(" ") + (words.length > 6 ? "..." : ""));
-            });
+            .text(d => vis.severityDescriptions[d])
+            .style("font-size", "12px");
 
         // Remove old items
         legendItems.exit().remove();

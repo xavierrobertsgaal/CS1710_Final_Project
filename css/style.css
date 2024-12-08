@@ -163,7 +163,7 @@ p {
 
 /* Visualization Colors */
 .line { stroke: var(--primary-blue) !important; }
-.area { fill: var(--primary-blue) !important; }
+/* .area { fill: var(--primary-blue) !important; } */
 .max-score-line { stroke: var(--primary-red) !important; }
 .point { fill: var(--primary-blue) !important; }
 .point.highlight { fill: var(--primary-red) !important; }
@@ -173,9 +173,18 @@ circle.active { fill: var(--primary-red) !important; }
 circle.passive { fill: var(--primary-blue) !important; }
 circle.no { fill: #5c7077 !important; }
 
-.area-high { fill: var(--primary-red) !important; opacity: 0.7; }
-.area-medium { fill: #e1a25d !important; opacity: 0.7; }
-.area-low { fill: var(--primary-blue) !important; opacity: 0.7; }
+.area-low { 
+    fill: #2563eb !important; /* Passive AI Use blue */
+    opacity: 0.7; 
+}
+.area-medium { 
+    fill: #5c7077 !important; /* No AI Use gray */
+    opacity: 0.7; 
+}
+.area-high { 
+    fill: #ff4141 !important; /* Active AI Use red */
+    opacity: 0.7; 
+}
 
 /* Button styles */
 .btn-primary {
@@ -241,4 +250,9 @@ circle.no { fill: #5c7077 !important; }
 
 .intro-row .text-section::before {
     display: none;
+}
+
+/* Add specific class for stacked areas */
+.stacked-area {
+    transition: opacity 0.2s;
 }
