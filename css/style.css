@@ -170,3 +170,30 @@ circle.no { fill: #5c7077 !important; }
     border-radius: 5px;
     pointer-events: none;
 }
+
+/* Credits Section Styling */
+.credits-section {
+    padding: 4rem 0;
+    background-color: var(--background-color);
+    border-top: 1px solid var(--border-color);
+}
+
+.credits-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-blue);
+    margin-bottom: 1rem;
+}
+
+.credits-link {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.role {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
