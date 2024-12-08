@@ -7,7 +7,7 @@ class ElectricityMap {
         vis.map = null;
 
         // Default settings
-        vis.currentYear = 1960;
+        vis.currentYear = 2022;
         vis.currentSector = 'Commercial';
 
         // Initialize margins
@@ -52,12 +52,69 @@ class ElectricityMap {
         vis.width = rect.width - vis.margin.left - vis.margin.right;
         vis.height = rect.height - vis.margin.top - vis.margin.bottom;
 
+        // Create a wrapper div to contain both map and buttons
+        vis.wrapper = d3.select(`#${vis.parentElement}`)
+            .append('div')
+            .attr('class', 'map-wrapper')
+            .style('position', 'relative')
+            .style('width', '100%')
+            .style('height', '100%');
+
         // Create map container
-        vis.mapContainer = d3.select(`#${vis.parentElement}`)
+        vis.mapContainer = vis.wrapper
             .append('div')
             .attr('class', 'map-container')
             .style('width', vis.width + 'px')
-            .style('height', vis.height + 'px');
+            .style('height', (vis.height - 60) + 'px')  // Reduced height to make room for buttons
+            .style('position', 'relative');
+
+        // Create button container with proper z-index
+        const buttonContainer = vis.wrapper
+            .append('div')
+            .attr('class', 'sector-buttons')
+            .style('position', 'absolute')
+            .style('bottom', '10px')
+            .style('left', '50%')
+            .style('transform', 'translateX(-50%)')
+            .style('text-align', 'center')
+            .style('width', '100%')
+            .style('z-index', '1000')
+            .style('pointer-events', 'auto');
+
+        // Add sector buttons with better styling
+        const sectors = ['Commercial', 'Industrial', 'Residential', 'Transportation'];
+        const buttonGroup = buttonContainer.append('div')
+            .attr('class', 'btn-group')
+            .attr('role', 'group')
+            .style('background-color', 'white')  // Add white background
+            .style('padding', '5px')
+            .style('border-radius', '5px')
+            .style('box-shadow', '0 2px 4px rgba(0,0,0,0.1)');
+
+        sectors.forEach(sector => {
+            buttonGroup.append('button')
+                .attr('type', 'button')
+                .attr('class', sector === vis.currentSector ? 'btn btn-primary' : 'btn btn-outline-primary')
+                .style('min-width', '120px')  // Ensure consistent button width
+                .style('margin', '0 2px')     // Add spacing between buttons
+                .text(sector)
+                .on('click', function() {
+                    // Update active button
+                    buttonGroup.selectAll('.btn')
+                        .classed('btn-primary', false)
+                        .classed('btn-outline-primary', true);
+                    d3.select(this)
+                        .classed('btn-outline-primary', false)
+                        .classed('btn-primary', true);
+
+                    // Update sector and redraw
+                    vis.currentSector = sector;
+                    if (vis.geojsonLayer) {
+                        vis.geojsonLayer.setStyle((feature) => vis.getStateStyle(feature));
+                    }
+                    vis.updateVis();
+                });
+        });
 
         // Initialize map
         vis.initMap();
