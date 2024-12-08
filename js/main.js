@@ -164,6 +164,7 @@ function showVis(section, step) {
                 if (mapVis) {
                     mapVis.style.visibility = 'visible';
                     mapVis.style.display = 'block';
+                    console.log('go to 2')
                 }
                 if (visualizations.electricityMap) {
                     visualizations.electricityMap.resize();

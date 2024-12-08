@@ -1,4 +1,4 @@
-class CircleChart {
+class CircleChart2 {
     constructor(parentElement, carbonData) {
         this.parentElement = parentElement;
         this.carbonData = carbonData;
