@@ -2,7 +2,7 @@ class CircleChart {
     constructor(parentElement, carbonData) {
         this.parentElement = parentElement;
         this.carbonData = carbonData;
-        this.margin = {top: 20, right: 20, bottom: 20, left: 20};
+        this.margin = {top: 20, right: 20, bottom: 40, left: 20};
         this.initVis();
     }
 
@@ -19,6 +19,13 @@ class CircleChart {
             .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
             .append("g")
             .attr("transform", `translate(${vis.margin.left}, ${vis.margin.top})`);
+
+        // Store default force simulation settings
+        vis.defaultSimulation = {
+            center: d3.forceCenter(vis.width / 2, vis.height / 2),
+            charge: d3.forceManyBody().strength(5),
+            collision: d3.forceCollide().radius(d => vis.sizeScale(+d["Total Carbon Emission (g CO2e)"]))
+        };
 
         // Tooltip
         vis.tooltip = d3.select("body").append("div")
@@ -42,9 +49,30 @@ class CircleChart {
         // Initial rendering
         vis.wrangleData();
 
-        // Add button functionality
-        document.getElementById("organizeClimate").addEventListener("click", () => vis.alignCircles());
+        // Add legends
+        vis.addLegends();
 
+        // Add button functionality
+        document.getElementById("organizeClimate").classList.remove("btn-primary");
+        document.getElementById("organizeClimate").classList.add("btn-outline-primary");
+        document.getElementById("resetForce").classList.remove("btn-primary");
+        document.getElementById("resetForce").classList.add("btn-outline-primary");
+
+        document.getElementById("organizeClimate").addEventListener("click", () => {
+            vis.alignCircles();
+            document.getElementById("organizeClimate").classList.add("btn-primary");
+            document.getElementById("organizeClimate").classList.remove("btn-outline-primary");
+            document.getElementById("resetForce").classList.remove("btn-primary");
+            document.getElementById("resetForce").classList.add("btn-outline-primary");
+        });
+
+        document.getElementById("resetForce").addEventListener("click", () => {
+            vis.resetSimulation();
+            document.getElementById("resetForce").classList.add("btn-primary");
+            document.getElementById("resetForce").classList.remove("btn-outline-primary");
+            document.getElementById("organizeClimate").classList.remove("btn-primary");
+            document.getElementById("organizeClimate").classList.add("btn-outline-primary");
+        });
 
     }
 
@@ -59,6 +87,66 @@ class CircleChart {
                 "collision",
                 d3.forceCollide().radius(d => vis.sizeScale(+d["Total Carbon Emission (g CO2e)"])))
             .   on("tick", () => vis.updateVis());
+    }
+
+    addLegends() {
+        let vis = this;
+
+        // Add legend group at the bottom center
+        const legendGroup = vis.svg.append("g")
+            .attr("class", "legend-group")
+            .attr("transform", `translate(${vis.width/2 - 225}, ${vis.height + 20})`);  // Centered position
+
+        // Define legend data
+        const legendData = [
+            { label: "Active AI Use", color: "#ff4141" },
+            { label: "Passive AI Use", color: "#2563eb" },
+            { label: "No AI Use", color: "#5c7077" }
+        ];
+
+        // Create legend items
+        const legendItems = legendGroup.selectAll(".legend-item")
+            .data(legendData)
+            .enter()
+            .append("g")
+            .attr("class", "legend-item")
+            .attr("transform", (d, i) => `translate(${i * 150}, 0)`);
+
+        // Add circles to legend with a specific class
+        legendItems.append("circle")
+            .attr("class", "legend-circle")  // Add this class
+            .attr("r", 10)
+            .attr("fill", d => d.color)
+            .attr("stroke", "black")
+            .attr("stroke-width", 1)
+            .attr("opacity", 0.7);
+
+        // Add text to legend
+        legendItems.append("text")
+            .attr("x", 25)
+            .attr("y", 4)
+            .style("font-size", "14px")
+            .style("font-family", "sans-serif")
+            .text(d => d.label);
+    }
+
+    resetSimulation() {
+        let vis = this;
+
+        // Stop current simulation
+        if (vis.simulation) {
+            vis.simulation.stop();
+        }
+
+        // Reset to default force simulation
+        vis.simulation = d3.forceSimulation(vis.carbonData)
+            .force("center", vis.defaultSimulation.center)
+            .force("charge", vis.defaultSimulation.charge)
+            .force("collision", vis.defaultSimulation.collision)
+            .on("tick", () => vis.updateVis());
+
+        // Restart simulation
+        vis.simulation.alpha(1).restart();
     }
 
     wrangleData() {
@@ -134,8 +222,8 @@ class CircleChart {
     updateVis() {
         let vis = this;
 
-        // Bind data
-        let circles = vis.svg.selectAll("circle")
+        // Bind data - only select data circles, not legend circles
+        let circles = vis.svg.selectAll("circle:not(.legend-circle)")
             .data(vis.carbonData);
 
         // Exit
@@ -191,6 +279,8 @@ class CircleChart {
                 vis.tooltip
                     .style("opacity", 0);
             });
+
+
 
         // Update simulation
         vis.simulation.nodes(vis.carbonData);
@@ -316,7 +406,7 @@ class CircleChart {
             vis.simulation.stop();
 
             // First transition: Move to grouped rows
-            vis.svg.selectAll("circle")
+            vis.svg.selectAll("circle:not(.legend-circle)")
                 .transition()
                 .duration(1000)
                 .attr("cx", d => {
