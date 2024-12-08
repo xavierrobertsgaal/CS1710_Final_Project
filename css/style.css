@@ -251,8 +251,3 @@ circle.no { fill: #5c7077 !important; }
 .intro-row .text-section::before {
     display: none;
 }
-
-/* Add specific class for stacked areas */
-.stacked-area {
-    transition: opacity 0.2s;
-}
