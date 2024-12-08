@@ -2,7 +2,7 @@
 :root {
     --primary-red: #ff4141;
     --primary-blue: #2563eb;
-    --text-color: #000000;
+    --text-color: #111111;
     --background-color: #ffffff;
     --border-color: #dddddd;
 }
@@ -14,6 +14,8 @@ body {
     padding: 0;
     color: var(--text-color);
     background-color: var(--background-color);
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.6;
 }
 
 .container-fluid {
@@ -26,20 +28,16 @@ body {
     min-height: 90vh;
     margin: 0 auto;
     padding: 1rem;
-    border-left: 2px solid #ddd;
-    opacity: 0.3;
-    transition: opacity 0.3s ease;
     color: var(--text-color);
 }
 
 .step.is-active {
-    opacity: 1;
-    border-left: 2px solid var(--primary-blue);
+    color: var(--text-color);
 }
 
 /* Text Section Styling */
 .text-section {
-    padding: 0 1rem;
+    padding: 0 1rem 0 4rem;
     position: relative;
     margin-bottom: 50vh;
 }
@@ -48,15 +46,29 @@ body {
     margin-bottom: 0;
 }
 
+/* Vertical line */
+.text-section::before {
+    content: '';
+    position: absolute;
+    left: 2rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--border-color);
+}
+
 .text-section h2 {
     position: sticky;
     top: 0;
     background: white;
-    padding: 1rem 0;
+    padding: 1.5rem 0;
     margin: 0;
     z-index: 100;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
 /* Intro Section */
@@ -76,20 +88,42 @@ body {
     opacity: 1;
     border: none;
     text-align: center;
+    padding: 1rem;
 }
 
 .intro-row h1 {
-    font-size: calc(2.5rem + 1.5vw);
-    line-height: 1.2;
+    font-size: calc(3.5rem + 1.5vw);
+    line-height: 1.1;
     margin-bottom: 2rem;
     text-align: center;
+    font-weight: 800;
+    letter-spacing: -0.03em;
 }
 
 .intro-content {
-    font-size: 1.2rem;
-    line-height: 1.6;
+    font-size: 1.25rem;
+    line-height: 1.7;
     max-width: 800px;
     margin: 0 auto;
+}
+
+.intro-content p {
+    margin-bottom: 1.5rem;
+}
+
+/* Regular paragraphs */
+p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+    max-width: 70ch;
+}
+
+.lead {
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
 }
 
 /* Visualization Layout */
@@ -193,7 +227,18 @@ circle.no { fill: #5c7077 !important; }
 }
 
 .role {
+    font-size: 1rem;
     color: #666;
-    font-size: 0.9rem;
+    font-weight: 500;
     margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+}
+
+/* Override intro section styles */
+.intro-row .text-section {
+    padding: 0 1rem;
+}
+
+.intro-row .text-section::before {
+    display: none;
 }
