@@ -145,8 +145,8 @@ class ElectricityMap {
             .attr('x2', '100%')
             .attr('y2', '0%');
 
-        gradient.append('stop').attr('offset', '0%').attr('stop-color', '#ffffff');
-        gradient.append('stop').attr('offset', '100%').attr('stop-color', '#0000ff');
+        gradient.append('stop').attr('offset', '0%').attr('stop-color', '#e8f5f8');
+        gradient.append('stop').attr('offset', '100%').attr('stop-color', '#4c6d9a');
 
         svg.append('rect')
             .attr('width', width)
