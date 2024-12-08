@@ -112,7 +112,12 @@ function updateVisualization(step) {
 }
 
 function showVis(section, step) {
-    // console.log("Showing visualization for section and step:", section, step);
+    // Prevent multiple calls for the same section/step
+    if (showVis.lastSection === section && showVis.lastStep === step) {
+        return;
+    }
+    showVis.lastSection = section;
+    showVis.lastStep = step;
 
     // Skip visibility changes for intro section
     if (section === 'intro') return;
@@ -157,18 +162,15 @@ function showVis(section, step) {
                 if (climateControls) climateControls.style.display = 'block';
                 if (visualizations.climate) {
                     visualizations.climate.resize();
-                    visualizations.climate.wrangleData();
                 }
                 break;
             case 'climate-2':
                 if (mapVis) {
                     mapVis.style.visibility = 'visible';
                     mapVis.style.display = 'block';
-                    console.log('go to 2')
                 }
                 if (visualizations.electricityMap) {
                     visualizations.electricityMap.resize();
-                    visualizations.electricityMap.wrangleData();
                 }
                 break;
             case 'climate-3':
@@ -178,7 +180,6 @@ function showVis(section, step) {
                 }
                 if (visualizations.electricityTimeline) {
                     visualizations.electricityTimeline.resize();
-                    visualizations.electricityTimeline.wrangleData();
                 }
                 break;
         }

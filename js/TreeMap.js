@@ -93,30 +93,39 @@ class TreeMap {
     wrangleData() {
         let vis = this;
         
-        // Filter out null/undefined sectors and count incidents
-        const sectorCounts = d3.rollup(
-            vis.displayData.filter(d => d.Cleaned_Sector),
-            v => v.length,
-            d => d.Cleaned_Sector
-        );
+        // Only process data if we haven't already or if displayData has changed
+        if (!vis.processedData || vis.lastDisplayData !== vis.displayData) {
+            // Filter out null/undefined sectors and count incidents
+            const sectorCounts = d3.rollup(
+                vis.displayData.filter(d => d.Cleaned_Sector),
+                v => v.length,
+                d => d.Cleaned_Sector
+            );
 
-        // Sort sectors by count for better visualization
-        const sortedSectors = Array.from(sectorCounts, ([sector, count]) => ({
-            name: sector,
-            value: count,
-            incidents: vis.displayData.filter(d => d.Cleaned_Sector === sector)
-        })).sort((a, b) => b.value - a.value);
+            // Sort sectors by count for better visualization
+            const sortedSectors = Array.from(sectorCounts, ([sector, count]) => {
+                const incidents = vis.displayData.filter(d => d.Cleaned_Sector === sector);
+                return {
+                    name: sector,
+                    value: count,
+                    incidents: incidents
+                };
+            }).sort((a, b) => b.value - a.value);
 
-        // Convert to hierarchical format
-        const hierarchicalData = {
-            name: "AI Incidents",
-            children: sortedSectors
-        };
+            // Convert to hierarchical format
+            const hierarchicalData = {
+                name: "AI Incidents",
+                children: sortedSectors
+            };
 
-        // Create hierarchy and calculate values
-        vis.root = d3.hierarchy(hierarchicalData)
-            .sum(d => d.value)
-            .sort((a, b) => b.value - a.value);
+            // Create hierarchy and calculate values
+            vis.root = d3.hierarchy(hierarchicalData)
+                .sum(d => d.value)
+                .sort((a, b) => b.value - a.value);
+
+            vis.processedData = true;
+            vis.lastDisplayData = vis.displayData;
+        }
 
         // Update treemap with current dimensions
         vis.treemap.size([vis.width, vis.height]);
@@ -136,13 +145,14 @@ class TreeMap {
             .domain(vis.root.leaves().map(d => d.data.name))
             .range(vis.colorPalette);
 
-        // Add rectangles for each leaf node
+        // Create group for each leaf
         const leaf = vis.chartGroup.selectAll("g")
             .data(vis.root.leaves())
             .join("g")
+            .attr("class", "tree-node")
             .attr("transform", d => `translate(${d.x0},${d.y0})`);
 
-        // Add rectangles
+        // Add rectangles and attach all interactions to them
         leaf.append("rect")
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
@@ -151,12 +161,21 @@ class TreeMap {
             .on("mouseover", function(event, d) {
                 d3.select(this)
                     .attr("fill", d3.color(vis.colorScale(d.data.name)).brighter(0.2));
+                
+                vis.tooltip
+                    .style("opacity", 1)
+                    .html(`${d.data.name}: ${d.value} incidents`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 10) + "px");
             })
             .on("mouseout", function(event, d) {
                 d3.select(this)
                     .attr("fill", vis.colorScale(d.data.name));
+                vis.tooltip.style("opacity", 0);
             })
             .on("click", function(event, d) {
+                event.preventDefault();
+                event.stopPropagation();
                 if (d.data.incidents && d.data.incidents.length > 0) {
                     const randomIndex = Math.floor(Math.random() * d.data.incidents.length);
                     const incident = d.data.incidents[randomIndex];
@@ -166,16 +185,6 @@ class TreeMap {
 
         // Add text labels
         vis.addTextLabels(leaf);
-
-        // Add instruction text
-        vis.svg.append("text")
-            .attr("class", "instruction-text")
-            .attr("x", vis.width / 2)
-            .attr("y", 20)
-            .attr("text-anchor", "middle")
-            .style("font-size", "14px")
-            .style("fill", "#666")
-            .text("Click on a sector to see a sample incident");
     }
 
     addTextLabels(leaf) {
@@ -232,7 +241,10 @@ class TreeMap {
     resize() {
         let vis = this;
         vis.updateDimensions();
-        vis.wrangleData(); // Need to recalculate treemap layout with new dimensions
+        // Don't rewrangle data, just update treemap and redraw
+        vis.treemap.size([vis.width, vis.height]);
+        vis.treemap(vis.root);
+        vis.updateVis();
     }
 
     hide() {
@@ -250,9 +262,9 @@ class TreeMap {
         const details = `
             <h5>Sample Incident</h5>
             <p><strong>Sector:</strong> ${incident.Cleaned_Sector || 'Unknown'}</p>
-            <p><strong>Date:</strong> ${incident.date ? d3.timeFormat("%B %d, %Y")(new Date(incident.date)) : 'Date unknown'}</p>
-            <p><strong>Description:</strong> ${incident.description ? incident.description.substring(0, 200) + '...' : 'No description available'}</p>
-            <p><strong>Severity:</strong> ${incident.severity || 'Not specified'}</p>
+            <p><strong>Date:</strong> ${incident.date ? new Date(incident.date).toLocaleDateString() : 'Date unknown'}</p>
+            <p><strong>Description:</strong> ${incident.description || incident.Description || 'No description available'}</p>
+            <p><strong>Severity:</strong> ${incident.severity || incident.Severity || 'Not specified'}</p>
         `;
         
         // Show the details panel with transition
@@ -265,7 +277,7 @@ class TreeMap {
             .style("opacity", 1);
         
         // Add close button
-        const closeButton = vis.detailsPanel.append("button")
+        vis.detailsPanel.append("button")
             .attr("class", "btn-close")
             .style("position", "absolute")
             .style("top", "10px")
