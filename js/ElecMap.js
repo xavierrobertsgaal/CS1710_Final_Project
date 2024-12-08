@@ -3,7 +3,7 @@ class ElectricityMap {
         let vis = this;
         vis.parentElement = parentElement;
         vis.rawData = vis.processData(csvData);
-        vis.dataCenters = dataCenters;
+        vis.dataCenters = vis.processDataCenters(dataCenters);
         vis.map = null;
 
         // Default settings
@@ -35,6 +35,23 @@ class ElectricityMap {
             }
         });
 
+        return processed;
+    }
+
+    processDataCenters(dataCenters) {
+        // Process data centers array into a flat structure with state information
+        let processed = [];
+        dataCenters.forEach(state => {
+            state.cities.forEach(city => {
+                city.data_centers.forEach(dc => {
+                    processed.push({
+                        ...dc,
+                        state: state.state,
+                        city: city.city
+                    });
+                });
+            });
+        });
         return processed;
     }
 
@@ -119,7 +136,175 @@ class ElectricityMap {
         // Initialize map
         vis.initMap();
         vis.initLegend();
+
+        // Create markers for data centers
+        vis.initDataCenterMarkers();
     }
+
+    initDataCenterMarkers2() {
+        let vis = this;
+
+        // Create a marker layer group
+        vis.markersLayer = L.layerGroup();
+
+        // Define coordinates for major cities
+        const cityCoordinates = {
+            'Los Angeles': [34.0522, -118.2437],
+            'San Jose': [37.3382, -121.8863],
+            'San Francisco': [37.7749, -122.4194],
+            'Montgomery TX': [30.3897, -95.6972],
+            'Ashburn': [39.0438, -77.4874],
+            'Pittsburgh': [40.4406, -79.9959],
+            'Fort Wayne': [41.0793, -85.1394],
+            'Cleveland': [41.4993, -81.6944],
+            'Baltimore': [39.2904, -76.6122],
+            'Wallingford': [41.4570, -72.8230],
+            'Hattiesburg': [31.3271, -89.2903]
+        };
+
+        // Add markers for each data center
+        vis.dataCenters.forEach(dc => {
+            const coords = cityCoordinates[dc.city];
+            if (coords) {
+                // Create marker with slight random offset to prevent complete overlap
+                const lat = coords[0] + (Math.random() - 0.5) * 0.1;
+                const lng = coords[1] + (Math.random() - 0.5) * 0.1;
+
+                const marker = L.circleMarker([lat, lng], {
+                    radius: 5,
+                    fillColor: '#E63946',
+                    color: '#000',
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.7
+                });
+
+                // Add popup with data center info
+                marker.bindPopup(`
+                    <strong>${dc.name}</strong><br>
+                    ${dc.address}<br>
+                    ${dc.city}, ${dc.state} ${dc.zip_code}
+                `);
+
+                marker.addTo(vis.markersLayer);
+            }
+        });
+
+        // Add the marker layer to the map
+        if (vis.map) {
+            vis.markersLayer.addTo(vis.map);
+        }
+    }
+
+    initDataCenterMarkers() {
+        let vis = this;
+
+        // Create a marker layer group
+        vis.markersLayer = L.layerGroup();
+
+        // Create tooltip div if it doesn't exist
+        if (!vis.tooltip) {
+            vis.tooltip = d3.select("body").append("div")
+                .attr("class", "datacenter-tooltip")
+                .style("opacity", 0)
+                .style("position", "absolute")
+                .style("background", "white")
+                .style("padding", "10px")
+                .style("border", "1px solid #ccc")
+                .style("border-radius", "5px")
+                .style("pointer-events", "none")
+                .style("font-size", "12px")
+                .style("max-width", "300px")
+                .style("box-shadow", "0 2px 4px rgba(0,0,0,0.1)")
+                .style("z-index", 1000);
+        }
+
+        // Define coordinates for major cities
+        const cityCoordinates = {
+            'Los Angeles': [34.0522, -118.2437],
+            'San Jose': [37.3382, -121.8863],
+            'San Francisco': [37.7749, -122.4194],
+            'Montgomery TX': [30.3897, -95.6972],
+            'Ashburn': [39.0438, -77.4874],
+            'Pittsburgh': [40.4406, -79.9959],
+            'Fort Wayne': [41.0793, -85.1394],
+            'Cleveland': [41.4993, -81.6944],
+            'Baltimore': [39.2904, -76.6122],
+            'Wallingford': [41.4570, -72.8230],
+            'Hattiesburg': [31.3271, -89.2903]
+        };
+
+        // Add markers for each data center
+        vis.dataCenters.forEach(dc => {
+            const coords = cityCoordinates[dc.city];
+            if (coords) {
+                // Create marker with slight random offset to prevent complete overlap
+                const lat = coords[0] + (Math.random() - 0.5) * 0.1;
+                const lng = coords[1] + (Math.random() - 0.5) * 0.1;
+
+                const marker = L.circleMarker([lat, lng], {
+                    radius: 5,
+                    fillColor: '#E63946',
+                    color: '#000',
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.7
+                });
+
+                // Add hover events for tooltip
+                marker.on('mouseover', (e) => {
+                    // Change marker style on hover
+                    e.target.setStyle({
+                        radius: 7,
+                        fillOpacity: 1
+                    });
+
+                    // Show tooltip
+                    vis.tooltip
+                        .style("opacity", 1)
+                        .style("left", (e.originalEvent.pageX + 10) + "px")
+                        .style("top", (e.originalEvent.pageY - 10) + "px")
+                        .html(`
+                            <div style="font-weight: bold; margin-bottom: 5px; color: #333;">
+                                ${dc.name}
+                            </div>
+                            <div style="color: #666;">
+                                ${dc.address}<br>
+                                ${dc.city}, ${dc.state} ${dc.zip_code}
+                            </div>
+                        `);
+                });
+
+                marker.on('mouseout', (e) => {
+                    // Reset marker style
+                    e.target.setStyle({
+                        radius: 5,
+                        fillOpacity: 0.7
+                    });
+
+                    // Hide tooltip
+                    vis.tooltip.style("opacity", 0);
+                });
+
+                marker.on('mousemove', (e) => {
+                    // Move tooltip with cursor
+                    vis.tooltip
+                        .style("left", (e.originalEvent.pageX + 10) + "px")
+                        .style("top", (e.originalEvent.pageY - 10) + "px");
+                });
+
+                marker.addTo(vis.markersLayer);
+            }
+        });
+
+        // Add the marker layer to the map
+        if (vis.map) {
+            vis.markersLayer.addTo(vis.map);
+        }
+    }
+
+
+
 
     initMap() {
         let vis = this;
@@ -163,6 +348,9 @@ class ElectricityMap {
                         style: (feature) => vis.getStateStyle(feature),
                         onEachFeature: (feature, layer) => vis.addFeatureInteraction(feature, layer)
                     }).addTo(vis.map);
+
+                    // Add data center markers after states are loaded
+                    vis.initDataCenterMarkers();
 
                     vis.updateVis();
                 })
@@ -312,6 +500,10 @@ class ElectricityMap {
         if (vis.map) {
             vis.map.remove();
             vis.map = null;
+        }
+        if (vis.tooltip) {
+            vis.tooltip.remove();
+            vis.tooltip = null;
         }
     }
 
