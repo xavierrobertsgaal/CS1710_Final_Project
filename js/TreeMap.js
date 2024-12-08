@@ -12,7 +12,7 @@ class TreeMap {
         vis.height = sharedDimensions.height;
         
         // Set margins
-        vis.margin = { top: 40, right: 10, bottom: 40, left: 10 };
+        vis.margin = { top: 40, right: 10, bottom: 60, left: 10 };
         
         vis.initVis();
     }
@@ -22,7 +22,7 @@ class TreeMap {
         vis.setupSvg();
         vis.setupScales();
         vis.setupTooltip();
-        vis.setupDetailsPanel();
+        
         vis.wrangleData();
     }
 
@@ -68,26 +68,11 @@ class TreeMap {
             .style('background-color', 'white')
             .style('border', '1px solid #ddd')
             .style('padding', '10px')
-            .style('border-radius', '5px')
+            .style('border-radius', '8px')
             .style('pointer-events', 'none')
-            .style('font-family', 'Montserrat, sans-serif');
-    }
-
-    setupDetailsPanel() {
-        let vis = this;
-        
-        vis.detailsPanel = d3.select(`#${vis.parentElement}`)
-            .append("div")
-            .attr("class", "incident-details")
-            .style("position", "absolute")
-            .style("right", "20px")
-            .style("top", "20px")
-            .style("width", "250px")
-            .style("background", "white")
-            .style("border", "1px solid #ddd")
-            .style("border-radius", "5px")
-            .style("padding", "15px")
-            .style("display", "none");
+            .style('font-family', 'Montserrat, sans-serif')
+            .style('box-shadow', '0 4px 12px rgba(0,0,0,0.15)')
+            .style('z-index', '1000');
     }
 
     wrangleData() {
@@ -140,6 +125,17 @@ class TreeMap {
         // Clear any existing content
         vis.chartGroup.selectAll("*").remove();
 
+        // Add instruction text at the top
+        vis.svg.append("text")
+            .attr("class", "instruction-text")
+            .attr("x", vis.width / 2)
+            .attr("y", 25)
+            .attr("text-anchor", "middle")
+            .style("font-size", "1.1rem")
+            .style("fill", "#111")
+            .style("font-weight", "500")
+            .text("Click on any sector to see a sample incident");
+
         // Create color scale
         vis.colorScale = d3.scaleOrdinal()
             .domain(vis.root.leaves().map(d => d.data.name))
@@ -162,16 +158,22 @@ class TreeMap {
                 d3.select(this)
                     .attr("fill", d3.color(vis.colorScale(d.data.name)).brighter(0.2));
                 
+                // Show basic sector info
                 vis.tooltip
+                    .style('pointer-events', 'none')
+                    .style('width', 'auto')
                     .style("opacity", 1)
-                    .html(`${d.data.name}: ${d.value} incidents`)
-                    .style("left", (event.pageX + 10) + "px")
-                    .style("top", (event.pageY - 10) + "px");
+                    .html(`<strong>${d.data.name}</strong><br>${d.value} incidents`)
+                    .style("left", (event.pageX + 5) + "px")
+                    .style("top", (event.pageY - 5) + "px");
             })
             .on("mouseout", function(event, d) {
-                d3.select(this)
-                    .attr("fill", vis.colorScale(d.data.name));
-                vis.tooltip.style("opacity", 0);
+                // Only reset fill and hide tooltip if not in expanded state
+                if (!vis.tooltip.classed('expanded')) {
+                    d3.select(this)
+                        .attr("fill", vis.colorScale(d.data.name));
+                    vis.tooltip.style("opacity", 0);
+                }
             })
             .on("click", function(event, d) {
                 event.preventDefault();
@@ -179,7 +181,47 @@ class TreeMap {
                 if (d.data.incidents && d.data.incidents.length > 0) {
                     const randomIndex = Math.floor(Math.random() * d.data.incidents.length);
                     const incident = d.data.incidents[randomIndex];
-                    vis.showIncidentDetails(incident);
+                    
+                    // Show expanded incident details
+                    vis.tooltip
+                        .classed('expanded', true)
+                        .style('pointer-events', 'all')
+                        .style('width', '300px')
+                        .html(`
+                            <div class="incident-content">
+                                <button class="btn-close" style="position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;font-size:20px;color:#666;">×</button>
+                                <h5 style="font-size: 1rem; margin-bottom: 0.75rem;">Sample Incident</h5>
+                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Sector:</strong> ${incident.Cleaned_Sector || 'Unknown'}</p>
+                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Date:</strong> ${incident.date ? new Date(incident.date).toLocaleDateString() : 'Date unknown'}</p>
+                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Description:</strong> ${incident.description || incident.Description || 'No description available'}</p>
+                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Severity:</strong> ${incident.severity || incident.Severity || 'Not specified'}</p>
+                            </div>
+                        `)
+                        .style("left", (event.pageX + 5) + "px")
+                        .style("top", (event.pageY - 5) + "px");
+
+                    // Add close button functionality
+                    vis.tooltip.select('.btn-close').on('click', () => {
+                        vis.tooltip
+                            .classed('expanded', false)
+                            .style('pointer-events', 'none')
+                            .style("opacity", 0);
+                        d3.select(this)
+                            .attr("fill", vis.colorScale(d.data.name));
+                    });
+
+                    // Add click-outside-to-close functionality
+                    d3.select('body').on('click.tooltip', function(event) {
+                        if (!event.target.closest('.tooltip')) {
+                            vis.tooltip
+                                .classed('expanded', false)
+                                .style('pointer-events', 'none')
+                                .style("opacity", 0);
+                            d3.select(this)
+                                .attr("fill", vis.colorScale(d.data.name));
+                            d3.select('body').on('click.tooltip', null);
+                        }
+                    });
                 }
             });
 
@@ -190,8 +232,11 @@ class TreeMap {
     addTextLabels(leaf) {
         let vis = this;
         
-        leaf.append("text")
-            .selectAll("tspan")
+        const textGroups = leaf.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", d => (d.x1 - d.x0) / 2);
+
+        textGroups.selectAll("tspan")
             .data(d => {
                 const name = d.data.name;
                 const value = d.value;
@@ -199,20 +244,69 @@ class TreeMap {
                 const height = d.y1 - d.y0;
                 
                 if (width < 60 || height < 30) return [];
-                if (width < 100) return [`${value}`];
-                return [`${name}`, `(${value})`];
+                
+                // Smart text wrapping function
+                function wrapText(text, maxCharsPerLine) {
+                    const words = text.split(' ');
+                    const lines = [];
+                    let currentLine = [];
+                    let currentLength = 0;
+                    
+                    words.forEach(word => {
+                        // Special handling for '&' to keep connected phrases together
+                        if (word === '&') {
+                            currentLine.push(word);
+                            return;
+                        }
+                        
+                        const wordLength = word.length;
+                        if (currentLength + wordLength + currentLine.length > maxCharsPerLine && currentLine.length > 0) {
+                            lines.push(currentLine.join(' '));
+                            currentLine = [word];
+                            currentLength = wordLength;
+                        } else {
+                            currentLine.push(word);
+                            currentLength += wordLength;
+                        }
+                    });
+                    
+                    if (currentLine.length > 0) {
+                        lines.push(currentLine.join(' '));
+                    }
+                    return lines;
+                }
+                
+                // Determine optimal line length based on box width
+                const maxCharsPerLine = Math.max(10, Math.floor(width / 10));
+                const lines = wrapText(name, maxCharsPerLine);
+                
+                // Add count as final line
+                lines.push(`(${value})`);
+                return lines;
             })
             .join("tspan")
-            .attr("x", 3)
-            .attr("y", (d, i, nodes) => {
-                const height = nodes[0].parentNode.__data__.y1 - nodes[0].parentNode.__data__.y0;
-                if (nodes.length === 1) return height / 2 + 5;
-                return 13 + i * Math.min(15, height / 3);
+            .attr("x", function() {
+                const parentNode = d3.select(this.parentNode);
+                const parentData = parentNode.datum();
+                return (parentData.x1 - parentData.x0) / 2;
+            })
+            .attr("y", function(d, i) {
+                const parentNode = d3.select(this.parentNode);
+                const parentData = parentNode.datum();
+                const height = parentData.y1 - parentData.y0;
+                const totalLines = this.parentNode.childNodes.length;
+                const lineHeight = 16; // Fixed, tighter line spacing
+                const totalHeight = lineHeight * (totalLines - 1);
+                const startY = (height - totalHeight) / 2;
+                return startY + (i * lineHeight);
             })
             .attr("fill", "white")
-            .style("font-size", (d, i, nodes) => {
-                const width = nodes[0].parentNode.__data__.x1 - nodes[0].parentNode.__data__.x0;
-                return `${Math.min(12, width / 10)}px`;
+            .style("font-size", function(d) {
+                // Just two fixed sizes
+                if (d.startsWith('(')) {
+                    return "12px"; // Count size
+                }
+                return "14px"; // Title size
             })
             .text(d => d);
     }
@@ -253,46 +347,6 @@ class TreeMap {
 
     show() {
         d3.select("#" + this.parentElement).style("display", "block");
-    }
-
-    showIncidentDetails(incident) {
-        let vis = this;
-        
-        // Format incident details with error handling
-        const details = `
-            <h5>Sample Incident</h5>
-            <p><strong>Sector:</strong> ${incident.Cleaned_Sector || 'Unknown'}</p>
-            <p><strong>Date:</strong> ${incident.date ? new Date(incident.date).toLocaleDateString() : 'Date unknown'}</p>
-            <p><strong>Description:</strong> ${incident.description || incident.Description || 'No description available'}</p>
-            <p><strong>Severity:</strong> ${incident.severity || incident.Severity || 'Not specified'}</p>
-        `;
-        
-        // Show the details panel with transition
-        vis.detailsPanel
-            .html(details)
-            .style("opacity", 0)
-            .style("display", "block")
-            .transition()
-            .duration(200)
-            .style("opacity", 1);
-        
-        // Add close button
-        vis.detailsPanel.append("button")
-            .attr("class", "btn-close")
-            .style("position", "absolute")
-            .style("top", "10px")
-            .style("right", "10px")
-            .style("background", "none")
-            .style("border", "none")
-            .style("cursor", "pointer")
-            .html("×")
-            .on("click", () => {
-                vis.detailsPanel
-                    .transition()
-                    .duration(200)
-                    .style("opacity", 0)
-                    .on("end", () => vis.detailsPanel.style("display", "none"));
-            });
     }
 
     filterByDate(startDate, endDate) {

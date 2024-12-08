@@ -243,23 +243,39 @@ function showVis(section, step) {
 function initScrollytelling() {
     // Instantiate the scrollama
     const scroller = scrollama();
+    const graphic = document.querySelector('.sticky-graphic');
 
     // Setup the instance, pass callback functions
     scroller
         .setup({
             step: '.step',
             offset: 0.5,
+            progress: true,  // Enable progress tracking
             debug: false
+        })
+        .onStepProgress(response => {
+            // Only handle positioning for non-intro sections
+            if (response.element.closest('section').id !== 'intro') {
+                // Calculate position based on progress
+                // Start at top (0) and move to 50vh based on progress
+                const progress = Math.min(1, response.progress * 2); // Double speed for first half
+                const targetPosition = progress * 50;
+                graphic.style.transform = `translateY(calc(-${targetPosition}% + ${targetPosition}vh))`;
+            }
         })
         .onStepEnter(response => {
             // Get current section and step
             const step = response.element.dataset.step;
             const section = response.element.closest('section').id;
             
-            // console.log(`Entering step: ${step}, section: ${section}`);
-            
             // Show appropriate visualization
             showVis(section, step);
+        })
+        .onStepExit(response => {
+            // Reset position when exiting to intro
+            if (response.direction === 'up' && response.index === 0) {
+                graphic.style.transform = 'translateY(0)';
+            }
         });
 
     // Setup resize event
