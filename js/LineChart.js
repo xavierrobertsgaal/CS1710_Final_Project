@@ -7,8 +7,13 @@ class LineChart {
         vis.currentDate = null;
         vis.isPlaying = false;
         
-        // Adjusted margins for better spacing
-        vis.margin = { top: 80, right: 180, bottom: 280, left: 60 }; // Increased top margin for controls
+        // Much more vertical space
+        vis.margin = { 
+            top: 120,    // Space for timeline controls
+            right: 180,  // Space for legend
+            bottom: 400, // Space for leaderboard
+            left: 80     // Space for y-axis labels
+        };
         
         // Add title
         vis.title = "AI Model Performance Progress on SWE-Bench-Verified";
@@ -30,10 +35,11 @@ class LineChart {
     setupSvg() {
         let vis = this;
         
+        // Much taller SVG
         vis.width = sharedDimensions.width - vis.margin.left - vis.margin.right;
-        vis.height = Math.min(500, sharedDimensions.height * 0.7) - vis.margin.top - vis.margin.bottom;
-        vis.leaderboardHeight = 180;
-        vis.spacing = 120; // Increased spacing between components
+        vis.height = 500; // Fixed height for line chart
+        vis.leaderboardHeight = 200;
+        vis.spacing = 200; // Spacing between components
 
         vis.svg = d3.select(`#${vis.parentElement}`)
             .append("svg")
@@ -58,11 +64,15 @@ class LineChart {
         vis.leaderboard = vis.svg.append("g")
             .attr("transform", `translate(0,${vis.height + vis.spacing})`);
 
-        // Add title and subtitle
+        // Move timeline controls to top
+        vis.timelineControls = vis.svg.append("g")
+            .attr("transform", `translate(0,-80)`);
+
+        // Add title and subtitle below timeline
         vis.svg.append("text")
             .attr("class", "chart-title")
             .attr("x", vis.width / 2)
-            .attr("y", -20)
+            .attr("y", -40)
             .attr("text-anchor", "middle")
             .style("font-size", "18px")
             .style("font-weight", "bold")
@@ -71,7 +81,7 @@ class LineChart {
         vis.svg.append("text")
             .attr("class", "chart-subtitle")
             .attr("x", vis.width / 2)
-            .attr("y", 0)
+            .attr("y", -20)
             .attr("text-anchor", "middle")
             .style("font-size", "14px")
             .style("fill", "#666")
@@ -81,7 +91,7 @@ class LineChart {
         vis.svg.append("text")
             .attr("class", "y-axis-label")
             .attr("transform", "rotate(-90)")
-            .attr("y", -45)
+            .attr("y", -60)
             .attr("x", -vis.height / 2)
             .attr("text-anchor", "middle")
             .style("font-size", "14px")
@@ -89,7 +99,7 @@ class LineChart {
 
         // Add legend
         const legendData = [
-            { name: "Claude Models", color: "#f97316" },
+            { name: "Anthropic Models", color: "#f97316" },
             { name: "OpenAI/GPT Models", color: "#22c55e" },
             { name: "Other Models", color: "#6b7280" },
             { name: "Pareto Frontier", color: "#1e40af" }
@@ -115,11 +125,11 @@ class LineChart {
             .style("font-size", "14px")
             .text(d => d.name);
 
-        // Add leaderboard title with more spacing
+        // Add leaderboard title
         vis.leaderboard.append("text")
             .attr("class", "leaderboard-title")
             .attr("x", vis.width / 2)
-            .attr("y", -50)
+            .attr("y", -70)
             .attr("text-anchor", "middle")
             .style("font-size", "16px")
             .style("font-weight", "bold")
@@ -129,9 +139,9 @@ class LineChart {
     setupDateSlider() {
         let vis = this;
         
-        // Add date slider below title
-        vis.sliderContainer = vis.svg.append("g")
-            .attr("transform", `translate(0,-40)`);
+        // Add date slider to timeline controls group
+        vis.sliderContainer = vis.timelineControls.append("g")
+            .attr("class", "date-slider");
 
         // Add play button
         const playButton = vis.sliderContainer.append("g")
@@ -148,7 +158,7 @@ class LineChart {
 
         // Play button triangle/pause bars
         vis.playSymbol = playButton.append("path")
-            .attr("d", "M0,-6L10,0L0,6Z") // Triangle pointing right
+            .attr("d", "M0,-6L10,0L0,6Z")
             .attr("fill", "#2563eb");
 
         vis.pauseSymbol = playButton.append("g")
@@ -289,11 +299,11 @@ class LineChart {
     }
 
     getModelColor(name, isPareto = false) {
-        if (isPareto) return "#1e40af"; // dark blue for Pareto
+        if (isPareto) return "#1e40af";
         name = name.toLowerCase();
-        if (name.includes("claude")) return "#f97316"; // orange for Claude
-        if (name.includes("openai") || name.includes("gpt")) return "#22c55e"; // green for OpenAI
-        return "#6b7280"; // grey for others
+        if (name.includes("anthropic") || name.includes("claude")) return "#f97316";
+        if (name.includes("openai") || name.includes("gpt")) return "#22c55e";
+        return "#6b7280";
     }
 
     startAnimation() {
@@ -307,7 +317,7 @@ class LineChart {
         // Get start and end dates
         const startDate = d3.min(vis.processedData, d => d.date);
         const endDate = d3.max(vis.processedData, d => d.date);
-        const duration = 5000; // 5 seconds
+        const duration = 8000; // 8 seconds total animation
 
         // Reset to start if near end
         if (vis.currentDate >= endDate || !vis.currentDate) {
@@ -337,7 +347,10 @@ class LineChart {
 
             vis.currentDate = new Date(startValue + (endValue - startValue) * t);
             
-            // Update without transitions during animation
+            // Update data
+            vis.wrangleData();
+            
+            // Update visualization
             vis.updateVisNoTransitions();
 
             if (progress < 1) {
@@ -407,15 +420,8 @@ class LineChart {
                             m.date.getTime() === d.date.getTime() && m.score === d.score);
                         return isMax ? 6 : 4;
                     })
-                    .style("fill", d => {
-                        const isMax = currentMaxLine.some(m => 
-                            m.date.getTime() === d.date.getTime() && m.score === d.score);
-                        if (isMax) return "#1e40af";
-                        const name = d.name.toLowerCase();
-                        if (name.includes("claude")) return "#f97316";
-                        if (name.includes("openai") || name.includes("gpt")) return "#22c55e";
-                        return "#6b7280";
-                    })
+                    .style("fill", d => vis.getModelColor(d.name, 
+                        currentMaxLine.some(m => m.date.getTime() === d.date.getTime() && m.score === d.score)))
                     .style("opacity", d => {
                         const isMax = currentMaxLine.some(m => 
                             m.date.getTime() === d.date.getTime() && m.score === d.score);
@@ -429,15 +435,8 @@ class LineChart {
                             m.date.getTime() === d.date.getTime() && m.score === d.score);
                         return isMax ? 6 : 4;
                     })
-                    .style("fill", d => {
-                        const isMax = currentMaxLine.some(m => 
-                            m.date.getTime() === d.date.getTime() && m.score === d.score);
-                        if (isMax) return "#1e40af";
-                        const name = d.name.toLowerCase();
-                        if (name.includes("claude")) return "#f97316";
-                        if (name.includes("openai") || name.includes("gpt")) return "#22c55e";
-                        return "#6b7280";
-                    })
+                    .style("fill", d => vis.getModelColor(d.name, 
+                        currentMaxLine.some(m => m.date.getTime() === d.date.getTime() && m.score === d.score)))
                     .style("opacity", d => {
                         const isMax = currentMaxLine.some(m => 
                             m.date.getTime() === d.date.getTime() && m.score === d.score);
@@ -465,12 +464,7 @@ class LineChart {
                     g.append("rect")
                         .attr("height", barHeight)
                         .attr("width", d => xLeaderboard(d.score))
-                        .style("fill", d => {
-                            const name = d.name.toLowerCase();
-                            if (name.includes("claude")) return "#f97316";
-                            if (name.includes("openai") || name.includes("gpt")) return "#22c55e";
-                            return "#6b7280";
-                        });
+                        .style("fill", d => vis.getModelColor(d.name));
 
                     g.append("text")
                         .attr("class", "model-name")
@@ -496,12 +490,7 @@ class LineChart {
                     .call(update => {
                         update.select("rect")
                             .attr("width", d => xLeaderboard(d.score))
-                            .style("fill", d => {
-                                const name = d.name.toLowerCase();
-                                if (name.includes("claude")) return "#f97316";
-                                if (name.includes("openai") || name.includes("gpt")) return "#22c55e";
-                                return "#6b7280";
-                            });
+                            .style("fill", d => vis.getModelColor(d.name));
 
                         update.select(".score-label")
                             .attr("x", d => xLeaderboard(d.score) + 10)
@@ -521,16 +510,10 @@ class LineChart {
 
     updateVis() {
         let vis = this;
-        
-        // If playing, use the no-transition update
-        if (vis.isPlaying) {
-            vis.updateVisNoTransitions();
-            return;
-        }
 
-        // Update scales
+        // Update scales with fixed y-axis range
         vis.x.domain(d3.extent(vis.processedData, d => d.date));
-        vis.y.domain([0, Math.ceil(d3.max(vis.processedData, d => d.score) / 5) * 5]);
+        vis.y.domain([0, 60]); // Fixed range to prevent squashing
 
         // Update axes with transitions
         vis.xAxisG.transition()
@@ -551,27 +534,19 @@ class LineChart {
         const currentData = vis.processedData.filter(d => d.date <= vis.currentDate);
         const currentMaxLine = vis.maxScoreLine.filter(d => d.date <= vis.currentDate);
 
-        // Update Pareto frontier line FIRST (so it appears behind points)
+        // Update Pareto frontier line
         const line = d3.line()
             .x(d => vis.x(d.date))
             .y(d => vis.y(d.score))
-            .curve(d3.curveMonotoneX); // Add curve interpolation
+            .curve(d3.curveMonotoneX);
 
-        const maxLine = vis.chartArea.selectAll(".max-score-line")
-            .data([currentMaxLine]);
-
-        maxLine.exit().remove();
-
-        const maxLineEnter = maxLine.enter()
-            .append("path")
+        vis.chartArea.selectAll(".max-score-line")
+            .data([currentMaxLine])
+            .join("path")
             .attr("class", "max-score-line")
             .attr("fill", "none")
             .style("stroke", "#1e40af")
-            .style("stroke-width", "2px");
-
-        maxLine.merge(maxLineEnter)
-            .transition()
-            .duration(500)
+            .style("stroke-width", "2px")
             .attr("d", line);
 
         // Update points
@@ -580,20 +555,21 @@ class LineChart {
 
         points.exit()
             .transition()
-            .duration(500)
+            .duration(200)
             .attr("r", 0)
+            .style("opacity", 0)
             .remove();
 
-        const pointsEnter = points.enter()
+        points.enter()
             .append("circle")
             .attr("class", "point")
             .attr("cx", d => vis.x(d.date))
             .attr("cy", d => vis.y(d.score))
-            .attr("r", 0);
-
-        points.merge(pointsEnter)
+            .attr("r", 0)
+            .style("opacity", 0)
+            .merge(points)
             .transition()
-            .duration(500)
+            .duration(200)
             .attr("cx", d => vis.x(d.date))
             .attr("cy", d => vis.y(d.score))
             .attr("r", d => {
@@ -601,24 +577,18 @@ class LineChart {
                     m.date.getTime() === d.date.getTime() && m.score === d.score);
                 return isMax ? 6 : 4;
             })
-            .style("fill", d => {
-                const isMax = currentMaxLine.some(m => 
-                    m.date.getTime() === d.date.getTime() && m.score === d.score);
-                if (isMax) return "#1e40af";
-                const name = d.name.toLowerCase();
-                if (name.includes("claude")) return "#f97316";
-                if (name.includes("openai") || name.includes("gpt")) return "#22c55e";
-                return "#6b7280";
-            })
+            .style("fill", d => vis.getModelColor(d.name, 
+                currentMaxLine.some(m => m.date.getTime() === d.date.getTime() && m.score === d.score)))
             .style("opacity", d => {
                 const isMax = currentMaxLine.some(m => 
                     m.date.getTime() === d.date.getTime() && m.score === d.score);
                 return isMax ? 1 : 0.7;
             });
 
-        // Update leaderboard with more spacing
+        // Update leaderboard
         const barHeight = 28;
         const barPadding = 12;
+        const totalBarSpace = barHeight + barPadding;
         
         const xLeaderboard = d3.scaleLinear()
             .domain([0, d3.max(vis.leaderboardData, d => d.score)])
@@ -627,58 +597,70 @@ class LineChart {
         const bars = vis.leaderboard.selectAll(".leaderboard-bar")
             .data(vis.leaderboardData, d => d.name);
 
+        // Remove old bars with animation from bottom
         bars.exit()
             .transition()
-            .duration(500)
-            .attr("transform", `translate(150,${vis.leaderboardHeight})`)
+            .duration(200)
+            .attr("transform", `translate(150,${vis.leaderboardHeight + totalBarSpace})`)
             .remove();
 
+        // Add new bars starting from bottom
         const barsEnter = bars.enter()
             .append("g")
             .attr("class", "leaderboard-bar")
-            .attr("transform", (d, i) => `translate(150,${vis.leaderboardHeight})`);
+            .attr("transform", `translate(150,${vis.leaderboardHeight + totalBarSpace})`);
 
+        // Add bar rectangles
         barsEnter.append("rect")
             .attr("height", barHeight)
             .attr("width", 0);
 
+        // Add text immediately
         barsEnter.append("text")
             .attr("class", "model-name")
-            .attr("x", -10)
-            .attr("y", barHeight / 2);
-
-        barsEnter.append("text")
-            .attr("class", "score-label")
-            .attr("y", barHeight / 2);
-
-        const allBars = bars.merge(barsEnter)
-            .transition()
-            .duration(500)
-            .attr("transform", (d, i) => `translate(150,${i * (barHeight + barPadding)})`);
-
-        allBars.select("rect")
-            .attr("height", barHeight)
-            .attr("width", d => xLeaderboard(d.score))
-            .style("fill", d => {
-                const name = d.name.toLowerCase();
-                if (name.includes("claude")) return "#f97316";
-                if (name.includes("openai") || name.includes("gpt")) return "#22c55e";
-                return "#6b7280";
-            });
-
-        allBars.select(".model-name")
             .attr("x", -10)
             .attr("y", barHeight / 2)
             .attr("text-anchor", "end")
             .attr("dominant-baseline", "middle")
             .style("font-size", "14px")
-            .text(d => d.name.length > 30 ? d.name.substring(0, 27) + "..." : d.name);
+            .text(d => {
+                if (d.name.length > 30) {
+                    return d.name.substring(0, 27) + "...";
+                }
+                return d.name;
+            });
 
-        allBars.select(".score-label")
-            .attr("x", d => xLeaderboard(d.score) + 10)
+        barsEnter.append("text")
+            .attr("class", "score-label")
             .attr("y", barHeight / 2)
             .attr("dominant-baseline", "middle")
-            .style("font-size", "14px")
+            .style("font-size", "14px");
+
+        // Calculate final positions from bottom up
+        const getBarY = (i) => {
+            const totalBars = vis.leaderboardData.length;
+            return (totalBars - 1 - i) * totalBarSpace; // Reverse the order
+        };
+
+        // Update all bars with transition
+        const allBars = bars.merge(barsEnter);
+
+        // Transition bars to their new positions
+        allBars.transition()
+            .duration(200)
+            .attr("transform", (d, i) => `translate(150,${getBarY(i)})`);
+
+        // Update rectangles
+        allBars.select("rect")
+            .transition()
+            .duration(200)
+            .attr("height", barHeight)
+            .attr("width", d => xLeaderboard(d.score))
+            .style("fill", d => vis.getModelColor(d.name));
+
+        // Update text (moves with the group transform)
+        allBars.select(".score-label")
+            .attr("x", d => xLeaderboard(d.score) + 10)
             .text(d => d.score.toFixed(1));
 
         // Update slider handle
