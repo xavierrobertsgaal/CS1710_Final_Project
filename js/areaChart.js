@@ -3,16 +3,17 @@ class AreaChart {
         let vis = this;
         vis.parentElement = parentElement;
 
-        // Filter data to only include dates from 2010 onwards
-        vis.data = data
-            .filter(d => new Date(d.date).getFullYear() >= 2010)
-            .map(d => ({
-                date: new Date(d.date),
-                severity: d.severity || 'Unknown',
-                incident_id: d.incident_id
-            }));
+        // Store the complete dataset with all dates
+        vis.completeData = data.map(d => ({
+            date: new Date(d.date),
+            severity: d.severity || 'Unknown',
+            incident_id: d.incident_id
+        }));
+
+        // Filter visible data to only include dates from 2000 onwards
+        vis.data = vis.completeData.filter(d => d.date.getFullYear() >= 2000);
         
-        // Store full dataset for filtering
+        // Store filtered dataset for brush interactions
         vis.allData = [...vis.data];
         
         // Group by severity levels in order from bottom to top
@@ -137,7 +138,7 @@ class AreaChart {
         vis.aggregatedData = Array.from(monthlyData, ([_, data]) => data)
             .sort((a, b) => a.date - b.date);
 
-        // Make the data cumulative
+        // Make the data cumulative starting from 0
         let cumulative = {High: 0, Medium: 0, Low: 0};
         vis.aggregatedData.forEach(d => {
             cumulative.High += d.High;
@@ -278,12 +279,18 @@ class AreaChart {
         let vis = this;
         
         if (startDate && endDate) {
-            vis.data = vis.allData.filter(d => 
-                d.date >= startDate && d.date <= endDate
-            );
+            // Filter data based on brush selection
+            vis.data = vis.allData.filter(d => {
+                const date = new Date(d.date);
+                return date >= startDate && date <= endDate;
+            });
         } else {
+            // If no brush selection, restore all data
             vis.data = [...vis.allData];
         }
+        
+        // Update visualization with filtered data
         vis.wrangleData();
+        vis.updateVis();
     }
 }
