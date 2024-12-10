@@ -15,7 +15,7 @@ class ElectricityTimeline {
         
         // Set default dimensions
         vis.margin = { top: 20, right: 150, bottom: 30, left: 80 };
-        vis.height = 200;  // Increased from 120 to 200
+        vis.height = 400;
         
         // Initialize scales with default domains
         vis.x = d3.scaleLinear()
@@ -158,17 +158,7 @@ class ElectricityTimeline {
 
         // Process data for the current sector
         vis.displayData = [];
-        // const years = d3.range(1960, 2023);
-        // years.forEach(year => {
-        //     const totalValue = vis.data
-        //         .filter(d => d.Sector === vis.currentSector)
-        //         .reduce((sum, d) => sum + (+d[year] || 0), 0);
-        //
-        //     vis.displayData.push({
-        //         year: year,
-        //         value: totalValue
-        //     });
-        // });
+
         vis.sectors.forEach(sector => {
             vis.displayData[sector] = [];
             const years = d3.range(1960, 2023);
