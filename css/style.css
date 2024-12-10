@@ -277,8 +277,16 @@ circle.no { fill: #5c7077 !important; }
 
 .brush .handle {
     fill: #2563eb;
+    stroke: #2563eb;
+    stroke-width: 1px;
 }
 
+.brush .overlay {
+    pointer-events: all;
+    cursor: crosshair;
+}
+
+/* Make the brush chart area more visible */
 .brush-area {
     pointer-events: none;
     shape-rendering: geometricPrecision;

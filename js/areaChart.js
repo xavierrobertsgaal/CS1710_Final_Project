@@ -157,17 +157,18 @@ class AreaChart {
         // Create stacked data
         vis.stackedData = vis.stack(vis.aggregatedData);
 
-        vis.updateVis();
+        // Update vis immediately without transition
+        vis.updateVis(0);
     }
 
-    updateVis() {
+    updateVis(duration = 0) {
         let vis = this;
 
         // Update scales with proper domains
         vis.x.domain(d3.extent(vis.aggregatedData, d => d.date));
         vis.y.domain([0, d3.max(vis.aggregatedData, d => d.total)]);
 
-        // Update axes
+        // Update axes without transition
         vis.xAxisG.call(vis.xAxis)
             .selectAll("text")
             .attr("transform", "rotate(-45)")
@@ -181,7 +182,7 @@ class AreaChart {
             .y0(d => vis.y(d[0]))
             .y1(d => vis.y(d[1]));
 
-        // Update areas with consistent colors
+        // Update areas without transition
         const layers = vis.chartGroup.selectAll(".stacked-area")
             .data(vis.stackedData);
 
@@ -191,8 +192,6 @@ class AreaChart {
             .merge(layers)
             .style("fill", d => vis.colorScale(d.key))
             .style("opacity", 0.7)
-            .transition()
-            .duration(1000)
             .attr("d", area);
 
         layers.exit().remove();
@@ -281,8 +280,7 @@ class AreaChart {
         if (startDate && endDate) {
             // Filter data based on brush selection
             vis.data = vis.allData.filter(d => {
-                const date = new Date(d.date);
-                return date >= startDate && date <= endDate;
+                return d.date >= startDate && d.date <= endDate;
             });
         } else {
             // If no brush selection, restore all data
@@ -291,6 +289,5 @@ class AreaChart {
         
         // Update visualization with filtered data
         vis.wrangleData();
-        vis.updateVis();
     }
 }

@@ -79,22 +79,21 @@ class BrushChart {
         // Initialize brush
         vis.brush = d3.brushX()
             .extent([[0, 0], [vis.width, vis.height]])
-            .on("brush end", function(event) {
-                // Only filter on brush end to avoid excessive updates
-                if (event.type === "end") {
-                    if (!event.selection) {
-                        // If brush is cleared, reset to full range
-                        if (visualizations.incidents) {
-                            visualizations.incidents.filterByDate(null, null);
-                        }
-                    } else {
-                        // Convert brush selection to dates
-                        const [x0, x1] = event.selection.map(vis.x.invert);
-                        console.log("Brush selection:", x0, x1); // Debug log
-                        if (visualizations.incidents) {
-                            visualizations.incidents.filterByDate(x0, x1);
-                        }
+            .on("brush", function(event) {
+                if (!event.selection) {
+                    // If brush is cleared, reset to full range
+                    if (visualizations.incidents) {
+                        visualizations.incidents.filterByDate(null, null);
                     }
+                    return;
+                }
+
+                // Convert brush selection to dates
+                const [x0, x1] = event.selection.map(vis.x.invert);
+                
+                // Update the area chart immediately
+                if (visualizations.incidents) {
+                    visualizations.incidents.filterByDate(x0, x1);
                 }
             });
 
