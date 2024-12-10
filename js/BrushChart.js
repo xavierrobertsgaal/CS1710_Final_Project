@@ -1,13 +1,24 @@
 class BrushChart {
     constructor(parentElement, data) {
         this.parentElement = parentElement;
-        this.data = data;
+        
+        // Filter data to only include dates from 2000 onwards
+        this.data = data
+            .filter(d => new Date(d.date).getFullYear() >= 2000)
+            .map(d => ({
+                date: new Date(d.date),
+                severity: d.severity,
+                incident_id: d.incident_id
+            }));
         
         // Initialize margins
-        this.margin = {top: 10, right: 10, bottom: 20, left: 10};
+        this.margin = {top: 10, right: 10, bottom: 20, left: 40};
         
         // Fixed height for brush chart
         this.height = 50;
+
+        // Group by severity levels in same order as area chart
+        this.severityLevels = ["High", "Medium", "Low"];
         
         this.initVis();
     }
@@ -24,8 +35,13 @@ class BrushChart {
     setupSvg() {
         let vis = this;
 
-        // Create SVG
-        vis.svg = d3.select(`#${vis.containerId}`)
+        // Get container dimensions
+        const container = document.getElementById(vis.parentElement);
+        const rect = container.getBoundingClientRect();
+        vis.width = rect.width - vis.margin.left - vis.margin.right;
+
+        // Create SVG with explicit dimensions
+        vis.svg = d3.select(`#${vis.parentElement}`)
             .append("svg")
             .attr("width", vis.width + vis.margin.left + vis.margin.right)
             .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
@@ -36,7 +52,7 @@ class BrushChart {
     setupScales() {
         let vis = this;
 
-        // Initialize scales
+        // Initialize scales with explicit ranges
         vis.x = d3.scaleTime()
             .range([0, vis.width]);
 
@@ -63,37 +79,67 @@ class BrushChart {
         // Initialize brush
         vis.brush = d3.brushX()
             .extent([[0, 0], [vis.width, vis.height]])
-            .on("end", function(event) {
+            .on("brush", function(event) {
                 if (!event.selection) {
-                    // Reset filters when brush is cleared
-                    vis.onBrush(null, null);
+                    // If brush is cleared, reset to full range
+                    if (visualizations.incidents) {
+                        visualizations.incidents.filterByDate(null, null);
+                    }
                     return;
                 }
-                // Apply filters when brush is set
+
+                // Convert brush selection to dates
                 const [x0, x1] = event.selection.map(vis.x.invert);
-                vis.onBrush(x0, x1);
+                
+                // Update the area chart immediately
+                if (visualizations.incidents) {
+                    visualizations.incidents.filterByDate(x0, x1);
+                }
             });
 
         // Add brush group
         vis.brushG = vis.svg.append("g")
-            .attr("class", "brush");
+            .attr("class", "brush")
+            .call(vis.brush);
     }
 
     wrangleData() {
         let vis = this;
         
-        // Process and aggregate data by date
-        vis.processedData = Array.from(d3.rollups(vis.data,
-            v => v.length, // count incidents
-            d => {
-                // Ensure we have a valid date
-                const date = new Date(d.date);
-                return isNaN(date.getTime()) ? null : d3.timeDay(date);
-            }
-        ))
-        .filter(d => d[0] !== null) // Remove null dates
-        .map(([date, count]) => ({date, count}))
-        .sort((a, b) => a.date - b.date);
+        // Group data by month and severity, matching area chart's aggregation
+        let monthlyData = d3.rollup(vis.data,
+            values => ({
+                High: values.filter(d => d.severity === "High").length,
+                Medium: values.filter(d => d.severity === "Medium").length,
+                Low: values.filter(d => d.severity === "Low").length,
+                date: d3.timeMonth(values[0].date)
+            }),
+            d => d3.timeMonth(d.date)
+        );
+
+        // Convert to array and sort by date
+        vis.aggregatedData = Array.from(monthlyData, ([_, data]) => data)
+            .sort((a, b) => a.date - b.date);
+
+        // Make cumulative like the area chart
+        let cumulative = {High: 0, Medium: 0, Low: 0};
+        vis.aggregatedData.forEach(d => {
+            cumulative.High += d.High;
+            cumulative.Medium += d.Medium;
+            cumulative.Low += d.Low;
+            
+            d.High = cumulative.High;
+            d.Medium = cumulative.Medium;
+            d.Low = cumulative.Low;
+            d.total = d.High + d.Medium + d.Low;
+        });
+
+        // Create stacked data
+        vis.stack = d3.stack()
+            .keys(vis.severityLevels)
+            .order(d3.stackOrderNone);
+
+        vis.stackedData = vis.stack(vis.aggregatedData);
 
         vis.updateVis();
     }
@@ -101,34 +147,35 @@ class BrushChart {
     updateVis() {
         let vis = this;
 
-        if (vis.processedData.length === 0) {
-            console.warn('No valid data for BrushChart');
-            return;
-        }
-
-        // Update scales
-        vis.x.domain(d3.extent(vis.processedData, d => d.date));
-        vis.y.domain([0, d3.max(vis.processedData, d => d.count)]);
+        // Set domains to match area chart (2000 onwards)
+        const startDate = new Date('2000-01-01');
+        const endDate = new Date('2024-12-31');
+        vis.x.domain([startDate, endDate]);
+        vis.y.domain([0, d3.max(vis.aggregatedData, d => d.total)]);
 
         // Update x-axis
-        vis.xAxisG.call(vis.xAxis);
+        vis.xAxisG.call(vis.xAxis)
+            .selectAll("text")  // Rotate labels for better readability
+            .attr("transform", "rotate(-45)")
+            .style("text-anchor", "end");
 
-        // Draw area
+        // Create area generator
         const area = d3.area()
-            .x(d => vis.x(d.date))
-            .y0(vis.height)
-            .y1(d => vis.y(d.count));
+            .x(d => vis.x(d.data.date))
+            .y0(d => vis.y(d[0]))
+            .y1(d => vis.y(d[1]));
 
-        vis.svg.selectAll(".area")
-            .data([vis.processedData])
+        // Draw stacked areas
+        vis.svg.selectAll(".brush-area")
+            .data(vis.stackedData)
             .join("path")
-            .attr("class", "area")
-            .attr("fill", "steelblue")
+            .attr("class", "brush-area")
+            .attr("fill", "#cccccc")  // Gray color for all layers
             .attr("opacity", 0.3)
             .attr("d", area);
 
-        // Update brush
-        vis.brushG.call(vis.brush);
+        // Make sure brush is on top
+        vis.brushG.raise();
     }
 
     onBrush(startDate, endDate) {

@@ -160,7 +160,7 @@ p {
 #swe-bench-progress {
     width: 100%;
     min-height: 500px;
-    margin: 0;
+    margin: 1rem 0;
     opacity: 1;
 }
 
@@ -255,8 +255,42 @@ circle.no { fill: #5c7077 !important; }
     display: none;
 }
 
-#random-incident-btn {
-    display: block;
-    margin: 0 auto;
-    margin-top: 1rem;
+/* Add these styles for the brush chart */
+.brush-container {
+    width: 100%;
+    height: 80px;
+    margin: 20px 0;
+    position: relative;
+}
+
+#date-brush {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Style for the brush selection */
+.brush .selection {
+    fill: rgba(37, 99, 235, 0.2);  /* Light blue selection */
+    stroke: #2563eb;
+    stroke-width: 1px;
+}
+
+.brush .handle {
+    fill: #2563eb;
+    stroke: #2563eb;
+    stroke-width: 1px;
+}
+
+.brush .overlay {
+    pointer-events: all;
+    cursor: crosshair;
+}
+
+/* Make the brush chart area more visible */
+.brush-area {
+    pointer-events: none;
+    shape-rendering: geometricPrecision;
 }
