@@ -4,9 +4,17 @@ class ElectricityTimeline {
         vis.parentElement = parentElement;
         vis.data = data;
         vis.currentSector = 'Commercial';
+
+        vis.sectors = ['Commercial', 'Industrial', 'Residential', 'Transportation'];
+        vis.colors = {
+            'Commercial': '#2563eb',
+            'Industrial': '#dc2626',
+            'Residential': '#16a34a',
+            'Transportation': '#9333ea'
+        };
         
         // Set default dimensions
-        vis.margin = { top: 20, right: 50, bottom: 30, left: 80 };
+        vis.margin = { top: 20, right: 150, bottom: 30, left: 80 };
         vis.height = 200;  // Increased from 120 to 200
         
         // Initialize scales with default domains
@@ -95,8 +103,33 @@ class ElectricityTimeline {
             .attr('class', 'pathGroup')
             .attr('clip-path', `url(#clip-${vis.parentElement})`);
 
-        vis.path = vis.pathGroup.append('path')
-            .attr('class', 'line');
+        // vis.path = vis.pathGroup.append('path')
+        //     .attr('class', 'line');
+
+        // Add legend
+        vis.legend = vis.svg.append('g')
+            .attr('class', 'legend')
+            .attr('transform', `translate(${vis.width + 10}, 0)`);
+
+        vis.sectors.forEach((sector, i) => {
+            const legendGroup = vis.legend.append('g')
+                .attr('transform', `translate(0, ${i * 20})`);
+
+            legendGroup.append('line')
+                .attr('x1', 0)
+                .attr('x2', 20)
+                .attr('y1', 10)
+                .attr('y2', 10)
+                .attr('stroke', vis.colors[sector])
+                .attr('stroke-width', 2);
+
+            legendGroup.append('text')
+                .attr('x', 25)
+                .attr('y', 10)
+                .attr('dy', '.35em')
+                .style('font-size', '12px')
+                .text(sector);
+        });
     }
 
     setupAxes() {
@@ -125,15 +158,30 @@ class ElectricityTimeline {
 
         // Process data for the current sector
         vis.displayData = [];
-        const years = d3.range(1960, 2023);
-        years.forEach(year => {
-            const totalValue = vis.data
-                .filter(d => d.Sector === vis.currentSector)
-                .reduce((sum, d) => sum + (+d[year] || 0), 0);
+        // const years = d3.range(1960, 2023);
+        // years.forEach(year => {
+        //     const totalValue = vis.data
+        //         .filter(d => d.Sector === vis.currentSector)
+        //         .reduce((sum, d) => sum + (+d[year] || 0), 0);
+        //
+        //     vis.displayData.push({
+        //         year: year,
+        //         value: totalValue
+        //     });
+        // });
+        vis.sectors.forEach(sector => {
+            vis.displayData[sector] = [];
+            const years = d3.range(1960, 2023);
 
-            vis.displayData.push({
-                year: year,
-                value: totalValue
+            years.forEach(year => {
+                const totalValue = vis.data
+                    .filter(d => d.Sector === sector)
+                    .reduce((sum, d) => sum + (+d[year] || 0), 0);
+
+                vis.displayData[sector].push({
+                    year: year,
+                    value: totalValue
+                });
             });
         });
 
@@ -143,14 +191,19 @@ class ElectricityTimeline {
     updateVis() {
         let vis = this;
 
+        // Find the maximum value across all sectors
+        const maxValue = d3.max(Object.values(vis.displayData), sectorData =>
+            d3.max(sectorData, d => d.value)
+        );
+
+        // Update y scale domain based on data
+        vis.y.domain([0, maxValue || 0]);
+
         // Check if we have valid data
         if (!vis.displayData) {
             console.warn('Missing data in ElectricityTimeline');
             return;
         }
-
-        // Update y scale domain based on data
-        vis.y.domain([0, d3.max(vis.displayData, d => d.value) || 0]);
 
         // Update axes
         if (vis.xAxis) {
@@ -165,16 +218,40 @@ class ElectricityTimeline {
                 .call(d3.axisLeft(vis.y).ticks(5).tickFormat(d3.format('.1s')));
         }
 
+        // Update y scale domain based on data
+        // vis.y.domain([0, d3.max(vis.displayData, d => d.value) || 0]);
+
         // Update path
-        if (vis.path && vis.line) {
-            vis.path.datum(vis.displayData)
+        // if (vis.path && vis.line) {
+        //     vis.path.datum(vis.displayData)
+        //         .transition()
+        //         .duration(800)
+        //         .attr('d', vis.line)
+        //         .attr('stroke', '#2563eb')
+        //         .attr('stroke-width', 2)
+        //         .attr('fill', 'none');
+        // }
+
+        // Update paths for each sector
+        vis.sectors.forEach(sector => {
+            // Create or update path for each sector
+            const path = vis.pathGroup.selectAll(`.line-${sector}`)
+                .data([vis.displayData[sector]]);
+
+            // Enter + Update
+            path.enter()
+                .append('path')
+                .attr('class', `line-${sector}`)
+                .merge(path)
                 .transition()
                 .duration(800)
                 .attr('d', vis.line)
-                .attr('stroke', '#2563eb')
+                .attr('stroke', vis.colors[sector])
                 .attr('stroke-width', 2)
                 .attr('fill', 'none');
-        }
+
+            path.exit().remove();
+        });
     }
 
     updateSector(sector) {
@@ -185,30 +262,28 @@ class ElectricityTimeline {
 
     updateDimensions() {
         let vis = this;
-        
-        // Get container element
+
         const element = document.getElementById(vis.parentElement);
         if (!element) return;
 
-        // Update width based on container
         const containerWidth = element.getBoundingClientRect().width;
         if (containerWidth <= 0) return;
 
         vis.width = containerWidth - vis.margin.left - vis.margin.right;
 
-        // Update SVG dimensions if it exists
         const svg = d3.select(`#${vis.parentElement} svg`);
         if (!svg.empty()) {
             svg.attr('width', vis.width + vis.margin.left + vis.margin.right)
-               .attr('height', vis.height + vis.margin.top + vis.margin.bottom);
+                .attr('height', vis.height + vis.margin.top + vis.margin.bottom);
 
-            // Update clip path
             svg.select(`#clip-${vis.parentElement} rect`)
-               .attr('width', vis.width)
-               .attr('height', vis.height);
+                .attr('width', vis.width)
+                .attr('height', vis.height);
+
+            // Update legend position
+            vis.legend.attr('transform', `translate(${vis.width + 10}, 0)`);
         }
 
-        // Update scales if they exist
         if (vis.x) {
             vis.x.range([0, vis.width]);
         }
