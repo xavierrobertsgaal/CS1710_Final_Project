@@ -19,10 +19,61 @@ class TreeMap {
 
     initVis() {
         let vis = this;
-        vis.setupSvg();
-        vis.setupScales();
-        vis.setupTooltip();
         
+        // Update dimensions to be larger
+        vis.width = sharedDimensions.width * 0.95;   
+        vis.height = sharedDimensions.height * 0.85;  
+        
+        // Define categorical color scale with consistent palette
+        vis.colorScale = d3.scaleOrdinal()
+            .domain([
+                'Information & Communication', 'Technology & IT Services', 
+                'Law Enforcement & Public Safety', 'Education', 
+                'Public Administration & Defense', 'Arts, Entertainment & Recreation',
+                'Health & Social Services', 'Manufacturing & Industrial',
+                'Retail & E-commerce', 'Transportation', 'Other/Unclear'
+            ])
+            .range([
+                '#2563eb', '#dc2626', '#16a34a', '#9333ea',
+                '#2C5784', '#5B9BD5', '#A5C8ED', '#7BA7D7',
+                '#4281C4', '#1B365D', '#89A9D3'
+            ]);
+        
+        // Setup SVG and groups as before
+        vis.svg = d3.select('#' + vis.parentElement)
+            .append("svg")
+            .attr("class", "chart-svg")
+            .attr("width", vis.width)
+            .attr("height", vis.height);
+
+        vis.chartGroup = vis.svg.append("g")
+            .attr("transform", `translate(0,40)`);
+
+        // Update treemap layout
+        vis.treemap = d3.treemap()
+            .size([vis.width, vis.height - 60])
+            .paddingTop(14)
+            .paddingRight(3)
+            .paddingBottom(3)
+            .paddingLeft(3);
+
+        // Add title
+        vis.svg.append("text")
+            .attr("class", "chart-title")
+            .attr("x", vis.width/2)
+            .attr("y", 25)
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("fill", "black")
+            .text("Click on a sector to explore incidents");
+
+        // Setup enhanced tooltip
+        vis.tooltip = d3.select('body').append('div')
+            .attr('class', 'tooltip')
+            .style('opacity', 0)
+            .style('width', '400px')  // Wider to accommodate new content
+            .style('padding', '15px');
+
         vis.wrangleData();
     }
 
@@ -108,12 +159,12 @@ class TreeMap {
                 .sum(d => d.value)
                 .sort((a, b) => b.value - a.value);
 
+            // Store processed state
             vis.processedData = true;
             vis.lastDisplayData = vis.displayData;
         }
 
         // Update treemap with current dimensions
-        vis.treemap.size([vis.width, vis.height]);
         vis.treemap(vis.root);
         
         vis.updateVis();
@@ -121,107 +172,121 @@ class TreeMap {
 
     updateVis() {
         let vis = this;
-
-        // Clear any existing content
         vis.chartGroup.selectAll("*").remove();
 
-        // Add instruction text at the top
-        vis.svg.append("text")
-            .attr("class", "instruction-text")
-            .attr("x", vis.width / 2)
-            .attr("y", 25)
-            .attr("text-anchor", "middle")
-            .style("font-size", "1.1rem")
-            .style("fill", "#111")
-            .style("font-weight", "500")
-            .text("Click on any sector to see a sample incident");
-
-        // Create color scale
-        vis.colorScale = d3.scaleOrdinal()
-            .domain(vis.root.leaves().map(d => d.data.name))
-            .range(vis.colorPalette);
-
-        // Create group for each leaf
         const leaf = vis.chartGroup.selectAll("g")
             .data(vis.root.leaves())
             .join("g")
             .attr("class", "tree-node")
             .attr("transform", d => `translate(${d.x0},${d.y0})`);
 
-        // Add rectangles and attach all interactions to them
+        // Add rectangles - removed hover
         leaf.append("rect")
             .attr("width", d => d.x1 - d.x0)
             .attr("height", d => d.y1 - d.y0)
             .attr("fill", d => vis.colorScale(d.data.name))
             .style("cursor", "pointer")
-            .on("mouseover", function(event, d) {
-                d3.select(this)
-                    .attr("fill", d3.color(vis.colorScale(d.data.name)).brighter(0.2));
-                
-                // Show basic sector info
-                vis.tooltip
-                    .style('pointer-events', 'none')
-                    .style('width', 'auto')
-                    .style("opacity", 1)
-                    .html(`<strong>${d.data.name}</strong><br>${d.value} incidents`)
-                    .style("left", (event.pageX + 5) + "px")
-                    .style("top", (event.pageY - 5) + "px");
-            })
-            .on("mouseout", function(event, d) {
-                // Only reset fill and hide tooltip if not in expanded state
-                if (!vis.tooltip.classed('expanded')) {
-                    d3.select(this)
-                        .attr("fill", vis.colorScale(d.data.name));
-                    vis.tooltip.style("opacity", 0);
-                }
-            })
             .on("click", function(event, d) {
                 event.preventDefault();
                 event.stopPropagation();
+                
                 if (d.data.incidents && d.data.incidents.length > 0) {
+                    const avgAutonomy = d3.mean(d.data.incidents, i => i.autonomy_level) || 0;
+                    const categories = d3.rollup(d.data.incidents, 
+                        v => v.length, 
+                        i => i.Category || 'Unknown'
+                    );
+                    
                     const randomIndex = Math.floor(Math.random() * d.data.incidents.length);
                     const incident = d.data.incidents[randomIndex];
                     
-                    // Show expanded incident details
+                    // Improved bar chart dimensions
+                    const margin = {top: 20, right: 20, bottom: 60, left: 60};
+                    const width = 320;
+                    const height = 180;
+                    
+                    const svg = d3.create('svg')
+                        .attr('width', width + margin.left + margin.right)
+                        .attr('height', height + margin.top + margin.bottom)
+                        .append('g')
+                        .attr('transform', `translate(${margin.left},${margin.top})`);
+                    
+                    const x = d3.scaleBand()
+                        .domain([...categories.keys()])
+                        .range([0, width])
+                        .padding(0.2);
+                    
+                    const y = d3.scaleLinear()
+                        .domain([0, d3.max(categories.values())])
+                        .nice()
+                        .range([height, 0]);
+                    
+                    // Add bars
+                    svg.selectAll('rect')
+                        .data(categories)
+                        .join('rect')
+                        .attr('x', d => x(d[0]))
+                        .attr('y', d => y(d[1]))
+                        .attr('width', x.bandwidth())
+                        .attr('height', d => height - y(d[1]))
+                        .attr('fill', vis.colorScale(d.data.name));
+                    
+                    // Add x axis with rotated labels
+                    svg.append('g')
+                        .attr('transform', `translate(0,${height})`)
+                        .call(d3.axisBottom(x))
+                        .selectAll('text')
+                        .attr('transform', 'rotate(-45)')
+                        .style('text-anchor', 'end')
+                        .attr('dx', '-.8em')
+                        .attr('dy', '.15em')
+                        .style('font-size', '10px');
+                    
+                    // Add y axis
+                    svg.append('g')
+                        .call(d3.axisLeft(y).ticks(5));
+                    
+                    // Enhanced tooltip with better styling
                     vis.tooltip
-                        .classed('expanded', true)
-                        .style('pointer-events', 'all')
-                        .style('width', '300px')
+                        .style('opacity', 1)
+                        .style('left', (event.pageX + 10) + 'px')
+                        .style('top', (event.pageY - 10) + 'px')
+                        .style('width', '400px')
                         .html(`
-                            <div class="incident-content">
-                                <button class="btn-close" style="position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;font-size:20px;color:#666;">×</button>
-                                <h5 style="font-size: 1rem; margin-bottom: 0.75rem;">Sample Incident</h5>
-                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Sector:</strong> ${incident.Cleaned_Sector || 'Unknown'}</p>
-                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Date:</strong> ${incident.date ? new Date(incident.date).toLocaleDateString() : 'Date unknown'}</p>
-                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Description:</strong> ${incident.description || incident.Description || 'No description available'}</p>
-                                <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Severity:</strong> ${incident.severity || incident.Severity || 'Not specified'}</p>
+                            <div style="padding: 15px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <h3 style="margin: 0; font-size: 18px;">Sector Analysis: ${d.data.name}</h3>
+                                    <button class="btn-close" style="border: none; background: none; font-size: 20px; cursor: pointer;">×</button>
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; margin: 20px 0; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                    <div style="text-align: center;">
+                                        <h4 style="margin: 0; font-size: 14px; color: #666;">Average Autonomy Level</h4>
+                                        <div style="font-size: 28px; font-weight: bold; color: ${vis.colorScale(d.data.name)};">
+                                            ${avgAutonomy.toFixed(1)}/5
+                                        </div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <h4 style="margin: 0; font-size: 14px; color: #666;">Total Incidents</h4>
+                                        <div style="font-size: 28px; font-weight: bold; color: ${vis.colorScale(d.data.name)};">
+                                            ${d.data.value}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin: 20px 0;">
+                                    <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #666;">AI Categories Distribution</h4>
+                                    ${svg.node().outerHTML}
+                                </div>
+                                
+                                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+                                    <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #666;">Sample Incident</h4>
+                                    <p style="margin: 5px 0; font-size: 12px;"><strong>Date:</strong> ${incident.date ? new Date(incident.date).toLocaleDateString() : 'Unknown'}</p>
+                                    <p style="margin: 5px 0; font-size: 12px;"><strong>Description:</strong> ${incident.description || 'No description available'}</p>
+                                    <p style="margin: 5px 0; font-size: 12px;"><strong>Severity:</strong> ${incident.severity || 'Not specified'}</p>
+                                </div>
                             </div>
-                        `)
-                        .style("left", (event.pageX + 5) + "px")
-                        .style("top", (event.pageY - 5) + "px");
-
-                    // Add close button functionality
-                    vis.tooltip.select('.btn-close').on('click', () => {
-                        vis.tooltip
-                            .classed('expanded', false)
-                            .style('pointer-events', 'none')
-                            .style("opacity", 0);
-                        d3.select(this)
-                            .attr("fill", vis.colorScale(d.data.name));
-                    });
-
-                    // Add click-outside-to-close functionality
-                    d3.select('body').on('click.tooltip', function(event) {
-                        if (!event.target.closest('.tooltip')) {
-                            vis.tooltip
-                                .classed('expanded', false)
-                                .style('pointer-events', 'none')
-                                .style("opacity", 0);
-                            d3.select(this)
-                                .attr("fill", vis.colorScale(d.data.name));
-                            d3.select('body').on('click.tooltip', null);
-                        }
-                    });
+                        `);
                 }
             });
 
@@ -302,11 +367,10 @@ class TreeMap {
             })
             .attr("fill", "white")
             .style("font-size", function(d) {
-                // Just two fixed sizes
                 if (d.startsWith('(')) {
-                    return "12px"; // Count size
+                    return "12px";
                 }
-                return "14px"; // Title size
+                return "14px";
             })
             .text(d => d);
     }
@@ -314,22 +378,22 @@ class TreeMap {
     updateDimensions() {
         let vis = this;
         
-        // Update width and height from shared dimensions
-        vis.width = sharedDimensions.width - vis.margin.left - vis.margin.right;
-        vis.height = sharedDimensions.height - vis.margin.top - vis.margin.bottom;
+        // Update width and height
+        vis.width = sharedDimensions.width * 0.95;
+        vis.height = sharedDimensions.height * 0.85;
 
         // Update SVG size
         vis.svg
-            .attr("width", vis.width + vis.margin.left + vis.margin.right)
-            .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
+            .attr("width", vis.width)
+            .attr("height", vis.height);
 
-        // Update transform
-        vis.chartGroup.attr("transform", `translate(${vis.margin.left},${vis.margin.top})`);
-
-        // Update treemap size if it exists
+        // Update treemap size
         if (vis.treemap) {
-            vis.treemap.size([vis.width, vis.height]);
+            vis.treemap.size([vis.width, vis.height - 60]);
         }
+
+        // Update chart group position
+        vis.chartGroup.attr("transform", `translate(0,40)`);
     }
 
     resize() {

@@ -3,18 +3,18 @@ class AreaChart {
         let vis = this;
         vis.parentElement = parentElement;
 
-        // Store the complete dataset with all dates
+        // Store the complete dataset with all dates from 1980s
         vis.completeData = data.map(d => ({
             date: new Date(d.date),
             severity: d.severity || 'Unknown',
             incident_id: d.incident_id
         }));
 
-        // Filter visible data to only include dates from 2000 onwards
-        vis.data = vis.completeData.filter(d => d.date.getFullYear() >= 2000);
+        // Initially filter to show only 2010 onwards
+        vis.data = vis.completeData.filter(d => d.date >= new Date('2010-01-01'));
         
-        // Store filtered dataset for brush interactions
-        vis.allData = [...vis.data];
+        // Store complete dataset for brush interactions
+        vis.allData = [...vis.completeData];
         
         // Group by severity levels in order from bottom to top
         vis.severityLevels = ["High", "Medium", "Low"];
@@ -29,9 +29,9 @@ class AreaChart {
         // Set ordinal color scale for severity levels with matching colors from circle chart
         vis.colorScale = d3.scaleOrdinal()
             .domain(["Low", "Medium", "High"])
-            .range(['#2563eb', '#5c7077', '#ff4141']); // Blue, Gray, Red - matching circle chart colors
+            .range(['#2563eb', '#5c7077', '#ff4141']); // Blue, Gray, Red
 
-        vis.margin = { top: 40, right: 40, bottom: 100, left: 50 };
+        vis.margin = { top: 40, right: 100, bottom: 100, left: 60 };
         vis.initVis();
     }
 
@@ -46,12 +46,22 @@ class AreaChart {
     setupSvg() {
         let vis = this;
         
-        // Create SVG area
+        // Get container width
+        const container = d3.select(`#${vis.parentElement}`).node();
+        const containerWidth = container.getBoundingClientRect().width;
+        
+        // Set width with more padding
+        vis.width = containerWidth - vis.margin.left - vis.margin.right - 20;  // Reduced padding
+        vis.height = Math.min(500, window.innerHeight * 0.6);
+        
+        // Create SVG area with explicit dimensions
         vis.svg = d3.select(`#${vis.parentElement}`)
             .append("svg")
-            .attr("class", "chart-svg");
+            .attr("class", "chart-svg")
+            .attr("width", vis.width + vis.margin.left + vis.margin.right)
+            .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
             
-        // Create group for content
+        // Add chart group with translation
         vis.chartGroup = vis.svg.append("g")
             .attr("transform", `translate(${vis.margin.left},${vis.margin.top})`);
         
@@ -277,15 +287,10 @@ class AreaChart {
     filterByDate(startDate, endDate) {
         let vis = this;
         
-        if (startDate && endDate) {
-            // Filter data based on brush selection
-            vis.data = vis.allData.filter(d => {
-                return d.date >= startDate && d.date <= endDate;
-            });
-        } else {
-            // If no brush selection, restore all data
-            vis.data = [...vis.allData];
-        }
+        // Filter data based on brush selection
+        vis.data = vis.allData.filter(d => {
+            return d.date >= startDate && d.date <= endDate;
+        });
         
         // Update visualization with filtered data
         vis.wrangleData();
