@@ -12,6 +12,8 @@ class ElectricityTimeline {
             'Residential': '#16a34a',
             'Transportation': '#9333ea'
         };
+
+        vis.aiBoomYear = 2010;
         
         // Set default dimensions
         vis.margin = { top: 20, right: 150, bottom: 30, left: 80 };
@@ -102,6 +104,10 @@ class ElectricityTimeline {
         vis.pathGroup = vis.svg.append('g')
             .attr('class', 'pathGroup')
             .attr('clip-path', `url(#clip-${vis.parentElement})`);
+
+        // Add AI boom reference line group
+        vis.referenceLineGroup = vis.svg.append('g')
+            .attr('class', 'reference-line');
 
         // vis.path = vis.pathGroup.append('path')
         //     .attr('class', 'line');
@@ -241,6 +247,31 @@ class ElectricityTimeline {
                 .attr('fill', 'none');
 
             path.exit().remove();
+
+            // Update AI boom reference line
+            vis.referenceLineGroup.selectAll('.ai-boom-line').remove();
+
+            // Add vertical line
+            vis.referenceLineGroup.append('line')
+                .attr('class', 'ai-boom-line')
+                .attr('x1', vis.x(vis.aiBoomYear))
+                .attr('x2', vis.x(vis.aiBoomYear))
+                .attr('y1', 0)
+                .attr('y2', vis.height)
+                .attr('stroke', '#666')
+                .attr('stroke-width', 1)
+                .attr('stroke-dasharray', '4,4');
+
+            // Add label
+            vis.referenceLineGroup.append('text')
+                .attr('class', 'ai-boom-line')
+                .attr('x', vis.x(vis.aiBoomYear))
+                .attr('y', 0)
+                .attr('dy', '-0.5em')
+                .attr('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .style('fill', '#666')
+                .text('AI Boom');
         });
     }
 
