@@ -53,7 +53,7 @@ class ElectricityTimeline {
         // Update width based on container
         const containerWidth = element.getBoundingClientRect().width;
         if (containerWidth <= 0) {
-            // Use minimum width if container width is 0
+
             vis.width = 300 - vis.margin.left - vis.margin.right;
         } else {
             vis.width = containerWidth - vis.margin.left - vis.margin.right;
@@ -108,9 +108,6 @@ class ElectricityTimeline {
         // Add AI boom reference line group
         vis.referenceLineGroup = vis.svg.append('g')
             .attr('class', 'reference-line');
-
-        // vis.path = vis.pathGroup.append('path')
-        //     .attr('class', 'line');
 
         // Add legend
         vis.legend = vis.svg.append('g')
@@ -213,20 +210,6 @@ class ElectricityTimeline {
                 .duration(800)
                 .call(d3.axisLeft(vis.y).ticks(5).tickFormat(d3.format('.1s')));
         }
-
-        // Update y scale domain based on data
-        // vis.y.domain([0, d3.max(vis.displayData, d => d.value) || 0]);
-
-        // Update path
-        // if (vis.path && vis.line) {
-        //     vis.path.datum(vis.displayData)
-        //         .transition()
-        //         .duration(800)
-        //         .attr('d', vis.line)
-        //         .attr('stroke', '#2563eb')
-        //         .attr('stroke-width', 2)
-        //         .attr('fill', 'none');
-        // }
 
         // Update paths for each sector
         vis.sectors.forEach(sector => {
