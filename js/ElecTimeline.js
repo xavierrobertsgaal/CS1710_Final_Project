@@ -16,7 +16,7 @@ class ElectricityTimeline {
         vis.aiBoomYear = 2010;
         
         // Set default dimensions
-        vis.margin = { top: 20, right: 150, bottom: 30, left: 80 };
+        vis.margin = { top: 50, right: 150, bottom: 30, left: 80 };
         vis.height = 400;
         
         // Initialize scales with default domains
@@ -84,6 +84,16 @@ class ElectricityTimeline {
             .attr('height', vis.height + vis.margin.top + vis.margin.bottom)
             .append('g')
             .attr('transform', `translate(${vis.margin.left}, ${vis.margin.top})`);
+
+        // Add chart title
+        vis.svg.append('text')
+            .attr('class', 'chart-title')
+            .attr('x', vis.width / 2)
+            .attr('y', -30)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '16px')
+            .style('font-weight', 'bold')
+            .text('Electricity Consumption Over Time by Sector');
 
         // Add debug rectangle to verify SVG size
         vis.svg.append('rect')

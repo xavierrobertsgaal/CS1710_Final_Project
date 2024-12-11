@@ -57,7 +57,7 @@ class ElectricityMap {
 
     initVis() {
         let vis = this;
-        
+
         // Get container dimensions
         const container = document.getElementById(vis.parentElement);
         if (!container) {
@@ -76,6 +76,16 @@ class ElectricityMap {
             .style('position', 'relative')
             .style('width', '100%')
             .style('height', '100%');
+
+        vis.wrapper.append('h2')
+            .attr('class', 'map-title')
+            .style('text-align', 'center')
+            .style('margin-bottom', '10px')
+            .style('position', 'relative')
+            .style('z-index', 1000)
+            .style('color', '#000')
+            .style('font-size', '16px')
+            .text('Electricity Consumption by Sector and Data Centers');
 
         // Create map container
         vis.mapContainer = vis.wrapper
@@ -368,7 +378,7 @@ class ElectricityMap {
             .append('div')
             .attr('class', 'legend')
             .style('position', 'absolute')
-            .style('top', '20px')
+            .style('top', '50px')
             .style('right', '20px')
             .style('background', 'white')
             .style('padding', '10px')
