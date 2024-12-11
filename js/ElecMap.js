@@ -57,7 +57,7 @@ class ElectricityMap {
 
     initVis() {
         let vis = this;
-        
+
         // Get container dimensions
         const container = document.getElementById(vis.parentElement);
         if (!container) {
@@ -77,12 +77,22 @@ class ElectricityMap {
             .style('width', '100%')
             .style('height', '100%');
 
+        vis.wrapper.append('h2')
+            .attr('class', 'map-title')
+            .style('text-align', 'center')
+            .style('margin-bottom', '10px')
+            .style('position', 'relative')
+            .style('z-index', 1000)
+            .style('color', '#000')
+            .style('font-size', '16px')
+            .text('Electricity Consumption by Sector and Data Centers');
+
         // Create map container
         vis.mapContainer = vis.wrapper
             .append('div')
             .attr('class', 'map-container')
             .style('width', vis.width + 'px')
-            .style('height', (vis.height - 60) + 'px')  // Reduced height to make room for buttons
+            .style('height', (vis.height - 60) + 'px')
             .style('position', 'relative');
 
         // Create button container with proper z-index
@@ -103,7 +113,7 @@ class ElectricityMap {
         const buttonGroup = buttonContainer.append('div')
             .attr('class', 'btn-group')
             .attr('role', 'group')
-            .style('background-color', 'white')  // Add white background
+            .style('background-color', 'white')
             .style('padding', '5px')
             .style('border-radius', '5px')
             .style('box-shadow', '0 2px 4px rgba(0,0,0,0.1)');
@@ -112,11 +122,11 @@ class ElectricityMap {
             buttonGroup.append('button')
                 .attr('type', 'button')
                 .attr('class', sector === vis.currentSector ? 'btn btn-primary' : 'btn btn-outline-primary')
-                .style('min-width', '120px')  // Ensure consistent button width
-                .style('margin', '0 2px')     // Add spacing between buttons
+                .style('min-width', '120px')
+                .style('margin', '0 2px')
                 .text(sector)
                 .on('click', function() {
-                    // Update active button
+
                     buttonGroup.selectAll('.btn')
                         .classed('btn-primary', false)
                         .classed('btn-outline-primary', true);
@@ -133,7 +143,7 @@ class ElectricityMap {
                 });
         });
 
-        // Initialize map
+
         vis.initMap();
         vis.initLegend();
 
@@ -368,7 +378,7 @@ class ElectricityMap {
             .append('div')
             .attr('class', 'legend')
             .style('position', 'absolute')
-            .style('top', '20px')
+            .style('top', '50px')
             .style('right', '20px')
             .style('background', 'white')
             .style('padding', '10px')
