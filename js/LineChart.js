@@ -4,685 +4,479 @@ class LineChart {
         let vis = this;
         vis.parentElement = parentElement;
         
-        // Clear any existing content
-        d3.select(`#${parentElement}`).html("");
+        // Create wrapper div for chart and leaderboard
+        d3.select(`#${parentElement}`)
+            .style("position", "relative")
+            .html("");
+        
+        // Create visualization container
+        vis.container = d3.select(`#${parentElement}`)
+            .append("div")
+            .style("display", "flex")
+            .style("flex-direction", "column")
+            .style("align-items", "center")
+            .style("gap", "0px")
+            .style("width", "100%");
+        
+        // Create chart container
+        vis.chartContainer = vis.container
+            .append("div")
+            .attr("class", "chart-container")
+            .style("width", "100%");
+        
+        // Create leaderboard container
+        vis.leaderboard = vis.container
+            .append("div")
+            .attr("class", "leaderboard")
+            .style("width", "100%")
+            .style("max-width", "1000px");
+        
+        // Add leaderboard title
+        vis.leaderboard.append("div")
+            .style("font-size", "20px")
+            .style("font-weight", "bold")
+            .style("margin-bottom", "5px")
+            .style("color", "#1a1a1a")
+            .text("Leaderboard");
+        
+        // Add leaderboard legends with larger font
+        vis.leaderboard.append("div")
+            .style("display", "flex")
+            .style("justify-content", "space-between")
+            .style("color", "#666")
+            .style("font-size", "14px")
+            .style("font-weight", "500")
+            .style("margin-top", "5px")
+            .style("padding", "0 15px")
+            .html(`
+                <span>Model</span>
+                <span>Score</span>
+            `);
         
         vis.data = data;
         vis.currentDate = null;
         vis.isPlaying = false;
         
-        // Adjust dimensions
-        vis.margin = {
-            top: 60,     // Reduced top margin
-            right: 120,  // Space for legend
-            bottom: 50,  // Space for x-axis
-            left: 60     // Space for y-axis
+        vis.margin = { 
+            top: 100,
+            right: 80,
+            bottom: 50,
+            left: 80
         };
         
-        // Calculate width based on container
-        const container = document.getElementById(parentElement);
-        const containerWidth = container.getBoundingClientRect().width;
-        vis.width = containerWidth - vis.margin.left - vis.margin.right;
-        vis.height = 300;  // Reduced height
-        
+        vis.updateDimensions();
         vis.initVis();
+    }
+
+    updateDimensions() {
+        let vis = this;
+        
+        // Calculate dimensions based on container
+        const container = document.getElementById(vis.parentElement);
+        vis.width = container.getBoundingClientRect().width - vis.margin.left - vis.margin.right;
+        vis.height = 400;
     }
 
     initVis() {
         let vis = this;
-        vis.setupSvg();
-        vis.setupScales();
-        vis.setupAxes();
-        vis.setupTooltip();
-        vis.setupDateSlider();
-        vis.wrangleData();
-    }
-
-    setupSvg() {
-        let vis = this;
         
-        // Create chart SVG
-        vis.chartSvg = d3.select(`#${vis.parentElement}`)
+        // Create tooltip div if it doesn't exist
+        if (!d3.select("#chart-tooltip").node()) {
+            vis.tooltip = d3.select("body").append("div")
+                .attr("id", "chart-tooltip")
+                .style("position", "absolute")
+                .style("visibility", "hidden")
+                .style("background-color", "white")
+                .style("border", "1px solid #ddd")
+                .style("border-radius", "4px")
+                .style("padding", "12px")
+                .style("font-size", "14px")
+                .style("box-shadow", "0 2px 8px rgba(0,0,0,0.1)")
+                .style("pointer-events", "none")
+                .style("z-index", "1000");
+        } else {
+            vis.tooltip = d3.select("#chart-tooltip");
+        }
+
+        // Create SVG
+        vis.svg = vis.chartContainer
             .append("svg")
             .attr("width", vis.width + vis.margin.left + vis.margin.right)
-            .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
-
-        // Create main group for chart
-        vis.mainG = vis.chartSvg.append("g")
+            .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
+            .append("g")
             .attr("transform", `translate(${vis.margin.left},${vis.margin.top})`);
 
-        // Add clipPath
-        vis.mainG.append("defs")
+        // Add title with conditional wrapping
+        const titleText = "AI Model Performance Progress on SWE-Bench-Verified";
+        const shouldWrapTitle = vis.width < 600;
+        
+        const titleElement = vis.svg.append("text")
+            .attr("class", "chart-title")
+            .attr("x", vis.width / 2)
+            .attr("y", -70)
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .style("font-weight", "bold");
+
+        if (shouldWrapTitle) {
+            titleElement.selectAll("tspan")
+                .data(["AI Model Performance Progress", "on SWE-Bench-Verified"])
+                .join("tspan")
+                .attr("x", vis.width / 2)
+                .attr("dy", (d, i) => i === 0 ? 0 : "1.2em")
+                .text(d => d);
+        } else {
+            titleElement.text(titleText);
+        }
+
+        // Add legend with proper spacing
+        const legendItems = [
+            { label: "Anthropic Models", color: "#f97316" },
+            { label: "OpenAI/GPT Models", color: "#22c55e" },
+            { label: "Other Models", color: "#6b7280" }
+        ];
+
+        const legend = vis.svg.append("g")
+            .attr("class", "legend")
+            .attr("transform", `translate(${vis.width/2},-35)`);
+
+        const legendSpacing = 180;  // Fixed spacing between items
+        const totalWidth = legendSpacing * (legendItems.length - 1);
+        const startX = -totalWidth / 2;
+
+        legendItems.forEach((item, i) => {
+            const g = legend.append("g")
+                .attr("transform", `translate(${startX + i * legendSpacing}, 0)`);
+            
+            g.append("circle")
+                .attr("r", 5)
+                .style("fill", item.color);
+            
+            g.append("text")
+                .attr("x", 12)
+                .attr("y", 4)
+                .style("font-size", "12px")
+                .text(item.label);
+        });
+
+        // Add clip path
+        vis.svg.append("defs")
             .append("clipPath")
-            .attr("id", "clip")
+            .attr("id", `clip-${vis.parentElement}`)
             .append("rect")
             .attr("width", vis.width)
             .attr("height", vis.height);
 
-        // Create chart area with clip path
-        vis.chartArea = vis.mainG.append("g")
-            .attr("class", "chart-area")
-            .attr("clip-path", "url(#clip)");
+        // Create scales
+        vis.x = d3.scaleTime().range([0, vis.width]);
+        vis.y = d3.scaleLinear().range([vis.height, 0]);
 
-        // Add axes groups
-        vis.xAxisG = vis.mainG.append("g")
+        // Add axes
+        vis.xAxis = vis.svg.append("g")
             .attr("class", "x-axis")
             .attr("transform", `translate(0,${vis.height})`);
 
-        vis.yAxisG = vis.mainG.append("g")
+        vis.yAxis = vis.svg.append("g")
             .attr("class", "y-axis");
-
-        // Create separate SVG for leaderboard
-        vis.leaderboardSvg = d3.select(`#${vis.parentElement}`)
-            .append("svg")
-            .attr("width", vis.width + vis.margin.left + vis.margin.right)
-            .attr("height", 200)  // Fixed height for leaderboard
-            .style("margin-top", "20px");
-
-        // Add leaderboard group
-        vis.leaderboard = vis.leaderboardSvg.append("g")
-            .attr("class", "leaderboard")
-            .attr("transform", `translate(${vis.margin.left},20)`);
-
-        // Add leaderboard title
-        vis.leaderboard.append("text")
-            .attr("class", "leaderboard-title")
-            .attr("x", 0)
-            .attr("y", -10)
-            .style("font-size", "16px")
-            .style("font-weight", "bold")
-            .text("Leaderboard");
-    }
-
-    setupDateSlider() {
-        let vis = this;
-        
-        // Create timeline controls group
-        vis.timelineControls = vis.mainG.append("g")
-            .attr("class", "timeline-controls")
-            .attr("transform", `translate(0,-20)`);
-
-        // Add play button
-        vis.playButton = vis.timelineControls.append("g")
-            .attr("class", "play-button")
-            .attr("transform", "translate(-30,4)")
-            .style("cursor", "pointer")
-            .on("click", () => {
-                if (vis.isPlaying) vis.stopAnimation();
-                else vis.startAnimation();
-            });
-
-        // Add play symbol (triangle)
-        vis.playSymbol = vis.playButton.append("path")
-            .attr("d", "M0,-6L10,0L0,6Z")
-            .attr("fill", "#2563eb")
-            .style("opacity", 1);
-
-        // Add pause symbol (two rectangles)
-        vis.pauseSymbol = vis.playButton.append("g")
-            .style("opacity", 0);
-
-        vis.pauseSymbol.append("rect")
-            .attr("x", -2)
-            .attr("y", -6)
-            .attr("width", 4)
-            .attr("height", 12)
-            .attr("fill", "#2563eb");
-
-        vis.pauseSymbol.append("rect")
-            .attr("x", 6)
-            .attr("y", -6)
-            .attr("width", 4)
-            .attr("height", 12)
-            .attr("fill", "#2563eb");
-
-        // Add date slider to timeline controls group
-        vis.sliderContainer = vis.timelineControls.append("g")
-            .attr("class", "date-slider");
-
-        // Add slider background
-        vis.sliderContainer.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", vis.width)
-            .attr("height", 8)
-            .attr("fill", "#eee")
-            .attr("rx", 4);
-
-        // Add date label
-        vis.sliderContainer.append("text")
-            .attr("class", "date-label")
-            .attr("x", vis.width)
-            .attr("y", -8)
-            .attr("text-anchor", "end")
-            .style("font-size", "14px");
-    }
-
-    setupScales() {
-        let vis = this;
-        
-        vis.x = d3.scaleTime()
-            .range([0, vis.width]);
-
-        vis.y = d3.scaleLinear()
-            .range([vis.height, 0])
-            .domain([0, 55]);  // Fixed y domain to match data range
-    }
-
-    setupAxes() {
-        let vis = this;
-        
-        vis.yAxis = d3.axisLeft(vis.y)
-            .ticks(10)
-            .tickFormat(d3.format("d"));
-
-        vis.xAxis = d3.axisBottom(vis.x)
-            .ticks(d3.timeMonth.every(1))
-            .tickFormat(d3.timeFormat("%b %Y"));
-
-        // Add axes to main group, not the clipped area
-        vis.xAxisG = vis.mainG.append("g")
-            .attr("class", "x-axis")
-            .attr("transform", `translate(0,${vis.height})`);
-
-        vis.yAxisG = vis.mainG.append("g")
-            .attr("class", "y-axis");
-
-        // Add chart title
-        vis.mainG.append("text")
-            .attr("class", "chart-title")
-            .attr("x", vis.width / 2)
-            .attr("y", -30)
-            .attr("text-anchor", "middle")
-            .attr("dominant-baseline", "middle")
-            .style("font-size", "18px")
-            .style("font-weight", "bold")
-            .text("AI Model Performance Progress on SWE-Bench-Verified");
 
         // Add y-axis label
-        vis.mainG.append("text")
-            .attr("class", "y-axis-label")
+        vis.svg.append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", -40)
             .attr("x", -vis.height / 2)
             .attr("text-anchor", "middle")
-            .style("font-size", "14px")
-            .text("EvaluationScore (higher is better)");
+            .text("Evaluation Score (higher is more human-like)");
 
-        // Add legend
-        const legend = vis.mainG.append("g")
-            .attr("class", "legend")
-            .attr("transform", `translate(${vis.width + 20}, 20)`);
+        // Create chart area
+        vis.chartArea = vis.svg.append("g")
+            .attr("clip-path", `url(#clip-${vis.parentElement})`);
 
-        const legendItems = [
-            { label: "Anthropic Models", color: "#f97316" },
-            { label: "OpenAI/GPT Models", color: "#22c55e" },
-            { label: "Other Models", color: "#6b7280" },
-            { label: "Pareto Frontier", color: "#1e40af" }
-        ];
-
-        legendItems.forEach((item, i) => {
-            const legendItem = legend.append("g")
-                .attr("class", "legend-item")
-                .attr("transform", `translate(0, ${i * 25})`);
-
-            legendItem.append("circle")
-                .attr("r", 6)
-                .style("fill", item.color);
-
-            legendItem.append("text")
-                .attr("x", 15)
-                .attr("y", 5)
-                .style("font-size", "14px")
-                .text(item.label);
-        });
-    }
-
-    setupTooltip() {
-        let vis = this;
-        
-        vis.tooltip = d3.select("body").append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0)
-            .style("position", "absolute")
-            .style("background-color", "white")
-            .style("border", "1px solid #ddd")
-            .style("padding", "10px")
-            .style("border-radius", "5px")
-            .style("max-width", "300px");
+        vis.wrangleData();
     }
 
     wrangleData() {
         let vis = this;
         
-        // Parse dates and convert scores to numbers
-        vis.processedData = vis.data.map(d => ({
-            name: d.cleaned_name,
-            date: d3.timeParse("%m/%d/%y")(d.date),
-            score: +d.score
-        })).sort((a, b) => a.date - b.date);
+        // Process data
+        vis.processedData = vis.data.map(d => {
+            const name = d.cleaned_name.toLowerCase();
+            let color;
+            if (name.includes("anthropic") || name.includes("claude")) {
+                color = "#f97316";  // Orange
+            } else if (name.includes("openai") || name.includes("gpt")) {
+                color = "#22c55e";  // Green
+            } else {
+                color = "#6b7280";  // Gray
+            }
+            
+            return {
+                name: d.cleaned_name,
+                date: d3.timeParse("%m/%d/%y")(d.date),
+                score: +d.score,
+                color: color
+            };
+        }).sort((a, b) => a.date - b.date);
 
-        // Set initial current date to latest date
+        // Set current date to latest if not set
         vis.currentDate = vis.currentDate || d3.max(vis.processedData, d => d.date);
 
-        // Calculate running maximum score
-        vis.maxScoreLine = [];
+        // Calculate Pareto frontier
+        vis.paretoPoints = [];
         let maxScore = -Infinity;
-        const dateGroups = d3.group(vis.processedData, d => d.date.getTime());
         
+        const dateGroups = d3.group(vis.processedData, d => d.date.getTime());
         Array.from(dateGroups.entries())
             .sort(([a], [b]) => a - b)
             .forEach(([date, points]) => {
-                const dateMaxScore = d3.max(points, d => d.score);
-                maxScore = Math.max(maxScore, dateMaxScore);
-                vis.maxScoreLine.push({
-                    date: new Date(+date),
-                    score: maxScore,
-                    name: points.find(p => p.score === dateMaxScore)?.name
-                });
+                const maxPoint = points.reduce((max, p) => p.score > max.score ? p : max);
+                if (maxPoint.score >= maxScore) {
+                    maxScore = maxPoint.score;
+                    vis.paretoPoints.push(maxPoint);
+                }
             });
 
-        // Calculate leaderboard data
-        vis.updateLeaderboard();
         vis.updateVis();
-
-        vis.maxScore = d3.max(vis.processedData, d => d.score);
     }
 
-    updateLeaderboard() {
+    updateVis() {
         let vis = this;
         
-        // Filter data up to current date
-        const filteredData = vis.processedData.filter(d => d.date <= vis.currentDate);
+        // Update scales with padding
+        vis.x.domain([
+            d3.min(vis.processedData, d => d.date),
+            d3.timeDay.offset(d3.max(vis.processedData, d => d.date), 7)  // Add 7 days padding
+        ]);
+        vis.y.domain([0, d3.max(vis.processedData, d => d.score) * 1.15]);
+
+        // Update axes with rotated text
+        vis.xAxis.call(
+            d3.axisBottom(vis.x)
+                .tickFormat(d3.timeFormat("%b %Y"))
+                .ticks(d3.timeMonth.every(1))
+        )
+        .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-45)");
+
+        vis.yAxis.call(d3.axisLeft(vis.y));
+        
+        // Filter current data
+        const currentData = vis.processedData.filter(d => d.date <= vis.currentDate);
+        const currentPareto = vis.paretoPoints.filter(d => d.date <= vis.currentDate);
+
+        // Draw Pareto line
+        const line = d3.line()
+            .x(d => vis.x(d.date))
+            .y(d => vis.y(d.score));
+
+        vis.chartArea.selectAll(".pareto-line")
+            .data([currentPareto])
+            .join("path")
+            .attr("class", "pareto-line")
+            .attr("d", line)
+            .style("fill", "none")
+            .style("stroke", "#1e40af")
+            .style("stroke-width", 2);
+
+        // Draw points
+        vis.chartArea.selectAll(".model-point")
+            .data(currentData)
+            .join("circle")
+            .attr("class", "model-point")
+            .attr("cx", d => vis.x(d.date))
+            .attr("cy", d => vis.y(d.score))
+            .attr("r", d => currentPareto.includes(d) ? 6 : 4)
+            .style("fill", d => d.color)
+            .style("opacity", d => currentPareto.includes(d) ? 1 : 0.7)
+            .style("stroke", d => currentPareto.includes(d) ? "#1e40af" : "none")
+            .style("stroke-width", d => currentPareto.includes(d) ? 2 : 0)
+            .style("cursor", "pointer")
+            .on("mouseover", function(event, d) {
+                d3.select(this)
+                    .style("opacity", 1)
+                    .attr("r", d => currentPareto.includes(d) ? 8 : 6);
+                
+                vis.tooltip
+                    .style("visibility", "visible")
+                    .html(`
+                        <div style="font-weight: bold; color: ${d.color}; margin-bottom: 8px;">
+                            ${d.name}
+                        </div>
+                        <div style="color: #4a4a4a; margin-bottom: 4px;">
+                            Score: <span style="font-weight: 600">${d.score.toFixed(1)}</span>
+                        </div>
+                        <div style="color: #4a4a4a;">
+                            Date: <span style="font-weight: 500">${d3.timeFormat("%B %d, %Y")(d.date)}</span>
+                        </div>
+                    `)
+                    .style("left", `${event.pageX + 15}px`)
+                    .style("top", `${event.pageY - 15}px`);
+            })
+            .on("mouseout", function(event, d) {
+                d3.select(this)
+                    .style("opacity", d => currentPareto.includes(d) ? 1 : 0.7)
+                    .attr("r", d => currentPareto.includes(d) ? 6 : 4);
+                
+                vis.tooltip.style("visibility", "hidden");
+            });
+
+        // Update legend with fixed positions
+        const legendItems = [
+            { label: "Anthropic Models", color: "#f97316" },
+            { label: "OpenAI/GPT Models", color: "#22c55e" },
+            { label: "Other Models", color: "#6b7280" }
+        ];
+
+        const legend = vis.svg.select(".legend")
+            .attr("transform", `translate(${vis.width/2}, -35)`);
+
+        const legendWidth = vis.width * 0.8;  // Use 80% of chart width
+        const itemWidth = legendWidth / legendItems.length;
+        const startX = -legendWidth / 2;  // Center the legend
+
+        const legendGroups = legend.selectAll("g")
+            .data(legendItems)
+            .join("g")
+            .attr("transform", (d, i) => `translate(${startX + (i * itemWidth)}, 0)`);
+
+        legendGroups.selectAll("circle").remove();
+        legendGroups.selectAll("text").remove();
+
+        legendGroups.append("circle")
+            .attr("r", 5)
+            .style("fill", d => d.color);
+
+        legendGroups.append("text")
+            .attr("x", 12)
+            .attr("y", 4)
+            .style("font-size", "12px")
+            .text(d => d.label);
+
+        // Update leaderboard with scaled bars
+        vis.updateLeaderboard(currentData);
+    }
+
+    updateLeaderboard(currentData) {
+        let vis = this;
         
         // Get latest score for each model
         const modelScores = new Map();
-        filteredData.forEach(d => {
-            modelScores.set(d.name, {
-                name: d.name,
-                score: d.score,
-                date: d.date
-            });
+        currentData.forEach(d => {
+            if (!modelScores.has(d.name) || modelScores.get(d.name).date < d.date) {
+                modelScores.set(d.name, {
+                    name: d.name,
+                    score: d.score,
+                    date: d.date,
+                    color: d.color
+                });
+            }
         });
 
-        // Sort by score and get top 5
-        vis.leaderboardData = Array.from(modelScores.values())
+        // Sort and get top 5
+        const leaderboardData = Array.from(modelScores.values())
             .sort((a, b) => b.score - a.score)
             .slice(0, 5);
 
-        // Update leaderboard visualization
-        const barHeight = 25;
-        const barPadding = 5;
+        // Calculate score range for scaling
+        const maxScore = d3.max(vis.processedData, d => d.score);
+        const minScore = d3.min(vis.processedData, d => d.score);
+        const scoreRange = maxScore - minScore;
 
-        const entries = vis.leaderboard.selectAll('.leaderboard-entry')
-            .data(vis.leaderboardData)
-            .join('g')
-            .attr('class', 'leaderboard-entry')
-            .attr('transform', (d, i) => `translate(0,${i * (barHeight + barPadding)})`);
-
-        entries.selectAll('*').remove();
-
-        entries.append('rect')
-            .attr('width', vis.width)
-            .attr('height', barHeight)
-            .attr('fill', d => vis.getModelColor(d.name));
-
-        entries.append('text')
-            .attr('x', 10)
-            .attr('y', barHeight/2)
-            .attr('dominant-baseline', 'middle')
-            .style('fill', 'white')
-            .text(d => d.name);
-
-        entries.append('text')
-            .attr('x', vis.width - 10)
-            .attr('y', barHeight/2)
-            .attr('text-anchor', 'end')
-            .attr('dominant-baseline', 'middle')
-            .style('fill', 'white')
-            .text(d => d.score.toFixed(1));
+        // Update leaderboard entries with thinner bars and smaller text
+        vis.leaderboard.selectAll(".leaderboard-entry")
+            .data(leaderboardData)
+            .join("div")
+            .attr("class", "leaderboard-entry")
+            .style("background-color", d => d.color)
+            .style("padding", "6px 15px")
+            .style("margin", "3px 0")
+            .style("border-radius", "4px")
+            .style("color", "white")
+            .style("display", "flex")
+            .style("justify-content", "space-between")
+            .style("align-items", "center")
+            .style("width", d => `${((d.score - minScore) / scoreRange) * 100}%`)
+            .style("min-width", "200px")
+            .html(d => `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: bold; font-size: 14px;">${d.name}</span>
+                </div>
+                <span style="font-weight: bold; font-size: 14px;">${d.score.toFixed(1)}</span>
+            `);
     }
 
-    getModelColor(name, isPareto = false) {
-        if (isPareto) return "#1e40af";
+    getModelColor(name) {
         name = name.toLowerCase();
         if (name.includes("anthropic") || name.includes("claude")) return "#f97316";
         if (name.includes("openai") || name.includes("gpt")) return "#22c55e";
         return "#6b7280";
     }
 
-    startAnimation() {
-        let vis = this;
-        if (vis.isPlaying) return;
-
-        vis.isPlaying = true;
-        vis.playSymbol.style("opacity", 0);
-        vis.pauseSymbol.style("opacity", 1);
-
-        // Get start and end dates
-        const startDate = d3.min(vis.processedData, d => d.date);
-        const endDate = d3.max(vis.processedData, d => d.date);
-        const duration = 8000; // 8 seconds total animation
-
-        // Reset to start if near end
-        if (vis.currentDate >= endDate || !vis.currentDate) {
-            vis.currentDate = startDate;
-        }
-
-        // Create animation
-        const startTime = Date.now();
-        const startValue = vis.currentDate.getTime();
-        const endValue = endDate.getTime();
-
-        // Cancel any existing transitions
-        vis.chartArea.selectAll("*").interrupt();
-        vis.leaderboard.selectAll("*").interrupt();
-
-        const animate = () => {
-            if (!vis.isPlaying) return;
-
-            const currentTime = Date.now();
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-
-            // Calculate current date using easeInOutCubic
-            const t = progress < 0.5
-                ? 4 * progress * progress * progress
-                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-
-            vis.currentDate = new Date(startValue + (endValue - startValue) * t);
-            
-            // Update data
-            vis.wrangleData();
-            
-            // Update visualization
-            vis.updateVisNoTransitions();
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                vis.stopAnimation();
-            }
-        };
-
-        requestAnimationFrame(animate);
-    }
-
-    stopAnimation() {
-        let vis = this;
-        vis.isPlaying = false;
-        vis.playSymbol.style("opacity", 1);
-        vis.pauseSymbol.style("opacity", 0);
-    }
-
-    updateVisNoTransitions() {
-        let vis = this;
-
-        // Update scales
-        vis.x.domain(d3.extent(vis.processedData, d => d.date));
-        vis.y.domain([0, Math.ceil(d3.max(vis.processedData, d => d.score) / 5) * 5]);
-
-        // Update axes without transitions
-        vis.xAxisG.call(vis.xAxis)
-            .selectAll("text")
-            .attr("transform", "rotate(-45)")
-            .style("text-anchor", "end")
-            .style("font-size", "12px");
-
-        vis.yAxisG.call(vis.yAxis)
-            .selectAll("text")
-            .style("font-size", "12px");
-
-        // Filter data up to current date
-        const currentData = vis.processedData.filter(d => d.date <= vis.currentDate);
-        const currentMaxLine = vis.maxScoreLine.filter(d => d.date <= vis.currentDate);
-
-        // Update Pareto frontier line
-        const line = d3.line()
-            .x(d => vis.x(d.date))
-            .y(d => vis.y(d.score))
-            .curve(d3.curveMonotoneX);
-
-        vis.chartArea.selectAll(".max-score-line")
-            .data([currentMaxLine])
-            .join("path")
-            .attr("class", "max-score-line")
-            .attr("fill", "none")
-            .style("stroke", "#1e40af")
-            .style("stroke-width", "2px")
-            .attr("d", line);
-
-        // Update points
-        vis.chartArea.selectAll(".point")
-            .data(currentData, d => d.name + d.date)
-            .join(
-                enter => enter.append("circle")
-                    .attr("class", "point")
-                    .attr("cx", d => vis.x(d.date))
-                    .attr("cy", d => vis.y(d.score))
-                    .attr("r", d => {
-                        const isMax = currentMaxLine.some(m => 
-                            m.date.getTime() === d.date.getTime() && m.score === d.score);
-                        return isMax ? 6 : 4;
-                    })
-                    .style("fill", d => vis.getModelColor(d.name, 
-                        currentMaxLine.some(m => m.date.getTime() === d.date.getTime() && m.score === d.score)))
-                    .style("opacity", d => {
-                        const isMax = currentMaxLine.some(m => 
-                            m.date.getTime() === d.date.getTime() && m.score === d.score);
-                        return isMax ? 1 : 0.7;
-                    }),
-                update => update
-                    .attr("cx", d => vis.x(d.date))
-                    .attr("cy", d => vis.y(d.score))
-                    .attr("r", d => {
-                        const isMax = currentMaxLine.some(m => 
-                            m.date.getTime() === d.date.getTime() && m.score === d.score);
-                        return isMax ? 6 : 4;
-                    })
-                    .style("fill", d => vis.getModelColor(d.name, 
-                        currentMaxLine.some(m => m.date.getTime() === d.date.getTime() && m.score === d.score)))
-                    .style("opacity", d => {
-                        const isMax = currentMaxLine.some(m => 
-                            m.date.getTime() === d.date.getTime() && m.score === d.score);
-                        return isMax ? 1 : 0.7;
-                    }),
-                exit => exit.remove()
-            );
-
-        // Update leaderboard
-        const barHeight = 16;
-        const barPadding = 4;
-        
-        const xLeaderboard = d3.scaleLinear()
-            .domain([0, vis.maxScore])
-            .range([0, vis.width + 100]);
-
-        vis.leaderboard.selectAll(".leaderboard-bar")
-            .data(vis.leaderboardData, d => d.name)
-            .join(
-                enter => {
-                    const g = enter.append("g")
-                        .attr("class", "leaderboard-bar")
-                        .attr("transform", (d, i) => `translate(0,${i * (barHeight + barPadding)})`);
-                    
-                    g.append("rect")
-                        .attr("height", barHeight)
-                        .attr("width", d => xLeaderboard(d.score))
-                        .style("fill", d => vis.getModelColor(d.name));
-
-                    g.append("text")
-                        .attr("class", "model-name")
-                        .attr("x", 10)
-                        .attr("y", barHeight / 2)
-                        .attr("text-anchor", "start")
-                        .attr("dominant-baseline", "middle")
-                        .style("font-size", "12px")
-                        .style("fill", "#fff")
-                        .text(d => truncateText(d.name, xLeaderboard(d.score)));
-
-                    g.append("text")
-                        .attr("class", "score-label")
-                        .attr("x", d => xLeaderboard(d.score) - 10)
-                        .attr("y", barHeight / 2)
-                        .attr("text-anchor", "end")
-                        .attr("dominant-baseline", "middle")
-                        .style("font-size", "12px")
-                        .style("fill", "#fff")
-                        .text(d => d.score.toFixed(1));
-
-                    return g;
-                },
-                update => update
-                    .attr("transform", (d, i) => `translate(0,${i * (barHeight + barPadding)})`)
-                    .call(update => {
-                        update.select("rect")
-                            .attr("width", d => xLeaderboard(d.score))
-                            .style("fill", d => vis.getModelColor(d.name));
-
-                        update.select(".score-label")
-                            .attr("x", d => xLeaderboard(d.score) - 10)
-                            .text(d => d.score.toFixed(1));
-                    }),
-                exit => exit.remove()
-            );
-
-        // Update slider handle position
-        vis.sliderContainer.select(".handle")
-            .attr("cx", vis.x(vis.currentDate));
-
-        // Update date label
-        vis.sliderContainer.select(".date-label")
-            .text(d3.timeFormat("%B %d, %Y")(vis.currentDate));
-    }
-
-    updateVis() {
-        let vis = this;
-
-        // Update scales
-        vis.x.domain(d3.extent(vis.processedData, d => d.date));
-        vis.y.domain([0, 55]);
-
-        // Update axes
-        vis.xAxisG.call(vis.xAxis)
-            .selectAll("text")
-            .attr("transform", "rotate(-45)")
-            .style("text-anchor", "end")
-            .style("font-size", "12px");
-
-        vis.yAxisG.call(vis.yAxis);
-
-        // Filter data up to current date
-        const currentData = vis.processedData.filter(d => d.date <= vis.currentDate);
-
-        // Draw Pareto frontier line
-        const paretoLine = d3.line()
-            .x(d => vis.x(d.date))
-            .y(d => vis.y(d.score));
-
-        const paretoPoints = currentData.filter(d => vis.isPareto(d))
-            .sort((a, b) => a.date - b.date);
-
-        vis.chartArea.selectAll(".pareto-line")
-            .data([paretoPoints])
-            .join("path")
-            .attr("class", "pareto-line")
-            .attr("d", paretoLine)
-            .style("fill", "none")
-            .style("stroke", "#1e40af")
-            .style("stroke-width", "2px");
-
-        // Update scatter points
-        vis.chartArea.selectAll('.point')
-            .data(currentData)
-            .join('circle')
-            .attr('class', 'point')
-            .attr('cx', d => vis.x(d.date))
-            .attr('cy', d => vis.y(d.score))
-            .attr('r', d => vis.isPareto(d) ? 6 : 4)
-            .attr('fill', d => vis.getModelColor(d.name))
-            .attr('stroke', '#fff')
-            .attr('stroke-width', 1)
-            .style('fill', d => vis.isPareto(d) ? '#1e40af' : vis.getModelColor(d.name))
-            .style('opacity', d => vis.isPareto(d) ? 1 : 0.7);
-    }
-
-    updateDimensions() {
-        let vis = this;
-        
-        // Calculate width based on container
-        const container = document.getElementById(vis.parentElement);
-        const containerWidth = container.getBoundingClientRect().width;
-        vis.width = containerWidth - vis.margin.left - vis.margin.right;
-
-        // Update SVG dimensions
-        vis.chartSvg
-            .attr("width", vis.width + vis.margin.left + vis.margin.right)
-            .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
-
-        // Update leaderboard SVG width
-        vis.leaderboardSvg
-            .attr("width", vis.width + vis.margin.left + vis.margin.right);
-
-        // Update scales
-        vis.x.range([0, vis.width]);
-
-        // Update clip path
-        vis.mainG.select("#clip rect")
-            .attr("width", vis.width);
-
-        // Update legend position
-        vis.mainG.select(".legend")
-            .attr("transform", `translate(${vis.width + 20}, 20)`);
-
-        // Update chart title position
-        vis.mainG.select(".chart-title")
-            .attr("x", vis.width / 2);
-
-        // Update slider width
-        if (vis.sliderContainer) {
-            vis.sliderContainer.select("rect")
-                .attr("width", vis.width);
-            
-            vis.sliderContainer.select(".date-label")
-                .attr("x", vis.width);
-        }
-    }
-
     resize() {
         let vis = this;
+        
+        // Update dimensions
         vis.updateDimensions();
+        
+        // Update chart container size
+        vis.svg
+            .attr("width", vis.width + vis.margin.left + vis.margin.right)
+            .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
+        
+        // Update scales
+        vis.x.range([0, vis.width]);
+        vis.y.range([vis.height, 0]);
+        
+        // Update title with conditional wrapping
+        const shouldWrapTitle = vis.width < 600;
+        const titleText = "AI Model Performance Progress on SWE-Bench-Verified";
+        
+        vis.svg.select(".chart-title").selectAll("*").remove();
+        if (shouldWrapTitle) {
+            vis.svg.select(".chart-title")
+                .selectAll("tspan")
+                .data(["AI Model Performance Progress", "on SWE-Bench-Verified"])
+                .join("tspan")
+                .attr("x", vis.width / 2)
+                .attr("dy", (d, i) => i === 0 ? 0 : "1.2em")
+                .text(d => d);
+        } else {
+            vis.svg.select(".chart-title")
+                .text(titleText);
+        }
+        
+        // Update legend position and wrapping
+        const shouldWrapLegend = vis.width < 800;
+        const itemWidth = shouldWrapLegend ? 
+            Math.min(100, vis.width / 4) : 
+            Math.min(160, vis.width / 4);
+        const startX = (vis.width - (itemWidth * 4)) / 2;
+        
+        vis.svg.selectAll(".legend g")
+            .attr("transform", (d, i) => `translate(${startX + i * itemWidth}, 0)`);
+        
+        // Update visualization
         vis.updateVis();
-        vis.updateLeaderboard();
-    }
-
-    hide() {
-        d3.select("#" + this.parentElement).style("display", "none");
-    }
-
-    show() {
-        d3.select("#" + this.parentElement).style("display", "block");
-    }
-
-    isPareto(point) {
-        let vis = this;
-        // A point is on the Pareto frontier if no other point at the same date has a higher score
-        const sameDate = vis.processedData.filter(d => 
-            d.date.getTime() === point.date.getTime()
-        );
-        return Math.max(...sameDate.map(d => d.score)) === point.score;
     }
 }
 
-const truncateText = (text, availableWidth) => {
-    if (!text) return "";
-    const scoreWidth = 50;  // Reserve space for score
-    const buffer = 20;      // Buffer space
-    const maxWidth = availableWidth - scoreWidth - buffer;
-    
-    if (text.length * 7 > maxWidth) {  // Approximate character width of 7px
-        const numChars = Math.floor(maxWidth / 7);
-        return text.substring(0, numChars - 3) + "...";
-    }
-    return text;
-};
+// Common tooltip HTML generator
+function getTooltipHTML(d) {
+    const color = d.name.toLowerCase().includes('anthropic') || d.name.toLowerCase().includes('claude') ? '#f97316' :
+                 d.name.toLowerCase().includes('openai') || d.name.toLowerCase().includes('gpt') ? '#22c55e' :
+                 '#6b7280';
+                 
+    return `
+        <div style="font-weight: bold; color: ${color}; margin-bottom: 8px;">
+            ${d.name}
+        </div>
+        <div style="color: #4a4a4a; margin-bottom: 4px;">
+            Score: <span style="font-weight: 600">${d.score.toFixed(1)}</span>
+        </div>
+        <div style="color: #4a4a4a;">
+            Date: <span style="font-weight: 500">${d3.timeFormat("%B %d, %Y")(d.date)}</span>
+        </div>
+    `;
+}
