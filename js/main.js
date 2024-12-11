@@ -232,6 +232,7 @@ function showVis(section, step) {
         if (visualizations.progress) {
             visualizations.progress.resize();
             visualizations.progress.wrangleData();
+            visualizations.progress.triggerAnimation();
         }
     }
 
