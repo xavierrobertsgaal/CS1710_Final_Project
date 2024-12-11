@@ -3,21 +3,27 @@ class LineChart {
     constructor(parentElement, data) {
         let vis = this;
         vis.parentElement = parentElement;
+        
+        // Clear any existing content
+        d3.select(`#${parentElement}`).html("");
+        
         vis.data = data;
         vis.currentDate = null;
         vis.isPlaying = false;
         
-        // Much more vertical space
-        vis.margin = { 
-            top: 120,    // Space for timeline controls
-            right: 180,  // Space for legend
-            bottom: 400, // Space for leaderboard
-            left: 80     // Space for y-axis labels
+        // Adjust dimensions
+        vis.margin = {
+            top: 60,     // Reduced top margin
+            right: 120,  // Space for legend
+            bottom: 50,  // Space for x-axis
+            left: 60     // Space for y-axis
         };
         
-        // Add title
-        vis.title = "AI Model Performance Progress on SWE-Bench-Verified";
-        vis.subtitle = "Pareto frontier shown in dark blue";
+        // Calculate width based on container
+        const container = document.getElementById(parentElement);
+        const containerWidth = container.getBoundingClientRect().width;
+        vis.width = containerWidth - vis.margin.left - vis.margin.right;
+        vis.height = 300;  // Reduced height
         
         vis.initVis();
     }
@@ -35,142 +41,94 @@ class LineChart {
     setupSvg() {
         let vis = this;
         
-        // Much taller SVG
-        vis.width = sharedDimensions.width - vis.margin.left - vis.margin.right;
-        vis.height = 500; // Fixed height for line chart
-        vis.leaderboardHeight = 200;
-        vis.spacing = 200; // Spacing between components
-
-        vis.svg = d3.select(`#${vis.parentElement}`)
+        // Create chart SVG
+        vis.chartSvg = d3.select(`#${vis.parentElement}`)
             .append("svg")
             .attr("width", vis.width + vis.margin.left + vis.margin.right)
-            .attr("height", vis.height + vis.margin.top + vis.margin.bottom + vis.leaderboardHeight)
-            .append("g")
+            .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
+
+        // Create main group for chart
+        vis.mainG = vis.chartSvg.append("g")
             .attr("transform", `translate(${vis.margin.left},${vis.margin.top})`);
 
-        // Add clipPath for animation
-        vis.svg.append("defs")
+        // Add clipPath
+        vis.mainG.append("defs")
             .append("clipPath")
             .attr("id", "clip")
             .append("rect")
             .attr("width", vis.width)
             .attr("height", vis.height);
 
-        // Add a group for the clipped content
-        vis.chartArea = vis.svg.append("g")
+        // Create chart area with clip path
+        vis.chartArea = vis.mainG.append("g")
+            .attr("class", "chart-area")
             .attr("clip-path", "url(#clip)");
 
-        // Add group for leaderboard with more spacing
-        vis.leaderboard = vis.svg.append("g")
-            .attr("transform", `translate(0,${vis.height + vis.spacing})`);
+        // Add axes groups
+        vis.xAxisG = vis.mainG.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", `translate(0,${vis.height})`);
 
-        // Move timeline controls to top
-        vis.timelineControls = vis.svg.append("g")
-            .attr("transform", `translate(0,-80)`);
+        vis.yAxisG = vis.mainG.append("g")
+            .attr("class", "y-axis");
 
-        // Add title and subtitle below timeline
-        vis.svg.append("text")
-            .attr("class", "chart-title")
-            .attr("x", vis.width / 2)
-            .attr("y", -40)
-            .attr("text-anchor", "middle")
-            .style("font-size", "18px")
-            .style("font-weight", "bold")
-            .text(vis.title);
+        // Create separate SVG for leaderboard
+        vis.leaderboardSvg = d3.select(`#${vis.parentElement}`)
+            .append("svg")
+            .attr("width", vis.width + vis.margin.left + vis.margin.right)
+            .attr("height", 200)  // Fixed height for leaderboard
+            .style("margin-top", "20px");
 
-        vis.svg.append("text")
-            .attr("class", "chart-subtitle")
-            .attr("x", vis.width / 2)
-            .attr("y", -20)
-            .attr("text-anchor", "middle")
-            .style("font-size", "14px")
-            .style("fill", "#666")
-            .text(vis.subtitle);
-
-        // Add y-axis label
-        vis.svg.append("text")
-            .attr("class", "y-axis-label")
-            .attr("transform", "rotate(-90)")
-            .attr("y", -60)
-            .attr("x", -vis.height / 2)
-            .attr("text-anchor", "middle")
-            .style("font-size", "14px")
-            .text("SWE-Bench Score (higher is better)");
-
-        // Add legend
-        const legendData = [
-            { name: "Anthropic Models", color: "#f97316" },
-            { name: "OpenAI/GPT Models", color: "#22c55e" },
-            { name: "Other Models", color: "#6b7280" },
-            { name: "Pareto Frontier", color: "#1e40af" }
-        ];
-
-        const legend = vis.svg.append("g")
-            .attr("class", "legend")
-            .attr("transform", `translate(${vis.width + 20}, 20)`);
-
-        const legendItems = legend.selectAll(".legend-item")
-            .data(legendData)
-            .join("g")
-            .attr("class", "legend-item")
-            .attr("transform", (d, i) => `translate(0, ${i * 25})`);
-
-        legendItems.append("circle")
-            .attr("r", 6)
-            .style("fill", d => d.color);
-
-        legendItems.append("text")
-            .attr("x", 15)
-            .attr("y", 5)
-            .style("font-size", "14px")
-            .text(d => d.name);
+        // Add leaderboard group
+        vis.leaderboard = vis.leaderboardSvg.append("g")
+            .attr("class", "leaderboard")
+            .attr("transform", `translate(${vis.margin.left},20)`);
 
         // Add leaderboard title
         vis.leaderboard.append("text")
             .attr("class", "leaderboard-title")
-            .attr("x", vis.width / 2)
-            .attr("y", -70)
-            .attr("text-anchor", "middle")
+            .attr("x", 0)
+            .attr("y", -10)
             .style("font-size", "16px")
             .style("font-weight", "bold")
-            .text("Current Leaderboard");
+            .text("Leaderboard");
     }
 
     setupDateSlider() {
         let vis = this;
         
-        // Add date slider to timeline controls group
-        vis.sliderContainer = vis.timelineControls.append("g")
-            .attr("class", "date-slider");
+        // Create timeline controls group
+        vis.timelineControls = vis.mainG.append("g")
+            .attr("class", "timeline-controls")
+            .attr("transform", `translate(0,-20)`);
 
         // Add play button
-        const playButton = vis.sliderContainer.append("g")
+        vis.playButton = vis.timelineControls.append("g")
             .attr("class", "play-button")
-            .attr("transform", "translate(-40,4)")
+            .attr("transform", "translate(-30,4)")
             .style("cursor", "pointer")
-            .on("click", function() {
-                if (vis.isPlaying) {
-                    vis.stopAnimation();
-                } else {
-                    vis.startAnimation();
-                }
+            .on("click", () => {
+                if (vis.isPlaying) vis.stopAnimation();
+                else vis.startAnimation();
             });
 
-        // Play button triangle/pause bars
-        vis.playSymbol = playButton.append("path")
+        // Add play symbol (triangle)
+        vis.playSymbol = vis.playButton.append("path")
             .attr("d", "M0,-6L10,0L0,6Z")
-            .attr("fill", "#2563eb");
+            .attr("fill", "#2563eb")
+            .style("opacity", 1);
 
-        vis.pauseSymbol = playButton.append("g")
+        // Add pause symbol (two rectangles)
+        vis.pauseSymbol = vis.playButton.append("g")
             .style("opacity", 0);
-            
+
         vis.pauseSymbol.append("rect")
             .attr("x", -2)
             .attr("y", -6)
             .attr("width", 4)
             .attr("height", 12)
             .attr("fill", "#2563eb");
-            
+
         vis.pauseSymbol.append("rect")
             .attr("x", 6)
             .attr("y", -6)
@@ -178,7 +136,11 @@ class LineChart {
             .attr("height", 12)
             .attr("fill", "#2563eb");
 
-        // Add slider track
+        // Add date slider to timeline controls group
+        vis.sliderContainer = vis.timelineControls.append("g")
+            .attr("class", "date-slider");
+
+        // Add slider background
         vis.sliderContainer.append("rect")
             .attr("x", 0)
             .attr("y", 0)
@@ -203,28 +165,77 @@ class LineChart {
             .range([0, vis.width]);
 
         vis.y = d3.scaleLinear()
-            .range([vis.height, 0]);
+            .range([vis.height, 0])
+            .domain([0, 55]);  // Fixed y domain to match data range
     }
 
     setupAxes() {
         let vis = this;
         
-        // Format y-axis to show whole numbers
         vis.yAxis = d3.axisLeft(vis.y)
             .ticks(10)
             .tickFormat(d3.format("d"));
 
-        // Format x-axis to show abbreviated months
         vis.xAxis = d3.axisBottom(vis.x)
             .ticks(d3.timeMonth.every(1))
             .tickFormat(d3.timeFormat("%b %Y"));
 
-        vis.xAxisG = vis.svg.append("g")
+        // Add axes to main group, not the clipped area
+        vis.xAxisG = vis.mainG.append("g")
             .attr("class", "x-axis")
             .attr("transform", `translate(0,${vis.height})`);
 
-        vis.yAxisG = vis.svg.append("g")
+        vis.yAxisG = vis.mainG.append("g")
             .attr("class", "y-axis");
+
+        // Add chart title
+        vis.mainG.append("text")
+            .attr("class", "chart-title")
+            .attr("x", vis.width / 2)
+            .attr("y", -30)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+            .style("font-size", "18px")
+            .style("font-weight", "bold")
+            .text("AI Model Performance Progress on SWE-Bench-Verified");
+
+        // Add y-axis label
+        vis.mainG.append("text")
+            .attr("class", "y-axis-label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -40)
+            .attr("x", -vis.height / 2)
+            .attr("text-anchor", "middle")
+            .style("font-size", "14px")
+            .text("EvaluationScore (higher is better)");
+
+        // Add legend
+        const legend = vis.mainG.append("g")
+            .attr("class", "legend")
+            .attr("transform", `translate(${vis.width + 20}, 20)`);
+
+        const legendItems = [
+            { label: "Anthropic Models", color: "#f97316" },
+            { label: "OpenAI/GPT Models", color: "#22c55e" },
+            { label: "Other Models", color: "#6b7280" },
+            { label: "Pareto Frontier", color: "#1e40af" }
+        ];
+
+        legendItems.forEach((item, i) => {
+            const legendItem = legend.append("g")
+                .attr("class", "legend-item")
+                .attr("transform", `translate(0, ${i * 25})`);
+
+            legendItem.append("circle")
+                .attr("r", 6)
+                .style("fill", item.color);
+
+            legendItem.append("text")
+                .attr("x", 15)
+                .attr("y", 5)
+                .style("font-size", "14px")
+                .text(item.label);
+        });
     }
 
     setupTooltip() {
@@ -274,6 +285,8 @@ class LineChart {
         // Calculate leaderboard data
         vis.updateLeaderboard();
         vis.updateVis();
+
+        vis.maxScore = d3.max(vis.processedData, d => d.score);
     }
 
     updateLeaderboard() {
@@ -292,10 +305,42 @@ class LineChart {
             });
         });
 
-        // Sort by score
+        // Sort by score and get top 5
         vis.leaderboardData = Array.from(modelScores.values())
             .sort((a, b) => b.score - a.score)
-            .slice(0, 5); // Top 5 models
+            .slice(0, 5);
+
+        // Update leaderboard visualization
+        const barHeight = 25;
+        const barPadding = 5;
+
+        const entries = vis.leaderboard.selectAll('.leaderboard-entry')
+            .data(vis.leaderboardData)
+            .join('g')
+            .attr('class', 'leaderboard-entry')
+            .attr('transform', (d, i) => `translate(0,${i * (barHeight + barPadding)})`);
+
+        entries.selectAll('*').remove();
+
+        entries.append('rect')
+            .attr('width', vis.width)
+            .attr('height', barHeight)
+            .attr('fill', d => vis.getModelColor(d.name));
+
+        entries.append('text')
+            .attr('x', 10)
+            .attr('y', barHeight/2)
+            .attr('dominant-baseline', 'middle')
+            .style('fill', 'white')
+            .text(d => d.name);
+
+        entries.append('text')
+            .attr('x', vis.width - 10)
+            .attr('y', barHeight/2)
+            .attr('text-anchor', 'end')
+            .attr('dominant-baseline', 'middle')
+            .style('fill', 'white')
+            .text(d => d.score.toFixed(1));
     }
 
     getModelColor(name, isPareto = false) {
@@ -446,12 +491,12 @@ class LineChart {
             );
 
         // Update leaderboard
-        const barHeight = 28;
-        const barPadding = 12;
+        const barHeight = 16;
+        const barPadding = 4;
         
         const xLeaderboard = d3.scaleLinear()
-            .domain([0, d3.max(vis.leaderboardData, d => d.score)])
-            .range([0, vis.width - 200]);
+            .domain([0, vis.maxScore])
+            .range([0, vis.width + 100]);
 
         vis.leaderboard.selectAll(".leaderboard-bar")
             .data(vis.leaderboardData, d => d.name)
@@ -459,7 +504,7 @@ class LineChart {
                 enter => {
                     const g = enter.append("g")
                         .attr("class", "leaderboard-bar")
-                        .attr("transform", (d, i) => `translate(150,${i * (barHeight + barPadding)})`);
+                        .attr("transform", (d, i) => `translate(0,${i * (barHeight + barPadding)})`);
                     
                     g.append("rect")
                         .attr("height", barHeight)
@@ -468,32 +513,35 @@ class LineChart {
 
                     g.append("text")
                         .attr("class", "model-name")
-                        .attr("x", -10)
+                        .attr("x", 10)
                         .attr("y", barHeight / 2)
-                        .attr("text-anchor", "end")
+                        .attr("text-anchor", "start")
                         .attr("dominant-baseline", "middle")
-                        .style("font-size", "14px")
-                        .text(d => d.name.length > 30 ? d.name.substring(0, 27) + "..." : d.name);
+                        .style("font-size", "12px")
+                        .style("fill", "#fff")
+                        .text(d => truncateText(d.name, xLeaderboard(d.score)));
 
                     g.append("text")
                         .attr("class", "score-label")
-                        .attr("x", d => xLeaderboard(d.score) + 10)
+                        .attr("x", d => xLeaderboard(d.score) - 10)
                         .attr("y", barHeight / 2)
+                        .attr("text-anchor", "end")
                         .attr("dominant-baseline", "middle")
-                        .style("font-size", "14px")
+                        .style("font-size", "12px")
+                        .style("fill", "#fff")
                         .text(d => d.score.toFixed(1));
 
                     return g;
                 },
                 update => update
-                    .attr("transform", (d, i) => `translate(150,${i * (barHeight + barPadding)})`)
+                    .attr("transform", (d, i) => `translate(0,${i * (barHeight + barPadding)})`)
                     .call(update => {
                         update.select("rect")
                             .attr("width", d => xLeaderboard(d.score))
                             .style("fill", d => vis.getModelColor(d.name));
 
                         update.select(".score-label")
-                            .attr("x", d => xLeaderboard(d.score) + 10)
+                            .attr("x", d => xLeaderboard(d.score) - 10)
                             .text(d => d.score.toFixed(1));
                     }),
                 exit => exit.remove()
@@ -511,231 +559,101 @@ class LineChart {
     updateVis() {
         let vis = this;
 
-        // Update scales with fixed y-axis range
+        // Update scales
         vis.x.domain(d3.extent(vis.processedData, d => d.date));
-        vis.y.domain([0, 60]); // Fixed range to prevent squashing
+        vis.y.domain([0, 55]);
 
-        // Update axes with transitions
-        vis.xAxisG.transition()
-            .duration(500)
-            .call(vis.xAxis)
+        // Update axes
+        vis.xAxisG.call(vis.xAxis)
             .selectAll("text")
             .attr("transform", "rotate(-45)")
             .style("text-anchor", "end")
             .style("font-size", "12px");
 
-        vis.yAxisG.transition()
-            .duration(500)
-            .call(vis.yAxis)
-            .selectAll("text")
-            .style("font-size", "12px");
+        vis.yAxisG.call(vis.yAxis);
 
         // Filter data up to current date
         const currentData = vis.processedData.filter(d => d.date <= vis.currentDate);
-        const currentMaxLine = vis.maxScoreLine.filter(d => d.date <= vis.currentDate);
 
-        // Update Pareto frontier line
-        const line = d3.line()
+        // Draw Pareto frontier line
+        const paretoLine = d3.line()
             .x(d => vis.x(d.date))
-            .y(d => vis.y(d.score))
-            .curve(d3.curveMonotoneX);
+            .y(d => vis.y(d.score));
 
-        vis.chartArea.selectAll(".max-score-line")
-            .data([currentMaxLine])
+        const paretoPoints = currentData.filter(d => vis.isPareto(d))
+            .sort((a, b) => a.date - b.date);
+
+        vis.chartArea.selectAll(".pareto-line")
+            .data([paretoPoints])
             .join("path")
-            .attr("class", "max-score-line")
-            .attr("fill", "none")
+            .attr("class", "pareto-line")
+            .attr("d", paretoLine)
+            .style("fill", "none")
             .style("stroke", "#1e40af")
-            .style("stroke-width", "2px")
-            .attr("d", line);
+            .style("stroke-width", "2px");
 
-        // Update points
-        const points = vis.chartArea.selectAll(".point")
-            .data(currentData, d => d.name + d.date);
-
-        points.exit()
-            .transition()
-            .duration(200)
-            .attr("r", 0)
-            .style("opacity", 0)
-            .remove();
-
-        points.enter()
-            .append("circle")
-            .attr("class", "point")
-            .attr("cx", d => vis.x(d.date))
-            .attr("cy", d => vis.y(d.score))
-            .attr("r", 0)
-            .style("opacity", 0)
-            .merge(points)
-            .transition()
-            .duration(200)
-            .attr("cx", d => vis.x(d.date))
-            .attr("cy", d => vis.y(d.score))
-            .attr("r", d => {
-                const isMax = currentMaxLine.some(m => 
-                    m.date.getTime() === d.date.getTime() && m.score === d.score);
-                return isMax ? 6 : 4;
-            })
-            .style("fill", d => vis.getModelColor(d.name, 
-                currentMaxLine.some(m => m.date.getTime() === d.date.getTime() && m.score === d.score)))
-            .style("opacity", d => {
-                const isMax = currentMaxLine.some(m => 
-                    m.date.getTime() === d.date.getTime() && m.score === d.score);
-                return isMax ? 1 : 0.7;
-            });
-
-        // Update leaderboard
-        const barHeight = 28;
-        const barPadding = 12;
-        const totalBarSpace = barHeight + barPadding;
-        
-        const xLeaderboard = d3.scaleLinear()
-            .domain([0, d3.max(vis.leaderboardData, d => d.score)])
-            .range([0, vis.width - 200]);
-
-        const bars = vis.leaderboard.selectAll(".leaderboard-bar")
-            .data(vis.leaderboardData, d => d.name);
-
-        // Remove old bars with animation from bottom
-        bars.exit()
-            .transition()
-            .duration(200)
-            .attr("transform", `translate(150,${vis.leaderboardHeight + totalBarSpace})`)
-            .remove();
-
-        // Add new bars starting from bottom
-        const barsEnter = bars.enter()
-            .append("g")
-            .attr("class", "leaderboard-bar")
-            .attr("transform", `translate(150,${vis.leaderboardHeight + totalBarSpace})`);
-
-        // Add bar rectangles
-        barsEnter.append("rect")
-            .attr("height", barHeight)
-            .attr("width", 0);
-
-        // Add text immediately
-        barsEnter.append("text")
-            .attr("class", "model-name")
-            .attr("x", -10)
-            .attr("y", barHeight / 2)
-            .attr("text-anchor", "end")
-            .attr("dominant-baseline", "middle")
-            .style("font-size", "14px")
-            .text(d => {
-                if (d.name.length > 30) {
-                    return d.name.substring(0, 27) + "...";
-                }
-                return d.name;
-            });
-
-        barsEnter.append("text")
-            .attr("class", "score-label")
-            .attr("y", barHeight / 2)
-            .attr("dominant-baseline", "middle")
-            .style("font-size", "14px");
-
-        // Calculate final positions from bottom up
-        const getBarY = (i) => {
-            const totalBars = vis.leaderboardData.length;
-            return (totalBars - 1 - i) * totalBarSpace; // Reverse the order
-        };
-
-        // Update all bars with transition
-        const allBars = bars.merge(barsEnter);
-
-        // Transition bars to their new positions
-        allBars.transition()
-            .duration(200)
-            .attr("transform", (d, i) => `translate(150,${getBarY(i)})`);
-
-        // Update rectangles
-        allBars.select("rect")
-            .transition()
-            .duration(200)
-            .attr("height", barHeight)
-            .attr("width", d => xLeaderboard(d.score))
-            .style("fill", d => vis.getModelColor(d.name));
-
-        // Update text (moves with the group transform)
-        allBars.select(".score-label")
-            .attr("x", d => xLeaderboard(d.score) + 10)
-            .text(d => d.score.toFixed(1));
-
-        // Update slider handle
-        const slider = vis.sliderContainer.selectAll(".date-slider")
-            .data([vis.currentDate])
-            .join("g")
-            .attr("class", "date-slider");
-
-        const handle = slider.selectAll(".handle")
-            .data([null])
-            .join("circle")
-            .attr("class", "handle")
-            .attr("cx", vis.x(vis.currentDate))
-            .attr("cy", 4)
-            .attr("r", 8)
-            .attr("fill", "#2563eb")
-            .style("cursor", "pointer")
-            .call(d3.drag()
-                .on("drag", function(event) {
-                    vis.stopAnimation(); // Stop animation if dragging
-                    const x = Math.max(0, Math.min(vis.width, event.x));
-                    const date = vis.x.invert(x);
-                    vis.currentDate = date;
-                    vis.wrangleData();
-                }));
-
-        // Update date label
-        vis.sliderContainer.select(".date-label")
-            .text(d3.timeFormat("%B %d, %Y")(vis.currentDate));
+        // Update scatter points
+        vis.chartArea.selectAll('.point')
+            .data(currentData)
+            .join('circle')
+            .attr('class', 'point')
+            .attr('cx', d => vis.x(d.date))
+            .attr('cy', d => vis.y(d.score))
+            .attr('r', d => vis.isPareto(d) ? 6 : 4)
+            .attr('fill', d => vis.getModelColor(d.name))
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 1)
+            .style('fill', d => vis.isPareto(d) ? '#1e40af' : vis.getModelColor(d.name))
+            .style('opacity', d => vis.isPareto(d) ? 1 : 0.7);
     }
 
     updateDimensions() {
         let vis = this;
         
-        // Get container dimensions
+        // Calculate width based on container
         const container = document.getElementById(vis.parentElement);
         const containerWidth = container.getBoundingClientRect().width;
-        
         vis.width = containerWidth - vis.margin.left - vis.margin.right;
-        vis.height = Math.min(500, window.innerHeight * 0.5) - vis.margin.top - vis.margin.bottom;
 
         // Update SVG dimensions
-        vis.svg
+        vis.chartSvg
             .attr("width", vis.width + vis.margin.left + vis.margin.right)
             .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
 
+        // Update leaderboard SVG width
+        vis.leaderboardSvg
+            .attr("width", vis.width + vis.margin.left + vis.margin.right);
+
         // Update scales
         vis.x.range([0, vis.width]);
-        vis.y.range([vis.height, 0]);
 
-        // Update axes and labels
-        vis.xAxis.scale(vis.x);
-        vis.yAxis.scale(vis.y);
-        
-        vis.xAxisG
-            .attr("transform", `translate(0,${vis.height})`);
-            
-        // Update title and subtitle positions
-        vis.svg.select(".chart-title")
+        // Update clip path
+        vis.mainG.select("#clip rect")
+            .attr("width", vis.width);
+
+        // Update legend position
+        vis.mainG.select(".legend")
+            .attr("transform", `translate(${vis.width + 20}, 20)`);
+
+        // Update chart title position
+        vis.mainG.select(".chart-title")
             .attr("x", vis.width / 2);
-        vis.svg.select(".chart-subtitle")
-            .attr("x", vis.width / 2);
+
+        // Update slider width
+        if (vis.sliderContainer) {
+            vis.sliderContainer.select("rect")
+                .attr("width", vis.width);
             
-        // Update axis labels
-        vis.svg.select(".x-label")
-            .attr("x", vis.width / 2)
-            .attr("y", vis.height + 40);
-        vis.svg.select(".y-label")
-            .attr("x", -vis.height / 2);
+            vis.sliderContainer.select(".date-label")
+                .attr("x", vis.width);
+        }
     }
 
     resize() {
         let vis = this;
         vis.updateDimensions();
         vis.updateVis();
+        vis.updateLeaderboard();
     }
 
     hide() {
@@ -745,4 +663,26 @@ class LineChart {
     show() {
         d3.select("#" + this.parentElement).style("display", "block");
     }
+
+    isPareto(point) {
+        let vis = this;
+        // A point is on the Pareto frontier if no other point at the same date has a higher score
+        const sameDate = vis.processedData.filter(d => 
+            d.date.getTime() === point.date.getTime()
+        );
+        return Math.max(...sameDate.map(d => d.score)) === point.score;
+    }
 }
+
+const truncateText = (text, availableWidth) => {
+    if (!text) return "";
+    const scoreWidth = 50;  // Reserve space for score
+    const buffer = 20;      // Buffer space
+    const maxWidth = availableWidth - scoreWidth - buffer;
+    
+    if (text.length * 7 > maxWidth) {  // Approximate character width of 7px
+        const numChars = Math.floor(maxWidth / 7);
+        return text.substring(0, numChars - 3) + "...";
+    }
+    return text;
+};
