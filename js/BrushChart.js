@@ -36,15 +36,25 @@ class BrushChart {
         // Get container dimensions
         const container = document.getElementById(vis.parentElement);
         const rect = container.getBoundingClientRect();
-        vis.width = rect.width - vis.margin.left - vis.margin.right - 20;  // Reduced padding
+        vis.width = rect.width - vis.margin.left - vis.margin.right - 20;
 
-        // Create SVG with explicit dimensions
+        // Create SVG with explicit dimensions and extra space for title
         vis.svg = d3.select(`#${vis.parentElement}`)
             .append("svg")
             .attr("width", vis.width + vis.margin.left + vis.margin.right)
-            .attr("height", vis.height + vis.margin.top + vis.margin.bottom)
+            .attr("height", vis.height + vis.margin.top + vis.margin.bottom + 20)  // Extra space for title
             .append("g")
-            .attr("transform", `translate(${vis.margin.left},${vis.margin.top})`);
+            .attr("transform", `translate(${vis.margin.left},${vis.margin.top + 20})`);  // Move down for title
+
+        // Add title
+        vis.svg.append("text")
+            .attr("class", "brush-title")
+            .attr("x", vis.width / 2)
+            .attr("y", -10)
+            .attr("text-anchor", "middle")
+            .style("font-size", "12px")
+            .style("fill", "#666")
+            .text("Drag to select time period");
     }
 
     setupScales() {
@@ -83,8 +93,12 @@ class BrushChart {
                     // If brush is cleared, reset to full range
                     const endDate = d3.max(vis.data, d => d.date);
                     const startDate = new Date('2010-01-01');
+                    // Update both visualizations when brush is cleared
                     if (visualizations.incidents) {
                         visualizations.incidents.filterByDate(startDate, endDate);
+                    }
+                    if (visualizations.sectors) {  // Add TreeMap update
+                        visualizations.sectors.filterByDate(startDate, endDate);
                     }
                     return;
                 }
@@ -92,9 +106,12 @@ class BrushChart {
                 // Convert brush selection to dates
                 const [x0, x1] = event.selection.map(vis.x.invert);
                 
-                // Update the area chart immediately
+                // Update both visualizations
                 if (visualizations.incidents) {
                     visualizations.incidents.filterByDate(x0, x1);
+                }
+                if (visualizations.sectors) {  // Add TreeMap update
+                    visualizations.sectors.filterByDate(x0, x1);
                 }
             });
 
@@ -194,15 +211,39 @@ class BrushChart {
         if (vis.brushG) vis.brushG.raise();
     }
 
+    brushed(event) {
+        let vis = this;
+        
+        // Only trigger if this is a user-initiated brush event
+        if (!event.sourceEvent) return;
+        
+        // Get the selected dates
+        const selection = event.selection || vis.x.range();
+        const newDates = selection.map(vis.x.invert);
+        
+        console.log('Brush event triggered:', newDates);
+        
+        // Update both visualizations
+        vis.onBrush(newDates[0], newDates[1]);
+    }
+
     onBrush(startDate, endDate) {
         let vis = this;
         
-        // Filter both area chart and treemap
-        if (visualizations.incidents) {
-            visualizations.incidents.filterByDate(startDate, endDate);
-        }
+        console.log('BrushChart dispatching to TreeMap and AreaChart:', startDate, endDate);
+        
+        // Update TreeMap
         if (visualizations.sectors) {
             visualizations.sectors.filterByDate(startDate, endDate);
+        } else {
+            console.warn('TreeMap visualization not found');
+        }
+        
+        // Update AreaChart
+        if (visualizations.areaChart) {
+            visualizations.areaChart.filterByDate(startDate, endDate);
+        } else {
+            console.warn('AreaChart visualization not found');
         }
     }
 

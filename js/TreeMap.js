@@ -5,14 +5,37 @@ class TreeMap {
         vis.parentElement = parentElement;
         vis.containerElement = document.getElementById(parentElement);
         vis.data = data;
-        vis.displayData = data; // Add this for filtering
+        vis.displayData = data;
         
         // Initialize with shared dimensions
-        vis.width = sharedDimensions.width;
-        vis.height = sharedDimensions.height;
+        vis.width = sharedDimensions.width * 0.83;
+        vis.height = sharedDimensions.height * 0.9;
         
         // Set margins
         vis.margin = { top: 40, right: 10, bottom: 60, left: 10 };
+
+        // Initialize color scale
+        vis.colorScale = d3.scaleOrdinal()
+            .range([
+                '#2563eb',  // Primary blue
+                '#5c7077',  // Gray
+                '#ff4141',  // Red
+                '#16a34a',  // Green
+                '#9333ea',  // Purple
+                '#2C5784',  // Additional blues
+                '#5B9BD5',
+                '#A5C8ED',
+                '#7BA7D7',
+                '#4281C4'
+            ]);
+
+        // Create treemap layout
+        vis.treemap = d3.treemap()
+            .size([vis.width, vis.height])
+            .paddingTop(10)
+            .paddingRight(2)
+            .paddingBottom(2)
+            .paddingLeft(2);
         
         vis.initVis();
     }
@@ -20,59 +43,69 @@ class TreeMap {
     initVis() {
         let vis = this;
         
-        // Update dimensions to be larger
-        vis.width = sharedDimensions.width * 0.95;   
-        vis.height = sharedDimensions.height * 0.85;  
+        // Initialize with shared dimensions
+        vis.width = sharedDimensions.width * 0.9;
+        vis.height = sharedDimensions.height * 1.2;
         
-        // Define categorical color scale with consistent palette
-        vis.colorScale = d3.scaleOrdinal()
-            .domain([
-                'Information & Communication', 'Technology & IT Services', 
-                'Law Enforcement & Public Safety', 'Education', 
-                'Public Administration & Defense', 'Arts, Entertainment & Recreation',
-                'Health & Social Services', 'Manufacturing & Industrial',
-                'Retail & E-commerce', 'Transportation', 'Other/Unclear'
-            ])
-            .range([
-                '#2563eb', '#dc2626', '#16a34a', '#9333ea',
-                '#2C5784', '#5B9BD5', '#A5C8ED', '#7BA7D7',
-                '#4281C4', '#1B365D', '#89A9D3'
-            ]);
+        // Create container div with flip capability
+        vis.container = d3.select('#' + vis.parentElement)
+            .append('div')
+            .attr('class', 'flip-container')
+            .style('width', vis.width + 'px')
+            .style('height', vis.height + 'px')
+            .style('perspective', '1000px')
+            .style('position', 'absolute')
+            .style('left', '50%')
+            .style('top', '50%')
+            .style('transform', 'translate(-50%, -50%)')
+            .style('border-radius', '12px')
+            .style('overflow-y', 'auto');
+
+        vis.flipper = vis.container
+            .append('div')
+            .attr('class', 'flipper')
+            .style('position', 'relative')
+            .style('transform-style', 'preserve-3d')
+            .style('transition', 'transform 0.6s')
+            .style('width', '100%')
+            .style('height', '100%');
+
+        // Front side (TreeMap)
+        vis.front = vis.flipper.append('div')
+            .attr('class', 'front')
+            .style('position', 'absolute')
+            .style('width', '100%')
+            .style('height', '100%')
+            .style('backface-visibility', 'hidden');
+
+        // Back side (Analysis)
+        vis.back = vis.flipper.append('div')
+            .attr('class', 'back')
+            .style('position', 'absolute')
+            .style('width', '100%')
+            .style('height', '100%')
+            .style('backface-visibility', 'hidden')
+            .style('transform', 'rotateY(180deg)');
         
-        // Setup SVG and groups as before
-        vis.svg = d3.select('#' + vis.parentElement)
-            .append("svg")
-            .attr("class", "chart-svg")
-            .attr("width", vis.width)
-            .attr("height", vis.height);
+        // Setup SVG with new dimensions
+        vis.svg = vis.front.append('svg')
+            .attr('class', 'chart-svg')
+            .attr('width', vis.width)
+            .attr('height', vis.height)
+            .style('background', '#ffffff');
 
-        vis.chartGroup = vis.svg.append("g")
-            .attr("transform", `translate(0,40)`);
-
-        // Update treemap layout
-        vis.treemap = d3.treemap()
-            .size([vis.width, vis.height - 60])
-            .paddingTop(14)
-            .paddingRight(3)
-            .paddingBottom(3)
-            .paddingLeft(3);
+        // Create chart group
+        vis.chartGroup = vis.svg.append('g');
 
         // Add title
-        vis.svg.append("text")
-            .attr("class", "chart-title")
-            .attr("x", vis.width/2)
-            .attr("y", 25)
-            .attr("text-anchor", "middle")
-            .style("font-size", "16px")
-            .style("fill", "black")
-            .text("Click on a sector to explore incidents");
-
-        // Setup enhanced tooltip
-        vis.tooltip = d3.select('body').append('div')
-            .attr('class', 'tooltip')
-            .style('opacity', 0)
-            .style('width', '400px')  // Wider to accommodate new content
-            .style('padding', '15px');
+        vis.svg.append('text')
+            .attr('class', 'chart-title')
+            .attr('x', vis.width/2)
+            .attr('y', 25)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '16px')
+            .style('fill', 'black')
+            .text('Click on a sector to explore incidents');
 
         vis.wrangleData();
     }
@@ -130,7 +163,7 @@ class TreeMap {
         let vis = this;
         
         // Only process data if we haven't already or if displayData has changed
-        if (!vis.processedData || vis.lastDisplayData !== vis.displayData) {
+        if (!vis.processedData || JSON.stringify(vis.lastDisplayData) !== JSON.stringify(vis.displayData)) {
             // Filter out null/undefined sectors and count incidents
             const sectorCounts = d3.rollup(
                 vis.displayData.filter(d => d.Cleaned_Sector),
@@ -144,7 +177,14 @@ class TreeMap {
                 return {
                     name: sector,
                     value: count,
-                    incidents: incidents
+                    incidents: incidents.map(d => ({
+                        incident_id: d.incident_id,  // Add incident_id
+                        date: new Date(d.date),
+                        description: d.description,
+                        severity: d.severity,
+                        capability: d.Category,
+                        autonomy: +d.Autonomy_Level_v1
+                    })),
                 };
             }).sort((a, b) => b.value - a.value);
 
@@ -159,9 +199,9 @@ class TreeMap {
                 .sum(d => d.value)
                 .sort((a, b) => b.value - a.value);
 
-            // Store processed state
+            // Store processed state and current data snapshot
             vis.processedData = true;
-            vis.lastDisplayData = vis.displayData;
+            vis.lastDisplayData = [...vis.displayData];
         }
 
         // Update treemap with current dimensions
@@ -174,226 +214,132 @@ class TreeMap {
         let vis = this;
         vis.chartGroup.selectAll("*").remove();
 
+        const leaves = vis.root.leaves();
+        
+        // Create groups
         const leaf = vis.chartGroup.selectAll("g")
-            .data(vis.root.leaves())
+            .data(leaves)
             .join("g")
             .attr("class", "tree-node")
             .attr("transform", d => `translate(${d.x0},${d.y0})`);
 
-        // Add rectangles - removed hover
+        // Add rectangles
         leaf.append("rect")
-            .attr("width", d => d.x1 - d.x0)
-            .attr("height", d => d.y1 - d.y0)
+            .attr("width", d => Math.max(0, d.x1 - d.x0))
+            .attr("height", d => Math.max(0, d.y1 - d.y0))
             .attr("fill", d => vis.colorScale(d.data.name))
+            .attr("rx", d => {
+                const isEdge = Math.abs(d.x0) < 1 || 
+                              Math.abs(d.x1 - vis.width) < 1 || 
+                              Math.abs(d.y0) < 1 || 
+                              Math.abs(d.y1 - vis.height) < 1;
+                return isEdge ? 8 : 0;
+            })
+            .attr("ry", d => {
+                const isEdge = Math.abs(d.x0) < 1 || 
+                              Math.abs(d.x1 - vis.width) < 1 || 
+                              Math.abs(d.y0) < 1 || 
+                              Math.abs(d.y1 - vis.height) < 1;
+                return isEdge ? 8 : 0;
+            })
             .style("cursor", "pointer")
-            .on("click", function(event, d) {
-                event.preventDefault();
-                event.stopPropagation();
-                
-                if (d.data.incidents && d.data.incidents.length > 0) {
-                    const avgAutonomy = d3.mean(d.data.incidents, i => i.autonomy_level) || 0;
-                    const categories = d3.rollup(d.data.incidents, 
-                        v => v.length, 
-                        i => i.Category || 'Unknown'
-                    );
-                    
-                    const randomIndex = Math.floor(Math.random() * d.data.incidents.length);
-                    const incident = d.data.incidents[randomIndex];
-                    
-                    // Improved bar chart dimensions
-                    const margin = {top: 20, right: 20, bottom: 60, left: 60};
-                    const width = 320;
-                    const height = 180;
-                    
-                    const svg = d3.create('svg')
-                        .attr('width', width + margin.left + margin.right)
-                        .attr('height', height + margin.top + margin.bottom)
-                        .append('g')
-                        .attr('transform', `translate(${margin.left},${margin.top})`);
-                    
-                    const x = d3.scaleBand()
-                        .domain([...categories.keys()])
-                        .range([0, width])
-                        .padding(0.2);
-                    
-                    const y = d3.scaleLinear()
-                        .domain([0, d3.max(categories.values())])
-                        .nice()
-                        .range([height, 0]);
-                    
-                    // Add bars
-                    svg.selectAll('rect')
-                        .data(categories)
-                        .join('rect')
-                        .attr('x', d => x(d[0]))
-                        .attr('y', d => y(d[1]))
-                        .attr('width', x.bandwidth())
-                        .attr('height', d => height - y(d[1]))
-                        .attr('fill', vis.colorScale(d.data.name));
-                    
-                    // Add x axis with rotated labels
-                    svg.append('g')
-                        .attr('transform', `translate(0,${height})`)
-                        .call(d3.axisBottom(x))
-                        .selectAll('text')
-                        .attr('transform', 'rotate(-45)')
-                        .style('text-anchor', 'end')
-                        .attr('dx', '-.8em')
-                        .attr('dy', '.15em')
-                        .style('font-size', '10px');
-                    
-                    // Add y axis
-                    svg.append('g')
-                        .call(d3.axisLeft(y).ticks(5));
-                    
-                    // Enhanced tooltip with better styling
-                    vis.tooltip
-                        .style('opacity', 1)
-                        .style('left', (event.pageX + 10) + 'px')
-                        .style('top', (event.pageY - 10) + 'px')
-                        .style('width', '400px')
-                        .html(`
-                            <div style="padding: 15px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                    <h3 style="margin: 0; font-size: 18px;">Sector Analysis: ${d.data.name}</h3>
-                                    <button class="btn-close" style="border: none; background: none; font-size: 20px; cursor: pointer;">×</button>
-                                </div>
-                                
-                                <div style="display: flex; justify-content: space-between; margin: 20px 0; background: #f8f9fa; padding: 15px; border-radius: 8px;">
-                                    <div style="text-align: center;">
-                                        <h4 style="margin: 0; font-size: 14px; color: #666;">Average Autonomy Level</h4>
-                                        <div style="font-size: 28px; font-weight: bold; color: ${vis.colorScale(d.data.name)};">
-                                            ${avgAutonomy.toFixed(1)}/5
-                                        </div>
-                                    </div>
-                                    <div style="text-align: center;">
-                                        <h4 style="margin: 0; font-size: 14px; color: #666;">Total Incidents</h4>
-                                        <div style="font-size: 28px; font-weight: bold; color: ${vis.colorScale(d.data.name)};">
-                                            ${d.data.value}
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div style="margin: 20px 0;">
-                                    <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #666;">AI Categories Distribution</h4>
-                                    ${svg.node().outerHTML}
-                                </div>
-                                
-                                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #dee2e6;">
-                                    <h4 style="margin: 0 0 10px 0; font-size: 14px; color: #666;">Sample Incident</h4>
-                                    <p style="margin: 5px 0; font-size: 12px;"><strong>Date:</strong> ${incident.date ? new Date(incident.date).toLocaleDateString() : 'Unknown'}</p>
-                                    <p style="margin: 5px 0; font-size: 12px;"><strong>Description:</strong> ${incident.description || 'No description available'}</p>
-                                    <p style="margin: 5px 0; font-size: 12px;"><strong>Severity:</strong> ${incident.severity || 'Not specified'}</p>
-                                </div>
-                            </div>
-                        `);
-                }
+            .on("click", (event, d) => {
+                vis.flipper.node().style.transform = "rotateY(180deg)";
+                vis.showAnalysis(d);
             });
 
-        // Add text labels
-        vis.addTextLabels(leaf);
-    }
-
-    addTextLabels(leaf) {
-        let vis = this;
-        
+        // Add text with proper wrapping and centering
         const textGroups = leaf.append("text")
-            .attr("text-anchor", "middle")
-            .attr("x", d => (d.x1 - d.x0) / 2);
+            .attr("class", "tree-label")
+            .style("fill", "white")
+            .style("text-anchor", "middle")
+            .style("dominant-baseline", "middle");
 
-        textGroups.selectAll("tspan")
-            .data(d => {
-                const name = d.data.name;
-                const value = d.value;
-                const width = d.x1 - d.x0;
-                const height = d.y1 - d.y0;
+        textGroups.each(function(d) {
+            const node = d3.select(this);
+            const width = d.x1 - d.x0;
+            const height = d.y1 - d.y0;
+            
+            // Skip if too small
+            if (width < 50 || height < 40) return;
+
+            // Calculate font size based on area
+            const area = width * height;
+            const fontSize = Math.min(
+                14,  // max font size
+                Math.max(10, Math.sqrt(area) / 25)  // dynamic sizing with minimum
+            );
+
+            // Split text into words and create lines
+            const words = d.data.name.split(/\s+/);
+            let lines = [];
+            let currentLine = [];
+            
+            words.forEach(word => {
+                currentLine.push(word);
+                const testLine = currentLine.join(" ");
+                const testWidth = testLine.length * fontSize * 0.6; // Approximate width
                 
-                if (width < 60 || height < 30) return [];
-                
-                // Smart text wrapping function
-                function wrapText(text, maxCharsPerLine) {
-                    const words = text.split(' ');
-                    const lines = [];
-                    let currentLine = [];
-                    let currentLength = 0;
-                    
-                    words.forEach(word => {
-                        // Special handling for '&' to keep connected phrases together
-                        if (word === '&') {
-                            currentLine.push(word);
-                            return;
-                        }
-                        
-                        const wordLength = word.length;
-                        if (currentLength + wordLength + currentLine.length > maxCharsPerLine && currentLine.length > 0) {
-                            lines.push(currentLine.join(' '));
-                            currentLine = [word];
-                            currentLength = wordLength;
-                        } else {
-                            currentLine.push(word);
-                            currentLength += wordLength;
-                        }
-                    });
-                    
-                    if (currentLine.length > 0) {
-                        lines.push(currentLine.join(' '));
+                if (testWidth > width - 20) {
+                    if (currentLine.length === 1) {
+                        lines.push(currentLine[0]);
+                        currentLine = [];
+                    } else {
+                        currentLine.pop();
+                        lines.push(currentLine.join(" "));
+                        currentLine = [word];
                     }
-                    return lines;
                 }
-                
-                // Determine optimal line length based on box width
-                const maxCharsPerLine = Math.max(10, Math.floor(width / 10));
-                const lines = wrapText(name, maxCharsPerLine);
-                
-                // Add count as final line
-                lines.push(`(${value})`);
-                return lines;
-            })
-            .join("tspan")
-            .attr("x", function() {
-                const parentNode = d3.select(this.parentNode);
-                const parentData = parentNode.datum();
-                return (parentData.x1 - parentData.x0) / 2;
-            })
-            .attr("y", function(d, i) {
-                const parentNode = d3.select(this.parentNode);
-                const parentData = parentNode.datum();
-                const height = parentData.y1 - parentData.y0;
-                const totalLines = this.parentNode.childNodes.length;
-                const lineHeight = 16; // Fixed, tighter line spacing
-                const totalHeight = lineHeight * (totalLines - 1);
-                const startY = (height - totalHeight) / 2;
-                return startY + (i * lineHeight);
-            })
-            .attr("fill", "white")
-            .style("font-size", function(d) {
-                if (d.startsWith('(')) {
-                    return "12px";
-                }
-                return "14px";
-            })
-            .text(d => d);
+            });
+            if (currentLine.length > 0) {
+                lines.push(currentLine.join(" "));
+            }
+
+            // Calculate total height of text block
+            const lineHeight = fontSize * 1.2;
+            const totalHeight = lines.length * lineHeight + fontSize; // Extra space for count
+            const startY = (height - totalHeight) / 2; // Center vertically
+
+            // Add each line
+            lines.forEach((line, i) => {
+                node.append("tspan")
+                    .attr("x", width / 2)
+                    .attr("y", startY + (i * lineHeight) + fontSize)
+                    .style("font-size", `${fontSize}px`)
+                    .style("fill", "white")
+                    .text(line);
+            });
+
+            // Add count on new line
+            node.append("tspan")
+                .attr("x", width / 2)
+                .attr("y", startY + (lines.length * lineHeight) + fontSize)
+                .style("font-size", `${fontSize - 2}px`)
+                .style("fill", "white")
+                .text(`(${d.value})`);
+        });
     }
 
     updateDimensions() {
         let vis = this;
         
         // Update width and height
-        vis.width = sharedDimensions.width * 0.95;
-        vis.height = sharedDimensions.height * 0.85;
+        vis.width = sharedDimensions.width * 0.85;
+        vis.height = sharedDimensions.height * 1.2; // Increased significantly
 
         // Update SVG size
         vis.svg
             .attr("width", vis.width)
-            .attr("height", vis.height);
+            .attr("height", vis.height)
+            .style("border-radius", "12px"); // Round the SVG container
 
         // Update treemap size
         if (vis.treemap) {
-            vis.treemap.size([vis.width, vis.height - 60]);
+            vis.treemap.size([vis.width, vis.height - 40]); // Reduced top padding
         }
 
         // Update chart group position
-        vis.chartGroup.attr("transform", `translate(0,40)`);
+        vis.chartGroup.attr("transform", `translate(0,30)`); // Moved up slightly
     }
 
     resize() {
@@ -416,12 +362,215 @@ class TreeMap {
     filterByDate(startDate, endDate) {
         let vis = this;
         
+        // Store current incident if flipper is showing
+        let currentIncident = null;
+        if (vis.flipper && vis.flipper.node().style.transform.includes('180deg')) {
+            const incidentDetails = document.getElementById('incident-details');
+            if (incidentDetails) {
+                // Find the current sector
+                const currentSector = vis.root.leaves().find(leaf => {
+                    const sectorName = leaf.data.name;
+                    return vis.back.html().includes(sectorName);
+                });
+                
+                if (currentSector) {
+                    // Get the currently displayed incident's description
+                    const description = incidentDetails.querySelector('p:nth-child(2)').textContent.split(': ')[1];
+                    // Find the incident in the current sector's data
+                    currentIncident = currentSector.data.incidents.find(inc => 
+                        inc.description === description
+                    );
+                }
+            }
+        }
+        
         // Filter data based on date range
         vis.displayData = vis.data.filter(d => {
             const date = new Date(d.date);
             return date >= startDate && date <= endDate;
         });
         
+        // Reset processed state to force rewrangling
+        vis.processedData = false;
+        
+        // Rewrangle and update
         vis.wrangleData();
+        
+        // If we're currently showing analysis for a sector, update it
+        if (vis.flipper && vis.flipper.node().style.transform.includes('180deg')) {
+            // Find the currently displayed sector
+            const currentSector = vis.root.leaves().find(leaf => {
+                const sectorName = leaf.data.name;
+                return vis.back.html().includes(sectorName);
+            });
+            
+            if (currentSector) {
+                vis.showAnalysis(currentSector, currentIncident);
+            }
+        }
+    }
+
+    showAnalysis(d, persistedIncident = null) {
+        let vis = this;
+        
+        // Calculate statistics
+        const totalIncidents = d.data.incidents.length;
+        const avgAutonomy = (d3.mean(d.data.incidents, i => i.autonomy) / 5).toFixed(1);
+        
+        // Get capability counts and sort alphabetically
+        const capabilityCounts = d3.rollup(
+            d.data.incidents,
+            v => v.length,
+            d => d.capability
+        );
+
+        // Create bar chart SVG with adjusted dimensions
+        const margin = {top: 30, right: 40, bottom: 100, left: 60};
+        const width = vis.width - margin.left - margin.right;
+        const height = 160;  // Even shorter height
+        
+        const svg = d3.create('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom);
+        
+        const g = svg.append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // Get capability data array
+        const data = Array.from(capabilityCounts, ([capability, count]) => ({
+            capability,
+            count
+        })).sort((a, b) => a.capability.localeCompare(b.capability));
+
+        // Create scales
+        const x = d3.scaleBand()
+            .domain(data.map(d => d.capability))
+            .range([0, width])
+            .padding(0.1);
+
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(data, d => d.count)])
+            .range([height, 0]);
+
+        // Add bars
+        const bars = g.selectAll('.bar')
+            .data(data)
+            .join('rect')
+            .attr('class', 'bar')
+            .attr('x', d => x(d.capability))
+            .attr('y', d => y(d.count))
+            .attr('width', x.bandwidth())
+            .attr('height', d => height - y(d.count))
+            .attr('fill', vis.colorScale(d.data.name));
+
+        // Add value labels on top of bars
+        g.selectAll('.bar-label')
+            .data(data)
+            .join('text')
+            .attr('class', 'bar-label')
+            .attr('x', d => x(d.capability) + x.bandwidth()/2)
+            .attr('y', d => y(d.count) - 5)  // Position above bar
+            .attr('text-anchor', 'middle')
+            .style('fill', 'var(--text-dark)')
+            .style('font-size', '12px')
+            .text(d => d.count);
+
+        // Add axes with proper styling
+        g.append('g')
+            .attr('transform', `translate(0,${height})`)
+            .call(d3.axisBottom(x))
+            .selectAll('text')
+            .style('text-anchor', 'end')
+            .style('fill', 'var(--text-dark)')
+            .attr('dx', '-.8em')
+            .attr('dy', '.15em')
+            .attr('transform', 'rotate(-45)');
+
+        g.append('g')
+            .call(d3.axisLeft(y))
+            .selectAll('text')
+            .style('fill', 'var(--text-dark)');
+
+        // add y axis label
+        g.append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', -margin.left + 20)
+            .attr('x', -height + 20)
+            .style('fill', 'var(--text-dark)')
+            .style('font-size', '10px')
+            .text('Number of Incidents');
+
+        // Handle incident selection
+        let incident;
+        if (persistedIncident && d.data.incidents.some(inc => 
+            inc.incident_id === persistedIncident.incident_id
+        )) {
+            // Keep the persisted incident if it's still in the filtered dataset
+            incident = persistedIncident;
+        } else {
+            // Otherwise get a new random incident
+            incident = d.data.incidents[Math.floor(Math.random() * d.data.incidents.length)];
+        }
+
+        // Add event listener for resampling
+        document.addEventListener('resampleIncident', function(e) {
+            if (e.detail === d.data.name) {
+                incident = d.data.incidents[Math.floor(Math.random() * d.data.incidents.length)];
+                const detailsDiv = document.getElementById('incident-details');
+                if (detailsDiv) {
+                    detailsDiv.innerHTML = `
+                        <p style="color: var(--text-dark); margin: 8px 0;"><strong>Date:</strong> ${incident.date ? new Date(incident.date).toLocaleDateString() : 'Unknown'}</p>
+                        <p style="color: var(--text-dark); margin: 8px 0;"><strong>Description:</strong> ${incident.description || 'No description available'}</p>
+                        <p style="color: var(--text-dark); margin: 8px 0;"><strong>Severity:</strong> ${incident.severity || 'Not specified'}</p>
+                    `;
+                }
+            }
+        });
+
+        // Update back content with proper text colors and event handling
+        vis.back.html(`
+            <div style="padding: 20px; background: white; height: 100%; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 style="margin: 0; color: ${vis.colorScale(d.data.name)}; font-size: 24px;">
+                        ${d.data.name} Sector
+                    </h2>
+                    <button onclick="this.closest('.flipper').style.transform = 'rotateY(0deg)'" 
+                        class="btn-outline-primary">
+                        Back to Map
+                    </button>
+                </div>
+
+                <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                    <div class="stat-box">
+                        <h4 style="color: var(--text-dark); font-size: 16px; margin-bottom: 8px;">Total Incidents</h4>
+                        <p style="color: ${vis.colorScale(d.data.name)}; font-size: 20px; margin: 0; font-weight: 700;">${totalIncidents}</p>
+                    </div>
+                    <div class="stat-box">
+                        <h4 style="color: var(--text-dark); font-size: 16px; margin-bottom: 8px;">Avg. Autonomy Level</h4>
+                        <p style="color: ${vis.colorScale(d.data.name)}; font-size: 20px; margin: 0; font-weight: 700;">${avgAutonomy}/5</p>
+                    </div>
+                </div>
+
+                <div style="margin: 25px 0;">
+                    <h4 style="color: var(--text-dark); font-size: 16px; margin-bottom: 15px;">AI Capabilities Involved in Incidents</h4>
+                    ${svg.node().outerHTML}
+                </div>
+
+                <div style="color: var(--text-dark);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h4 style="color: var(--text-dark); font-size: 16px; margin: 0;">Sample Incident</h4>
+                        <button onclick="document.dispatchEvent(new CustomEvent('resampleIncident', {detail: '${d.data.name}'}))"
+                            class="btn-outline-primary">
+                            New Sample
+                        </button>
+                    </div>
+                    <div id="incident-details" style="color: var(--text-dark);">
+                        <p style="color: var(--text-dark); margin: 8px 0;"><strong>Date:</strong> ${incident.date ? new Date(incident.date).toLocaleDateString() : 'Unknown'}</p>
+                        <p style="color: var(--text-dark); margin: 8px 0;"><strong>Description:</strong> ${incident.description || 'No description available'}</p>
+                        <p style="color: var(--text-dark); margin: 8px 0;"><strong>Severity:</strong> ${incident.severity || 'Not specified'}</p>
+                    </div>
+                </div>
+            </div>
+        `);
     }
 }

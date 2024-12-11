@@ -176,6 +176,10 @@ p {
     padding: 1rem;
 }
 
+#ai-incidents-by-sector {
+    min-height: 800px;
+}
+
 /* Visualization Colors */
 .line { stroke: var(--secondary-blue) !important; }
 .max-score-line { stroke: #ff4141 !important; }
@@ -399,4 +403,21 @@ circle.no { fill: var(--dark-silver) !important; }
 .intro-content,
 .step p {
     color: var(--text-light);
+}
+
+/* Incident Details is black text */
+.incident-details {
+    color: var(--text-dark);
+}
+
+.incident-details p {
+    color: var(--text-dark);
+    margin: 8px 0;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.back h4 {
+    font-size: 14px;
+    margin-bottom: 8px;
 }

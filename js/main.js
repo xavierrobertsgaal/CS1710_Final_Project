@@ -214,6 +214,10 @@ function showVis(section, step) {
                 visualizations.brush.wrangleData();
             }
         } else if (step === 'incidents-3') {
+            if (brushVis) {
+                brushVis.style.visibility = 'visible';
+                brushVis.style.display = 'block';
+            }
             if (sectorsVis) {
                 sectorsVis.style.visibility = 'visible';
                 sectorsVis.style.display = 'block';
@@ -221,6 +225,10 @@ function showVis(section, step) {
             if (visualizations.sectors) {
                 visualizations.sectors.resize();
                 visualizations.sectors.wrangleData();
+            }
+            if (visualizations.brush) {
+                visualizations.brush.resize();
+                visualizations.brush.wrangleData();
             }
         }
     } else if (section === 'progress') {
