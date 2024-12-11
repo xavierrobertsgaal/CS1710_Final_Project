@@ -3,18 +3,18 @@ class AreaChart {
         let vis = this;
         vis.parentElement = parentElement;
 
-        // Store the complete dataset with all dates
+        // Store the complete dataset with all dates from 1980s
         vis.completeData = data.map(d => ({
             date: new Date(d.date),
             severity: d.severity || 'Unknown',
             incident_id: d.incident_id
         }));
 
-        // Filter visible data to only include dates from 2000 onwards
-        vis.data = vis.completeData.filter(d => d.date.getFullYear() >= 2000);
+        // Initially filter to show only 2010 onwards
+        vis.data = vis.completeData.filter(d => d.date >= new Date('2010-01-01'));
         
-        // Store filtered dataset for brush interactions
-        vis.allData = [...vis.data];
+        // Store complete dataset for brush interactions
+        vis.allData = [...vis.completeData];
         
         // Group by severity levels in order from bottom to top
         vis.severityLevels = ["High", "Medium", "Low"];
@@ -287,15 +287,10 @@ class AreaChart {
     filterByDate(startDate, endDate) {
         let vis = this;
         
-        if (startDate && endDate) {
-            // Filter data based on brush selection
-            vis.data = vis.allData.filter(d => {
-                return d.date >= startDate && d.date <= endDate;
-            });
-        } else {
-            // If no brush selection, restore all data
-            vis.data = [...vis.allData];
-        }
+        // Filter data based on brush selection
+        vis.data = vis.allData.filter(d => {
+            return d.date >= startDate && d.date <= endDate;
+        });
         
         // Update visualization with filtered data
         vis.wrangleData();

@@ -52,6 +52,7 @@ class BrushChart {
 
         // Initialize scales with explicit ranges
         vis.x = d3.scaleTime()
+            .domain([new Date('1985-01-01'), new Date('2024-12-31')])  // Show full date range in brush
             .range([0, vis.width]);
 
         vis.y = d3.scaleLinear()
@@ -97,13 +98,12 @@ class BrushChart {
                 }
             });
 
-        // Add brush group and ensure it's visible
+        // Add brush group
         vis.brushG = vis.svg.append("g")
             .attr("class", "brush")
-            .style("display", "block")
             .call(vis.brush);
 
-        // Set initial brush position
+        // Set initial brush position to 2010-2024
         const defaultStart = vis.x(new Date('2010-01-01'));
         const defaultEnd = vis.x(new Date('2024-12-31'));
         vis.brushG.call(vis.brush.move, [defaultStart, defaultEnd]);
