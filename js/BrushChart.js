@@ -26,8 +26,8 @@ class BrushChart {
         vis.setupSvg();
         vis.setupScales();
         vis.setupAxes();
-        vis.setupBrush();
         vis.wrangleData();
+        vis.setupBrush();
     }
 
     setupSvg() {
@@ -52,7 +52,7 @@ class BrushChart {
 
         // Initialize scales with explicit ranges
         vis.x = d3.scaleTime()
-            .domain([new Date('1985-01-01'), new Date('2024-12-31')])  // Show full date range in brush
+            .domain([new Date('1985-01-01'), new Date('2024-12-31')])  // Set initial full range
             .range([0, vis.width]);
 
         vis.y = d3.scaleLinear()
@@ -80,11 +80,11 @@ class BrushChart {
             .extent([[0, 0], [vis.width, vis.height]])
             .on("brush", function(event) {
                 if (!event.selection) {
-                    // If brush is cleared, reset to 2010
-                    const defaultStart = new Date('2010-01-01');
-                    const defaultEnd = new Date('2024-12-31');
+                    // If brush is cleared, reset to full range
+                    const endDate = d3.max(vis.data, d => d.date);
+                    const startDate = new Date('2010-01-01');
                     if (visualizations.incidents) {
-                        visualizations.incidents.filterByDate(defaultStart, defaultEnd);
+                        visualizations.incidents.filterByDate(startDate, endDate);
                     }
                     return;
                 }
@@ -103,9 +103,11 @@ class BrushChart {
             .attr("class", "brush")
             .call(vis.brush);
 
-        // Set initial brush position to 2010-2024
-        const defaultStart = vis.x(new Date('2010-01-01'));
-        const defaultEnd = vis.x(new Date('2024-12-31'));
+        // Set initial brush position using the actual data range
+        const endDate = d3.max(vis.data, d => d.date);
+        const startDate = new Date('2010-01-01');
+        const defaultStart = vis.x(startDate);
+        const defaultEnd = vis.x(endDate);
         vis.brushG.call(vis.brush.move, [defaultStart, defaultEnd]);
     }
 
@@ -153,11 +155,11 @@ class BrushChart {
     updateVis() {
         let vis = this;
 
-        // Set domains to show full date range
+        // Update x domain based on actual data
         vis.x.domain(d3.extent(vis.data, d => d.date));
         vis.y.domain([0, d3.max(vis.aggregatedData, d => d.total)]);
 
-        // Update x-axis with more space for labels
+        // Update x-axis
         vis.xAxisG.call(vis.xAxis)
             .selectAll("text")
             .attr("transform", "rotate(-45)")
@@ -165,10 +167,10 @@ class BrushChart {
             .attr("x", -5)
             .style("text-anchor", "end");
 
-        // Draw stacked areas aligned with x-axis
+        // Draw stacked areas
         const area = d3.area()
             .x(d => vis.x(d.data.date))
-            .y0(d => vis.height)  // Changed from vis.height to make area touch axis
+            .y0(d => vis.height)
             .y1(d => vis.y(d[1]));
 
         // Update areas
@@ -179,8 +181,17 @@ class BrushChart {
             .attr("d", area)
             .attr("transform", "translate(0, 10)");
 
+        // Update brush position if it exists
+        if (vis.brushG) {
+            const startDate = new Date('2010-01-01');
+            const endDate = d3.max(vis.data, d => d.date);
+            const defaultStart = vis.x(startDate);
+            const defaultEnd = vis.x(endDate);
+            vis.brushG.call(vis.brush.move, [defaultStart, defaultEnd]);
+        }
+
         // Make sure brush is on top
-        vis.brushG.raise();
+        if (vis.brushG) vis.brushG.raise();
     }
 
     onBrush(startDate, endDate) {
