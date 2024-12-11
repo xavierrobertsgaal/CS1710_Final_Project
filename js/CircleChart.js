@@ -49,7 +49,7 @@ class CircleChart {
         // Create a size scale for circle radius
         vis.sizeScale = d3.scaleSqrt()
             .domain([0, d3.max(vis.carbonData, d => +d["Total Carbon Emission (g CO2e)"] || 0)])
-            .range([5, 50]);
+            .range([5, 30]);
 
         // Initialize force simulation
         vis.initializeSimulation();
@@ -312,8 +312,8 @@ class CircleChart {
 
         // Constants for layout
         const FIXED_SPACING = 2;
-        const ROW_SPACING = 75;
-        const MARGIN = 50;
+        const ROW_SPACING = 55;
+        const MARGIN = 40;
 
         // First phase: Move to categorical groups
         vis.simulation
