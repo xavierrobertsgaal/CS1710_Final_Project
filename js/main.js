@@ -64,7 +64,7 @@ function initVis(data) {
         climate: new CircleChart(containers.climate, data[1]),
         electricityMap: new ElectricityMap(containers.electricityMap, data[3], data[4]),
         electricityTimeline: new ElectricityTimeline(containers.electricityTimeline, data[3]),
-        incidents: new areaChart(containers.incidents, data[0]),
+        incidents: new AreaChart(containers.incidents, data[0]),
         sectors: new TreeMap(containers.sectors, data[0]),
         progress: new LineChart(containers.progress, data[2]),
         brush: new BrushChart(containers.brush, data[0])
