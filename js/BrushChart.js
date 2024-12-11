@@ -168,7 +168,7 @@ class BrushChart {
         // Draw stacked areas aligned with x-axis
         const area = d3.area()
             .x(d => vis.x(d.data.date))
-            .y0(vis.height)  // Start from bottom
+            .y0(d => vis.height)  // Changed from vis.height to make area touch axis
             .y1(d => vis.y(d[1]));
 
         // Update areas
@@ -176,9 +176,8 @@ class BrushChart {
             .data(vis.stackedData)
             .join("path")
             .attr("class", "brush-area")
-            .attr("fill", "#cccccc")
-            .attr("opacity", 0.3)
-            .attr("d", area);
+            .attr("d", area)
+            .attr("transform", "translate(0, 10)");
 
         // Make sure brush is on top
         vis.brushG.raise();

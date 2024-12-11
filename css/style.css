@@ -266,6 +266,8 @@ circle.no { fill: var(--dark-silver) !important; }
 .brush-area {
     pointer-events: none;
     shape-rendering: geometricPrecision;
+    fill: #666666 !important;
+    opacity: 0.5;
 }
 
 /* Credits Section */
@@ -353,7 +355,8 @@ circle.no { fill: var(--dark-silver) !important; }
     width: 100%;
     max-width: calc(100% - 40px);
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0;
+    transform: translateX(-20px);
 }
 
 #incidents-over-time,
@@ -361,6 +364,7 @@ circle.no { fill: var(--dark-silver) !important; }
     width: 100%;
     margin: 0 auto;
     overflow: visible;
+    padding-right: 40px;
 }
 
 /* Ensure x and y axes specifically are dark */
