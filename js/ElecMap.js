@@ -398,8 +398,16 @@ class ElectricityMap {
             .attr('height', height)
             .style('fill', 'url(#legend-gradient)');
 
-        vis.legendMin = legend.append('div').style('float', 'left').text('0 BTU');
-        vis.legendMax = legend.append('div').style('float', 'right').text('Max BTU');
+        vis.legendMin = legend.append('div')
+            .style('float', 'left')
+            .style('color', '#000000')
+            .style('margin-right', '5px')
+            .text('0 BTU');
+        vis.legendMax = legend.append('div')
+            .style('float', 'right')
+            .style('color', '#000000')
+            .style('margin-left', '5px')
+            .text('Max BTU');
     }
 
     addFeatureInteraction(feature, layer) {
@@ -422,7 +430,7 @@ class ElectricityMap {
                 L.popup()
                     .setLatLng(e.latlng)
                     .setContent(
-                        `<b>${stateName}</b><br>${vis.currentSector}: ${d3.format(",")(value)} BTU`
+                        `<div style="color: #000000;"><b>${stateName}</b><br>${vis.currentSector}: ${d3.format(",")(value)} BTU</div>`
                     )
                     .openOn(vis.map);
             }

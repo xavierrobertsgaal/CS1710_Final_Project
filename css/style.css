@@ -379,3 +379,24 @@ circle.no { fill: var(--dark-silver) !important; }
 .y-axis path {
     stroke: #2c3e50 !important;
 }
+
+/* Add these specific overrides for map and treemap text */
+.leaflet-popup-content {
+    color: var(--text-dark) !important;
+}
+
+.incident-content {
+    color: var(--text-dark);
+}
+
+.tree-node text {
+    fill: var(--text-dark) !important;  /* For TreeMap labels */
+}
+
+/* Keep the text-section and other left column text white */
+.text-section p,
+.text-section .lead,
+.intro-content,
+.step p {
+    color: var(--text-light);
+}

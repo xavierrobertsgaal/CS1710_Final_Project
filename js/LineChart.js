@@ -200,7 +200,7 @@ class LineChart {
         const titleText = "AI Model Performance Progress on SWE-Bench-Verified";
         const shouldWrapTitle = vis.width < 600;
         
-        const titleElement = vis.svg.append("text")
+        vis.titleElement = vis.svg.append("text")
             .attr("class", "chart-title")
             .attr("x", vis.width / 2)
             .attr("y", -70)
@@ -209,14 +209,14 @@ class LineChart {
             .style("font-weight", "bold");
 
         if (shouldWrapTitle) {
-            titleElement.selectAll("tspan")
+            vis.titleElement.selectAll("tspan")
                 .data(["AI Model Performance Progress", "on SWE-Bench-Verified"])
                 .join("tspan")
                 .attr("x", vis.width / 2)
                 .attr("dy", (d, i) => i === 0 ? 0 : "1.2em")
                 .text(d => d);
         } else {
-            titleElement.text(titleText);
+            vis.titleElement.text(titleText);
         }
 
         // Add legend with proper spacing
@@ -636,31 +636,26 @@ class LineChart {
         // Update dimensions
         vis.updateDimensions();
         
-        // Update chart container size
+        // Update SVG size
         vis.svg
             .attr("width", vis.width + vis.margin.left + vis.margin.right)
             .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
-        
-        // Update scales
-        vis.x.range([0, vis.width]);
-        vis.y.range([vis.height, 0]);
         
         // Update title with conditional wrapping
         const shouldWrapTitle = vis.width < 600;
         const titleText = "AI Model Performance Progress on SWE-Bench-Verified";
         
-        vis.svg.select(".chart-title").selectAll("*").remove();
+        vis.titleElement.selectAll("*").remove();
         if (shouldWrapTitle) {
-            vis.svg.select(".chart-title")
+            vis.titleElement
                 .selectAll("tspan")
-                .data(["Frontier model performance", "on SWE-Bench-Verified"])
+                .data(["AI Model Performance Progress", "on SWE-Bench-Verified"])
                 .join("tspan")
                 .attr("x", vis.width / 2)
                 .attr("dy", (d, i) => i === 0 ? 0 : "1.2em")
                 .text(d => d);
         } else {
-            vis.svg.select(".chart-title")
-                .text(titleText);
+            vis.titleElement.text(titleText);
         }
         
         // Update legend position and wrapping
