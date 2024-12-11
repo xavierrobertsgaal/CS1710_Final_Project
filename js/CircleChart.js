@@ -65,6 +65,7 @@ class CircleChart {
         document.getElementById("organizeClimate").classList.add("btn-outline-primary");
         document.getElementById("resetForce").classList.remove("btn-primary");
         document.getElementById("resetForce").classList.add("btn-outline-primary");
+        document.getElementById("resetForce").style.backgroundColor = "#f8f9fa";
 
         document.getElementById("organizeClimate").addEventListener("click", () => {
             vis.alignCircles();
@@ -72,14 +73,17 @@ class CircleChart {
             document.getElementById("organizeClimate").classList.remove("btn-outline-primary");
             document.getElementById("resetForce").classList.remove("btn-primary");
             document.getElementById("resetForce").classList.add("btn-outline-primary");
+            document.getElementById("resetForce").style.backgroundColor = "";
         });
 
         document.getElementById("resetForce").addEventListener("click", () => {
             vis.resetSimulation();
             document.getElementById("resetForce").classList.add("btn-primary");
             document.getElementById("resetForce").classList.remove("btn-outline-primary");
+            document.getElementById("resetForce").style.backgroundColor = "";
             document.getElementById("organizeClimate").classList.remove("btn-primary");
             document.getElementById("organizeClimate").classList.add("btn-outline-primary");
+            document.getElementById("organizeClimate").style.backgroundColor = "#f8f9fa";
         });
 
     }

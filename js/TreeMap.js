@@ -415,7 +415,7 @@ class TreeMap {
         
         // Calculate statistics
         const totalIncidents = d.data.incidents.length;
-        const avgAutonomy = (d3.mean(d.data.incidents, i => i.autonomy) / 5).toFixed(1);
+        const avgAutonomy = (d3.mean(d.data.incidents, i => i.autonomy)).toFixed(1);
         
         // Get capability counts and sort alphabetically
         const capabilityCounts = d3.rollup(
@@ -489,13 +489,15 @@ class TreeMap {
         g.append('g')
             .call(d3.axisLeft(y))
             .selectAll('text')
-            .style('fill', 'var(--text-dark)');
+            .style('fill', 'var(--text-dark)')
+            .style('font-size', '12px')
+            ;
 
         // add y axis label
         g.append('text')
             .attr('transform', 'rotate(-90)')
             .attr('y', -margin.left + 20)
-            .attr('x', -height + 20)
+            .attr('x', -height + 25)
             .style('fill', 'var(--text-dark)')
             .style('font-size', '10px')
             .text('Number of Incidents');

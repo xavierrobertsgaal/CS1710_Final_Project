@@ -7,6 +7,9 @@ class LineChart {
         // Create wrapper div for chart and leaderboard
         d3.select(`#${parentElement}`)
             .style("position", "relative")
+            .style("padding", "0")
+            .style("margin", "0")
+            .style("background", "#FFFFFF")
             .html("");
         
         // Create visualization container with transform
@@ -17,7 +20,9 @@ class LineChart {
             .style("align-items", "center")
             .style("gap", "5px")
             .style("width", "100%")
-            .style("transform", "translateY(-60px)");  // Move everything up
+            .style("transform", "translateY(-60px)")
+            .style("padding-bottom", "0")
+            .style("margin-bottom", "0");
         
         // Add animation controls container FIRST
         vis.animationControls = vis.container
@@ -112,14 +117,18 @@ class LineChart {
         vis.chartContainer = vis.container
             .append("div")
             .attr("class", "chart-container")
-            .style("width", "100%");
+            .style("width", "100%")
+            .style("padding", "0")
+            .style("margin", "0");
         
         // THEN create leaderboard container
         vis.leaderboard = vis.container
             .append("div")
             .attr("class", "leaderboard")
             .style("width", "100%")
-            .style("max-width", "800px");
+            .style("max-width", "800px")
+            .style("padding-bottom", "0")
+            .style("margin-bottom", "0");
         
         // Add leaderboard title
         vis.leaderboard.append("div")
@@ -600,7 +609,7 @@ class LineChart {
         const minScore = d3.min(vis.processedData, d => d.score);
         const scoreRange = maxScore - minScore;
 
-        // Update leaderboard entries with thinner bars and smaller text
+        // Update leaderboard entries
         vis.leaderboard.selectAll(".leaderboard-entry")
             .data(leaderboardData)
             .join("div")
@@ -616,10 +625,23 @@ class LineChart {
             .style("width", d => `${((d.score - minScore) / scoreRange) * 100}%`)
             .style("min-width", "200px")
             .html(d => `
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-weight: bold; font-size: 14px;">${d.name}</span>
+                <div style="
+                    flex: 1; 
+                    overflow: hidden; 
+                    text-overflow: ellipsis; 
+                    white-space: nowrap; 
+                    margin-right: 15px;
+                ">
+                    <span style="
+                        font-weight: bold; 
+                        font-size: 14px;
+                    ">${d.name}</span>
                 </div>
-                <span style="font-weight: bold; font-size: 14px;">${d.score.toFixed(1)}</span>
+                <div style="
+                    flex: 0 0 auto;
+                    font-weight: bold; 
+                    font-size: 14px;
+                ">${d.score.toFixed(1)}</div>
             `);
     }
 

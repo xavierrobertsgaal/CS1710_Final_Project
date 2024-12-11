@@ -9,8 +9,8 @@ class BrushChart {
             incident_id: d.incident_id
         }));
         
-        // Initialize margins with more space for x-axis labels
-        this.margin = {top: 10, right: 100, bottom: 30, left: 60};
+        // Initialize margins with more space for x-axis labels and reset button
+        this.margin = {top: 10, right: 140, bottom: 30, left: 60};  // Increased right margin
         
         // Fixed height for brush chart
         this.height = 50;
@@ -36,25 +36,49 @@ class BrushChart {
         // Get container dimensions
         const container = document.getElementById(vis.parentElement);
         const rect = container.getBoundingClientRect();
-        vis.width = rect.width - vis.margin.left - vis.margin.right - 20;
+        vis.width = rect.width - vis.margin.left - vis.margin.right;
 
         // Create SVG with explicit dimensions and extra space for title
         vis.svg = d3.select(`#${vis.parentElement}`)
             .append("svg")
             .attr("width", vis.width + vis.margin.left + vis.margin.right)
-            .attr("height", vis.height + vis.margin.top + vis.margin.bottom + 20)  // Extra space for title
+            .attr("height", vis.height + vis.margin.top + vis.margin.bottom + 30)
             .append("g")
-            .attr("transform", `translate(${vis.margin.left},${vis.margin.top + 20})`);  // Move down for title
+            .attr("transform", `translate(${vis.margin.left},${vis.margin.top + 10})`);
 
         // Add title
         vis.svg.append("text")
             .attr("class", "brush-title")
-            .attr("x", vis.width / 2)
-            .attr("y", -10)
-            .attr("text-anchor", "middle")
+            .attr("x", 0)
+            .attr("y", -5)
+            .attr("text-anchor", "start")
             .style("font-size", "12px")
             .style("fill", "#666")
             .text("Drag to select time period");
+
+        // Add reset button to parent container
+        d3.select(`#${vis.parentElement}`)
+            .append('button')
+            .attr('class', 'btn-outline-primary')
+            .style('position', 'absolute')
+            .style('right', '10px')
+            .style('top', '85%')
+            .style('transform', 'translateY(-50%)')
+            .style('z-index', '100')
+            .style('padding', '4px 12px')
+            .style('color', '#f6c744')
+            .style('background-color', '#f8f9fa')
+            .style('border', 'none')
+            .style('font-weight', '500')
+            .style('cursor', 'pointer')
+            .text('Reset')
+            .on('click', () => {
+                const endDate = d3.max(vis.data, d => d.date);
+                const startDate = new Date('2010-01-01');
+                const defaultStart = vis.x(startDate);
+                const defaultEnd = vis.x(endDate);
+                vis.brushG.call(vis.brush.move, [defaultStart, defaultEnd]);
+            });
     }
 
     setupScales() {
@@ -72,9 +96,9 @@ class BrushChart {
     setupAxes() {
         let vis = this;
 
-        // Initialize axes
+        // Initialize axes with year-only format
         vis.xAxis = d3.axisBottom(vis.x)
-            .tickFormat(d3.timeFormat("%b %Y"));
+            .tickFormat(d3.timeFormat("%Y"));
 
         // Add axes groups
         vis.xAxisG = vis.svg.append("g")
@@ -196,7 +220,7 @@ class BrushChart {
             .join("path")
             .attr("class", "brush-area")
             .attr("d", area)
-            .attr("transform", "translate(0, 10)");
+            .attr("transform", "translate(0, 5)");
 
         // Update brush position if it exists
         if (vis.brushG) {

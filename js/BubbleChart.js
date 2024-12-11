@@ -1,1 +1,0 @@
-// Placeholder for bubble chart -- used in pretraining carbon intensity section

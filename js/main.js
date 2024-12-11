@@ -125,117 +125,121 @@ function showVis(section, step) {
     // Hide all visualization containers first
     document.querySelectorAll('.vis-container').forEach(container => {
         container.style.visibility = 'hidden';
+        container.style.opacity = '0';
         container.style.display = 'none';
     });
 
     // Show the container for current section
     const currentContainer = document.getElementById(`${section}-vis`);
     if (currentContainer) {
-        currentContainer.style.visibility = 'visible';
         currentContainer.style.display = 'block';
+        // Use setTimeout to ensure display takes effect before changing visibility
+        setTimeout(() => {
+            currentContainer.style.visibility = 'visible';
+            currentContainer.style.opacity = '1';
+        }, 0);
     }
 
     // Handle specific section visualizations
     if (section === 'climate') {
-        // Get all climate visualization elements
-        const climateControls = document.querySelector('.climate-controls');
-        const circleVis = document.getElementById('pretraining-carbon-intensity');
-        const mapVis = document.getElementById('electricity-data-center');
-        const timelineVis = document.getElementById('electricity-timeline');
+        const elements = {
+            controls: document.querySelector('.climate-controls'),
+            circle: document.getElementById('pretraining-carbon-intensity'),
+            map: document.getElementById('electricity-data-center'),
+            timeline: document.getElementById('electricity-timeline')
+        };
 
-        // First hide all climate visualizations
-        [circleVis, mapVis, timelineVis].forEach(vis => {
-            if (vis) {
-                vis.style.visibility = 'hidden';
-                vis.style.display = 'none';
-            }
-        });
-        if (climateControls) climateControls.style.display = 'none';
-
-        // Show appropriate visualization based on step
-        switch(step) {
-            case 'climate-1':
-                if (circleVis) {
-                    circleVis.style.visibility = 'visible';
-                    circleVis.style.display = 'block';
-                }
-                if (climateControls) climateControls.style.display = 'block';
-                if (visualizations.climate) {
-                    visualizations.climate.resize();
-                }
-                break;
-            case 'climate-2':
-                if (mapVis) {
-                    mapVis.style.visibility = 'visible';
-                    mapVis.style.display = 'block';
-                }
-                if (visualizations.electricityMap) {
-                    visualizations.electricityMap.resize();
-                }
-                break;
-            case 'climate-3':
-                if (timelineVis) {
-                    timelineVis.style.visibility = 'visible';
-                    timelineVis.style.display = 'block';
-                }
-                if (visualizations.electricityTimeline) {
-                    visualizations.electricityTimeline.resize();
-                }
-                break;
-        }
-    } else if (section === 'incidents') {
-        const incidentsVis = document.getElementById('incidents-over-time');
-        const sectorsVis = document.getElementById('ai-incidents-by-sector');
-        const brushVis = document.getElementById('date-brush');
-
-        // Hide all incidents visualizations first
-        [incidentsVis, sectorsVis, brushVis].forEach(vis => {
-            if (vis) {
-                vis.style.visibility = 'hidden';
-                vis.style.display = 'none';
+        // Hide all climate elements
+        Object.values(elements).forEach(el => {
+            if (el) {
+                el.style.visibility = 'hidden';
+                el.style.opacity = '0';
+                el.style.display = 'none';
             }
         });
 
-        if (step === 'incidents-1' || step === 'incidents-2') {
-            if (incidentsVis) {
-                incidentsVis.style.visibility = 'visible';
-                incidentsVis.style.display = 'block';
+        // Show elements based on step
+        const showElements = {
+            'climate-1': ['controls', 'circle'],
+            'climate-2': ['map'],
+            'climate-3': ['timeline']
+        };
+
+        showElements[step]?.forEach(elementKey => {
+            const element = elements[elementKey];
+            if (element) {
+                element.style.display = 'block';
+                setTimeout(() => {
+                    element.style.visibility = 'visible';
+                    element.style.opacity = '1';
+                }, 0);
             }
-            if (brushVis) {
-                brushVis.style.visibility = 'visible';
-                brushVis.style.display = 'block';
-            }
-            if (visualizations.incidents) {
-                visualizations.incidents.resize();
-                visualizations.incidents.wrangleData();
-            }
-            if (visualizations.brush) {
-                visualizations.brush.resize();
-                visualizations.brush.wrangleData();
-            }
-        } else if (step === 'incidents-3') {
-            if (brushVis) {
-                brushVis.style.visibility = 'visible';
-                brushVis.style.display = 'block';
-            }
-            if (sectorsVis) {
-                sectorsVis.style.visibility = 'visible';
-                sectorsVis.style.display = 'block';
-            }
-            if (visualizations.sectors) {
-                visualizations.sectors.resize();
-                visualizations.sectors.wrangleData();
-            }
-            if (visualizations.brush) {
-                visualizations.brush.resize();
-                visualizations.brush.wrangleData();
-            }
+        });
+
+        // Trigger resize for active visualization
+        const visMap = {
+            'climate-1': 'climate',
+            'climate-2': 'electricityMap',
+            'climate-3': 'electricityTimeline'
+        };
+        if (visualizations[visMap[step]]) {
+            visualizations[visMap[step]].resize();
         }
-    } else if (section === 'progress') {
+    }
+
+    // Similar pattern for incidents section
+    if (section === 'incidents' || section === 'incidents-2') {
+        const elements = {
+            incidents: document.getElementById('incidents-over-time'),
+            sectors: document.getElementById('ai-incidents-by-sector'),
+            brush: document.getElementById('date-brush')
+        };
+
+        // Hide all elements first
+        Object.values(elements).forEach(el => {
+            if (el) {
+                el.style.visibility = 'hidden';
+                el.style.opacity = '0';
+                el.style.display = 'none';
+            }
+        });
+
+        // Show elements based on step
+        const showElements = {
+            'incidents-1': ['incidents', 'brush'],
+            'incidents-2': ['incidents', 'brush'],
+            'incidents-3': ['sectors', 'brush']
+        };
+
+        showElements[step]?.forEach(elementKey => {
+            const element = elements[elementKey];
+            if (element) {
+                element.style.display = 'block';
+                setTimeout(() => {
+                    element.style.visibility = 'visible';
+                    element.style.opacity = '1';
+                }, 0);
+            }
+        });
+
+        // Resize and update active visualizations
+        ['incidents', 'sectors', 'brush'].forEach(visKey => {
+            if (elements[visKey]?.style.visibility === 'visible' && visualizations[visKey]) {
+                visualizations[visKey].resize();
+                visualizations[visKey].wrangleData();
+            }
+        });
+    }
+
+    // Handle progress section
+    if (section === 'progress') {
         const progressVis = document.getElementById('swe-bench-progress');
         if (progressVis) {
-            progressVis.style.visibility = 'visible';
             progressVis.style.display = 'block';
+            setTimeout(() => {
+                progressVis.style.visibility = 'visible';
+                progressVis.style.opacity = '1';
+            }, 0);
         }
         if (visualizations.progress) {
             visualizations.progress.resize();
@@ -244,7 +248,7 @@ function showVis(section, step) {
         }
     }
 
-    // Force a resize event to ensure visualizations render properly
+    // Force a resize event
     window.dispatchEvent(new Event('resize'));
 }
 
