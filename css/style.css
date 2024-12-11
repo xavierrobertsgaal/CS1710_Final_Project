@@ -594,3 +594,7 @@ text {
     position: relative;
     z-index: 1;
 }
+
+a, a:hover {
+    color: var(--accent-gold);
+}
