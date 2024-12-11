@@ -52,6 +52,7 @@ class BrushChart {
 
         // Initialize scales with explicit ranges
         vis.x = d3.scaleTime()
+            .domain([new Date('1985-01-01'), new Date('2024-12-31')])  // Show full date range in brush
             .range([0, vis.width]);
 
         vis.y = d3.scaleLinear()
@@ -97,13 +98,12 @@ class BrushChart {
                 }
             });
 
-        // Add brush group and ensure it's visible
+        // Add brush group
         vis.brushG = vis.svg.append("g")
             .attr("class", "brush")
-            .style("display", "block")
             .call(vis.brush);
 
-        // Set initial brush position
+        // Set initial brush position to 2010-2024
         const defaultStart = vis.x(new Date('2010-01-01'));
         const defaultEnd = vis.x(new Date('2024-12-31'));
         vis.brushG.call(vis.brush.move, [defaultStart, defaultEnd]);
@@ -168,7 +168,7 @@ class BrushChart {
         // Draw stacked areas aligned with x-axis
         const area = d3.area()
             .x(d => vis.x(d.data.date))
-            .y0(vis.height)  // Start from bottom
+            .y0(d => vis.height)  // Changed from vis.height to make area touch axis
             .y1(d => vis.y(d[1]));
 
         // Update areas
@@ -176,9 +176,8 @@ class BrushChart {
             .data(vis.stackedData)
             .join("path")
             .attr("class", "brush-area")
-            .attr("fill", "#cccccc")
-            .attr("opacity", 0.3)
-            .attr("d", area);
+            .attr("d", area)
+            .attr("transform", "translate(0, 10)");
 
         // Make sure brush is on top
         vis.brushG.raise();
