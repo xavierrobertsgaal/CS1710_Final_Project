@@ -1,10 +1,14 @@
 /* Color variables */
 :root {
-    --primary-red: #ff4141;
-    --primary-blue: #2563eb;
-    --text-color: #111111;
-    --background-color: #ffffff;
-    --border-color: #dddddd;
+    --primary-blue: #1e3d59;       /* Deep navy blue for main background */
+    --secondary-blue: #2d5b84;     /* Lighter blue for hover states */
+    --accent-gold: #ffc13b;        /* Warm golden brown */
+    --accent-silver: #e6e9ed;      /* Light silver gray */
+    --dark-silver: #5c7077;        /* Darker silver for text */
+    --text-light: #ffffff;         /* White text */
+    --text-dark: #2c3e50;          /* Dark text */
+    --chart-bg: #ffffff;           /* White background for charts */
+    --border-color: #e6e9ed;       /* Light borders */
 }
 
 /* Core Layout */
@@ -12,8 +16,8 @@ body {
     overflow-y: auto;
     margin: 0;
     padding: 0;
-    color: var(--text-color);
-    background-color: var(--background-color);
+    color: var(--text-light);
+    background-color: var(--primary-blue);
     font-family: 'Montserrat', sans-serif;
     line-height: 1.6;
 }
@@ -21,32 +25,31 @@ body {
 .container-fluid {
     width: 100%;
     padding: 0;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
 }
 
 /* Scrollytelling Steps */
 .step {
     min-height: 90vh;
     margin: 0 auto;
-    padding: 1rem;
-    color: var(--text-color);
+    padding: 1.5rem;
+    color: var(--text-light);
 }
 
 .step.is-active {
-    color: var(--text-color);
+    color: var(--text-light);
 }
 
 /* Text Section Styling */
 .text-section {
-    padding: 0 1rem 0 4rem;
+    padding: 2rem;
+    background: var(--secondary-blue);
+    border-radius: 15px;
+    margin: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: relative;
-    margin-bottom: 50vh;
 }
 
-.text-section:last-child {
-    margin-bottom: 0;
-}
-
-/* Vertical line */
 .text-section::before {
     content: '';
     position: absolute;
@@ -54,18 +57,18 @@ body {
     top: 0;
     bottom: 0;
     width: 2px;
-    background-color: var(--border-color);
+    background-color: var(--accent-gold);
 }
 
 .text-section h2 {
     position: sticky;
     top: 0;
-    background: white;
+    background: var(--secondary-blue);
     padding: 1.25rem 0 1rem;
     margin: 0 0 1rem 0;
     z-index: 100;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-color);
+    border-bottom: 2px solid var(--accent-gold);
+    color: var(--accent-gold);
     font-size: 2.5rem;
     font-weight: 700;
     letter-spacing: -0.02em;
@@ -78,6 +81,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
 }
 
 .intro-row .step {
@@ -88,7 +92,10 @@ body {
     opacity: 1;
     border: none;
     text-align: center;
-    padding: 1rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
 }
 
 .intro-row h1 {
@@ -98,6 +105,8 @@ body {
     text-align: center;
     font-weight: 800;
     letter-spacing: -0.03em;
+    color: var(--accent-gold);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .intro-content {
@@ -107,22 +116,19 @@ body {
     margin: 0 auto;
 }
 
-.intro-content p {
-    margin-bottom: 1.5rem;
-}
-
 /* Regular paragraphs */
 p {
     font-size: 1.1rem;
     line-height: 1.7;
     margin-bottom: 1.2rem;
     max-width: 70ch;
+    color: var(--text-light);
 }
 
 .lead {
     font-size: 1.35rem;
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--accent-silver);
     margin-bottom: 1.5rem;
 }
 
@@ -133,21 +139,24 @@ p {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
+    padding: 2rem;
     min-width: 300px;
-    background: white;
+    background: var(--chart-bg);
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1;
+    margin: 1rem;
 }
 
 .vis-container {
     width: 100%;
-    height: 100%;
+    height: auto;
     position: relative;
-    opacity: 1;
-    transition: opacity 0.5s ease;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    margin: 0 auto;
 }
 
 /* Individual Visualization Containers */
@@ -162,125 +171,90 @@ p {
     min-height: 500px;
     margin: 1rem 0;
     opacity: 1;
+    background: var(--chart-bg);
+    border-radius: 10px;
+    padding: 1rem;
 }
 
 /* Visualization Colors */
-.line { stroke: var(--primary-blue) !important; }
-/* .area { fill: var(--primary-blue) !important; } */
-.max-score-line { stroke: var(--primary-red) !important; }
-.point { fill: var(--primary-blue) !important; }
-.point.highlight { fill: var(--primary-red) !important; }
-.node rect { fill: var(--primary-blue) !important; }
+.line { stroke: var(--secondary-blue) !important; }
+.max-score-line { stroke: #ff4141 !important; }
+.point { fill: var(--secondary-blue) !important; }
+.point.highlight { fill: #ff4141 !important; }
+.node rect { fill: var(--secondary-blue) !important; }
 
-circle.active { fill: var(--primary-red) !important; }
-circle.passive { fill: var(--primary-blue) !important; }
-circle.no { fill: #5c7077 !important; }
+circle.active { fill: #ff4141 !important; }
+circle.passive { fill: var(--secondary-blue) !important; }
+circle.no { fill: var(--dark-silver) !important; }
 
 .area-low { 
-    fill: #2563eb !important; /* Passive AI Use blue */
+    fill: #2563eb !important;
     opacity: 0.7; 
 }
 .area-medium { 
-    fill: #5c7077 !important; /* No AI Use gray */
+    fill: #5c7077 !important;
     opacity: 0.7; 
 }
 .area-high { 
-    fill: #ff4141 !important; /* Active AI Use red */
+    fill: #ff4141 !important;
     opacity: 0.7; 
 }
 
 /* Button styles */
 .btn-primary {
-    background-color: var(--primary-blue) !important;
-    border-color: var(--primary-blue) !important;
-    color: white !important;
+    background-color: var(--accent-gold) !important;
+    border-color: var(--accent-gold) !important;
+    color: var(--primary-blue) !important;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
 .btn-outline-primary {
-    color: var(--primary-blue) !important;
-    border-color: var(--primary-blue) !important;
+    color: var(--accent-gold) !important;
+    border-color: var(--accent-gold) !important;
     background-color: transparent !important;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
 }
 
 .btn-outline-primary:hover {
-    background-color: var(--primary-blue) !important;
-    color: white !important;
+    background-color: var(--accent-gold) !important;
+    color: var(--primary-blue) !important;
 }
 
-/* Tooltip styles */
-.tooltip {
-    background-color: var(--background-color);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    padding: 10px;
-    border-radius: 5px;
-    pointer-events: none;
-}
-
-/* Credits Section Styling */
-.credits-section {
-    padding: 4rem 0;
-    background-color: var(--background-color);
-    border-top: 1px solid var(--border-color);
-}
-
-.credits-img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--primary-blue);
-    margin-bottom: 1rem;
-}
-
-.credits-link {
-    text-decoration: none;
-    color: var(--text-color);
-}
-
-.role {
-    font-size: 1rem;
-    color: #666;
-    font-weight: 500;
-    margin-top: 0.5rem;
-    letter-spacing: 0.02em;
-}
-
-/* Override intro section styles */
-.intro-row .text-section {
-    padding: 0 1rem;
-}
-
-.intro-row .text-section::before {
-    display: none;
-}
-
-/* Add these styles for the brush chart */
+/* Brush Chart Styling */
 .brush-container {
     width: 100%;
     height: 80px;
     margin: 20px 0;
     position: relative;
+    background: var(--chart-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    transform: translateY(-80px);
 }
 
 #date-brush {
     width: 100%;
     height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
+    display: block;
+    min-height: 80px;
 }
 
-/* Style for the brush selection */
 .brush .selection {
-    fill: rgba(37, 99, 235, 0.2);  /* Light blue selection */
-    stroke: #2563eb;
+    fill: rgba(45, 91, 132, 0.2);
+    stroke: var(--secondary-blue);
     stroke-width: 1px;
 }
 
 .brush .handle {
-    fill: #2563eb;
-    stroke: #2563eb;
+    fill: var(--secondary-blue);
+    stroke: var(--secondary-blue);
     stroke-width: 1px;
 }
 
@@ -289,8 +263,115 @@ circle.no { fill: #5c7077 !important; }
     cursor: crosshair;
 }
 
-/* Make the brush chart area more visible */
 .brush-area {
     pointer-events: none;
     shape-rendering: geometricPrecision;
+}
+
+/* Credits Section */
+.credits-section {
+    padding: 4rem 0;
+    background: var(--secondary-blue);
+    border-top: 2px solid var(--accent-gold);
+    margin-top: 4rem;
+}
+
+.credits-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent-gold);
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.credits-link {
+    text-decoration: none;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+}
+
+.credits-link:hover {
+    color: var(--accent-gold);
+}
+
+.role {
+    font-size: 1rem;
+    color: var(--accent-silver);
+    font-weight: 500;
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+}
+
+/* Chart Elements */
+.axis text {
+    fill: #2c3e50 !important;
+    font-size: 12px;
+}
+
+.axis line, .axis path {
+    stroke: #2c3e50 !important;
+    stroke-width: 1px;
+}
+
+.chart-title {
+    fill: var(--text-dark);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.y-axis-label {
+    fill: var(--text-dark);
+    font-size: 12px;
+}
+
+/* Legend Styling */
+.legend text {
+    fill: var(--text-dark);
+    font-size: 12px;
+}
+
+/* Tooltip Styling */
+.tooltip {
+    background-color: var(--chart-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    font-size: 12px;
+    max-width: 200px;
+}
+
+/* Add styling for main visualization container */
+.main-vis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: calc(100% - 40px);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+#incidents-over-time,
+#date-brush {
+    width: 100%;
+    margin: 0 auto;
+    overflow: visible;
+}
+
+/* Ensure x and y axes specifically are dark */
+.x-axis text,
+.y-axis text {
+    fill: #2c3e50 !important;
+}
+
+.x-axis line,
+.x-axis path,
+.y-axis line,
+.y-axis path {
+    stroke: #2c3e50 !important;
 }
