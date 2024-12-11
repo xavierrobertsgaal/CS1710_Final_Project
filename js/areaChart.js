@@ -29,9 +29,9 @@ class AreaChart {
         // Set ordinal color scale for severity levels with matching colors from circle chart
         vis.colorScale = d3.scaleOrdinal()
             .domain(["Low", "Medium", "High"])
-            .range(['#2563eb', '#5c7077', '#ff4141']); // Blue, Gray, Red - matching circle chart colors
+            .range(['#2563eb', '#5c7077', '#ff4141']); // Blue, Gray, Red
 
-        vis.margin = { top: 40, right: 40, bottom: 100, left: 50 };
+        vis.margin = { top: 40, right: 100, bottom: 100, left: 60 };
         vis.initVis();
     }
 
@@ -46,12 +46,22 @@ class AreaChart {
     setupSvg() {
         let vis = this;
         
-        // Create SVG area
+        // Get container width
+        const container = d3.select(`#${vis.parentElement}`).node();
+        const containerWidth = container.getBoundingClientRect().width;
+        
+        // Set width with more padding
+        vis.width = containerWidth - vis.margin.left - vis.margin.right - 20;  // Reduced padding
+        vis.height = Math.min(500, window.innerHeight * 0.6);
+        
+        // Create SVG area with explicit dimensions
         vis.svg = d3.select(`#${vis.parentElement}`)
             .append("svg")
-            .attr("class", "chart-svg");
+            .attr("class", "chart-svg")
+            .attr("width", vis.width + vis.margin.left + vis.margin.right)
+            .attr("height", vis.height + vis.margin.top + vis.margin.bottom);
             
-        // Create group for content
+        // Add chart group with translation
         vis.chartGroup = vis.svg.append("g")
             .attr("transform", `translate(${vis.margin.left},${vis.margin.top})`);
         

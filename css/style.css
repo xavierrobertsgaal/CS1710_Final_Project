@@ -150,16 +150,13 @@ p {
 
 .vis-container {
     width: 100%;
-    height: 100%;
+    height: auto;
     position: relative;
-    opacity: 1;
-    transition: opacity 0.5s ease;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    background: var(--chart-bg);
-    border-radius: 10px;
+    align-items: center;
     padding: 1.5rem;
+    margin: 0 auto;
 }
 
 /* Individual Visualization Containers */
@@ -191,11 +188,11 @@ circle.passive { fill: var(--secondary-blue) !important; }
 circle.no { fill: var(--dark-silver) !important; }
 
 .area-low { 
-    fill: var(--accent-gold) !important;
+    fill: #2563eb !important;
     opacity: 0.7; 
 }
 .area-medium { 
-    fill: var(--dark-silver) !important;
+    fill: #5c7077 !important;
     opacity: 0.7; 
 }
 .area-high { 
@@ -238,14 +235,15 @@ circle.no { fill: var(--dark-silver) !important; }
     background: var(--chart-bg);
     border-radius: 8px;
     padding: 1rem;
+    transform: translateY(-80px);
 }
 
 #date-brush {
     width: 100%;
     height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
+    display: block;
+    min-height: 80px;
 }
 
 .brush .selection {
@@ -308,12 +306,12 @@ circle.no { fill: var(--dark-silver) !important; }
 
 /* Chart Elements */
 .axis text {
-    fill: var(--text-dark);
+    fill: #2c3e50 !important;
     font-size: 12px;
 }
 
 .axis line, .axis path {
-    stroke: var(--dark-silver);
+    stroke: #2c3e50 !important;
     stroke-width: 1px;
 }
 
@@ -345,4 +343,35 @@ circle.no { fill: var(--dark-silver) !important; }
     pointer-events: none;
     font-size: 12px;
     max-width: 200px;
+}
+
+/* Add styling for main visualization container */
+.main-vis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: calc(100% - 40px);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+#incidents-over-time,
+#date-brush {
+    width: 100%;
+    margin: 0 auto;
+    overflow: visible;
+}
+
+/* Ensure x and y axes specifically are dark */
+.x-axis text,
+.y-axis text {
+    fill: #2c3e50 !important;
+}
+
+.x-axis line,
+.x-axis path,
+.y-axis line,
+.y-axis path {
+    stroke: #2c3e50 !important;
 }

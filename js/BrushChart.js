@@ -10,7 +10,7 @@ class BrushChart {
         }));
         
         // Initialize margins with more space for x-axis labels
-        this.margin = {top: 10, right: 10, bottom: 30, left: 40};
+        this.margin = {top: 10, right: 100, bottom: 30, left: 60};
         
         // Fixed height for brush chart
         this.height = 50;
@@ -36,7 +36,7 @@ class BrushChart {
         // Get container dimensions
         const container = document.getElementById(vis.parentElement);
         const rect = container.getBoundingClientRect();
-        vis.width = rect.width - vis.margin.left - vis.margin.right;
+        vis.width = rect.width - vis.margin.left - vis.margin.right - 20;  // Reduced padding
 
         // Create SVG with explicit dimensions
         vis.svg = d3.select(`#${vis.parentElement}`)
@@ -74,7 +74,7 @@ class BrushChart {
     setupBrush() {
         let vis = this;
 
-        // Initialize brush
+        // Initialize brush with explicit dimensions
         vis.brush = d3.brushX()
             .extent([[0, 0], [vis.width, vis.height]])
             .on("brush", function(event) {
@@ -97,12 +97,13 @@ class BrushChart {
                 }
             });
 
-        // Add brush group
+        // Add brush group and ensure it's visible
         vis.brushG = vis.svg.append("g")
             .attr("class", "brush")
+            .style("display", "block")
             .call(vis.brush);
 
-        // Set initial brush position (2010 to end)
+        // Set initial brush position
         const defaultStart = vis.x(new Date('2010-01-01'));
         const defaultEnd = vis.x(new Date('2024-12-31'));
         vis.brushG.call(vis.brush.move, [defaultStart, defaultEnd]);
